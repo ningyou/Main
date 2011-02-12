@@ -18,6 +18,7 @@ end
 
 function _M:Route()
 	local pathInfo, pathSplit = self:Path()
+	if(not pathInfo) then return end
 
 	for i=1, #routes do
 		local ptrn, dst = unpack(routes[i])
