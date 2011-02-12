@@ -23,7 +23,7 @@ function _M:Route()
 	for i=1, #routes do
 		local ptrn, dst = unpack(routes[i])
 		if(pathInfo:match(ptrn)) then
-			ob.Get'Content':write(unpack(pathSplit))
+			return dst(unpack(pathSplit))
 		end
 	end
 end
