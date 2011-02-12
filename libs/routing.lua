@@ -5,10 +5,10 @@ local routes = {}
 local _M = {}
 
 function _M:Path()
-	local pathInfo = os.getenv'PATH_INFO'
+	local pathInfo = os.getenv'PATH_INFO' or os.getenv'SCRIPT_NAME' or os.getenv'SCRIPT_URL'
 	if(pathInfo) then
 		local split = {}
-		for str in path:gmatch'[^/]+' do
+		for str in pathInfo:gmatch'[^/]+' do
 			table.insert(split, str)
 		end
 
@@ -18,11 +18,12 @@ end
 
 function _M:Route()
 	local pathInfo, pathSplit = self:Path()
+	if(not pathInfo) then return end
 
 	for i=1, #routes do
 		local ptrn, dst = unpack(routes[i])
 		if(pathInfo:match(ptrn)) then
-			ob.Get'Content':write(unpack(pathSplit))
+			return dst(unpack(pathSplit))
 		end
 	end
 end
