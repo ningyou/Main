@@ -25,6 +25,6 @@ xpcall(
 		io.write'<h1>I accidently the page!</h1>'
 		io.write('<pre>', err:gsub('/.-/ningyou/', ''), '</pre>')
 		io.write'<h2>Debug stack:<ningyou'
-		io.write('<pre>', debug.traceback():gsub('\t/.-/dump/', '\t'), '</pre>')
+		io.write('<pre>', debug.traceback():gsub('\t/.-/ningyou/', '\t'), '</pre>')
 	end
 )
