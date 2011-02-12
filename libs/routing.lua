@@ -5,7 +5,7 @@ local routes = {}
 local _M = {}
 
 function _M:Path()
-	local pathInfo = os.getenv'PATH_INFO'
+	local pathInfo = os.getenv'PATH_INFO' or os.getenv'SCRIPT_NAME' or os.getenv'SCRIPT_URL'
 	if(pathInfo) then
 		local split = {}
 		for str in path:gmatch'[^/]+' do
