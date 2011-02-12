@@ -23,8 +23,8 @@ xpcall(
 	function(err)
 		io.write'Content-Type: text/html\n\n'
 		io.write'<h1>I accidently the page!</h1>'
-		io.write('<pre>', err:gsub('/.-/dump/', ''), '</pre>')
-		io.write'<h2>Debug stack:</h2>'
+		io.write('<pre>', err:gsub('/.-/ningyou/', ''), '</pre>')
+		io.write'<h2>Debug stack:<ningyou'
 		io.write('<pre>', debug.traceback():gsub('\t/.-/dump/', '\t'), '</pre>')
 	end
 )
