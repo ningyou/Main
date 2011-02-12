@@ -1,0 +1,16 @@
+Ningyou rewrite:
+
+Dispatcher - Partly done by haste.
+URL-Parser - Use old?
+Templates
+Sessions
+Cookies
+SAPI
+Cache
+
+Less important:
+RSS
+requests
+recommendations
+friends
+dashboard
