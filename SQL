@@ -1,0 +1,33 @@
+NINGYOU
+|
+| - LISTS
+| | - ID
+| | - NAME
+| | - OWNER (USERID)
+|
+| - LIST ENTRIES
+| | - LIST ID
+| | - SHOW ID
+| | - EPISODES WATCHED
+| | - CATEGORY (CURRENTLY WATCHING, FINISHED, ONHOLD, DROPPED)
+| 
+| - TITLES?
+| | - SHOW ID
+| | - LANGUAGE
+| | - NAME
+|
+| - USER?
+| | - ID
+| | - NAME
+| | - PASSWD
+| | - ACCESS (USER, ADMIN ETC)
+|
+| - FRIENDS LIST?
+| | - USER ID
+| | - FRIEND's USER ID
+|
+| - FREIND RECOMMANDATIONS?
+| | - FROM USER ID
+| | - TO USER ID
+| | - SHOW ID
+| | - COMMENT
