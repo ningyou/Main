@@ -14,3 +14,13 @@ requests
 recommendations
 friends
 dashboard
+
+Database stuff:
+MongoDB - learn it!
+
+Titles / External linking for info:
+AniDB? - animetitles file easily parsed and inserted/updated with mongo, has titles and id.
+IMDB? no fucking apis... only a huge file with names, no id. see https://github.com/minrk/imdb_api 
+TVRage? haste has something here I think?
+TVDB? has a api, thats about all I know.
+JDRAMA? We have d-addicts... but they have no api.
