@@ -5,13 +5,13 @@ local header = require'header'
 local routing = require'routing'
 local ob = require'ob'
 
+for _, route in ipairs(dofile'../config/routing.lua') do
+	routing:Register(route[1], route[2], route[3])
+end
+
 xpcall(
 	function()
 		routing:Route()
-
-		-- AMAZING CONTENT
-		ob.Get'Content':write'<h1>Landing page!</h1>'
-		ob.Get'Content':write'We has a landing page.'
 
 		header:Generate()
 		ob.Get'Header':flush()
