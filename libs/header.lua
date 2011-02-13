@@ -4,7 +4,11 @@ local headerFields = {
 	['Content-Type'] = 'text/html',
 }
 
-local _M = {}
+local _M = setmetatable({}, {
+	__call = function(self, field, value)
+		headerFields[field] = value
+	end,
+})
 
 function _M:Generate()
 	local buffer = ob.Get'Header'

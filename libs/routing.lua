@@ -29,6 +29,8 @@ function _M:Route()
 			return dofile('controller/' .. controller)[handler](unpack(pathSplit))
 		end
 	end
+
+	return dofile'controller/404.lua'.index(unpack(pathSplit))
 end
 
 function _M:Register(ptrn, controller, handler)
