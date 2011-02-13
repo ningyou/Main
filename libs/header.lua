@@ -1,19 +1,21 @@
 local ob = require'ob'
 
 local headerFields = {
-	['Content-Type'] = 'text/html',
+	{'Content-Type', 'text/html'},
 }
 
 local _M = setmetatable({}, {
 	__call = function(self, field, value)
-		headerFields[field] = value
+		table.insert(headerFields, {field, value})
 	end,
 })
 
 function _M:Generate()
 	local buffer = ob.Get'Header'
-	for key, value in next, headerFields do
-		buffer:write(key, ': ', value, next(headerFields, key) and '\r\n')
+
+	for i=1, #headerFields do
+		local key, value = unpack(headerFields[i])
+		buffer:write(key, ': ', value, headerFields[i + 1] and '\r\n')
 	end
 
 	buffer:write'\n\n'
