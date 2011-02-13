@@ -26,7 +26,7 @@ function _M:Route()
 			if(not handler) then handler = 'index' end
 
 			-- pwetty!
-			return dofile('../controller/' .. controller)[handler](unpack(pathSplit))
+			return dofile('controller/' .. controller)[handler](unpack(pathSplit))
 		end
 	end
 end

@@ -1,11 +1,14 @@
 #!/usr/bin/env lua
-package.path = '../libs/?/init.lua;../libs/?.lua;?.lua;init/?/.lua' .. package.path
+local lfs = require'lfs'
+lfs.chdir'..'
+
+package.path = 'libs/?/init.lua;libs/?.lua;?.lua;init/?/.lua' .. package.path
 
 local header = require'header'
 local routing = require'routing'
 local ob = require'ob'
 
-for _, route in ipairs(dofile'../config/routing.lua') do
+for _, route in ipairs(dofile'config/routing.lua') do
 	routing:Register(route[1], route[2], route[3])
 end
 
