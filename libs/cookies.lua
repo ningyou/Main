@@ -29,6 +29,19 @@ do
 	end
 end
 
+local parseCookies
+do
+	function parseCookies(str, pat)
+		local cookies = {}
+		str:gsub(';%s*', ';'):gsub('[^;]+', function(cookie)
+			local key, value = cookie:match'([^=]+)=(.*)$'
+			cookies[key] = value
+		end)
+
+		return cookies
+	end
+end
+
 local handlers = {
 	expires = function(time)
 		return os.date("!Expires=%a, %d-%b-%Y %H:%M:%S GMT", time)
@@ -54,6 +67,13 @@ end
 
 function _M:Delete(name)
 	return self:Set(name, '', 'expires', 1)
+end
+
+function _M:Get(name)
+	local cookies = os.getenv'HTTP_COOKIE'
+	if(not cookies) then return end
+
+	return parseCookies(cookies)[name]
 end
 
 return _M
