@@ -4,8 +4,7 @@ local _M = mongo.Connection.New()
 
 _M:connect"localhost"
 
-function _M:TitleFromID(id, type, lang
-	local lang = lang or "main"
+function _M:TitleFromID(id, type, lang or "main")
 	local q = self:query("ningyou.titles", { _id = id })
 
 	for r in q:results() do
