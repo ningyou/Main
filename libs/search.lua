@@ -7,7 +7,7 @@ local http = require"http"
 local apikey = function(site)
 	local q = db:query("ningyou.apikey", { site = site })
 	for r in q:results() do
-		return r.site
+		return r.key
 	end
 
 	return
