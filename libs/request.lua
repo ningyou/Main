@@ -20,7 +20,9 @@ local parseRequest = function(str)
 	local request = {}
 	str:gsub('[^&]+', function(entry)
 		local key, value = entry:match'([^=]+)=(.*)$'
-		request[key] = urlDecode(value)
+		if(key and value) then
+			request[key] = urlDecode(value)
+		end
 	end)
 
 	return request
