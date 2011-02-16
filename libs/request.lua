@@ -1,4 +1,7 @@
 local method = os.getenv'REQUEST_METHOD'
+local contentType = os.getenv'CONTENT_TYPE'
+local contentLength = os.getenv'CONTENT_LENGTH'
+
 local _GET ={}
 local _POST = {}
 
@@ -33,8 +36,17 @@ if(#get_query > 0) then
 	_GET = parseRequest(get_query)
 end
 
+if(method == 'POST') then
+	if(contentType == 'application/x-www-form-urlencoded') then
+		_POST = parseRequest(io.stdin:read'*a')
+	end
+end
+
 return {
 	_POST = _POST,
 	_GET = _GET,
+
 	method = method,
+	contentType = contentType,
+	contentLength = contentLength,
 }
