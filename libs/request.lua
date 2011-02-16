@@ -21,7 +21,6 @@ local parseRequest = function(str)
 	str:gsub('[^&]+', function(entry)
 		local key, value = entry:match'([^=]+)=(.*)$'
 		request[key] = urlDecode(value)
-		print(key, urlDecode(value))
 	end)
 
 	return request
@@ -30,10 +29,6 @@ end
 local get_query = os.getenv'QUERY_STRING'
 if(#get_query > 0) then
 	_GET = parseRequest(get_query)
-end
-
-if(method == 'POST') then
-	_POST = parseRequest(io.read'*a')
 end
 
 return {
