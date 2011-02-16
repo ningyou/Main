@@ -2,7 +2,7 @@ Ningyou rewrite:
 
 Dispatcher - Mostly done, gj haste!
 URL-Parser - It's handled by the dispatcher.
-Template - haste is fixin' it!
+Template - done! might want to extend it later on tho'.
 Sessions
 Cookies - 90% done, minor features left.
 SAPI
