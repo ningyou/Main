@@ -33,7 +33,7 @@ local parseCookies = function(str)
 	local cookies = {}
 	str:gsub(';%s*', ';'):gsub('[^;]+', function(cookie)
 		local key, value = cookie:match'([^=]+)=(.*)$'
-		cookies[key] = value
+		cookies[key] = urlDecode(value)
 	end)
 
 	return cookies
@@ -47,7 +47,7 @@ local handlers = {
 
 function _M:Set(name, value, ...)
 	local cookie = {}
-	table.insert(cookie, ('%s=%s'):format(name, value))
+	table.insert(cookie, ('%s=%s'):format(name, urlEncode(value)))
 
 	for i=1, select('#', ...) do
 		local type, argument = select(i, ...)
