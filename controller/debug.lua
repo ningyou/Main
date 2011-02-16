@@ -10,16 +10,16 @@ return {
 		ob.Get'Content':write'<pre>'
 		ob.Get'Content':write(o)
 
-		ob.Get'Content':write'_GET:'
+		ob.Get'Content':write'_GET:\n'
 		for k,v in next, request._GET do
-			ob.Get'Content':write(k, ' = ', v)
+			ob.Get'Content':write(k, ' = ', v, '\n')
 		end
 
-		ob.Get'Content':write'_POST:'
+		ob.Get'Content':write'_POST:\n'
 		for k,v in next, request._POST do
-			ob.Get'Content':write(k, ' = ', v)
+			ob.Get'Content':write(k, ' = ', v, '\n')
 		end
 
-		ob.Get'Conten':write'</pre>'
+		ob.Get'Content':write'</pre>'
 	end,
 }
