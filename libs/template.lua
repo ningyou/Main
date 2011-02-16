@@ -1,50 +1,80 @@
+-- Highly inspired by Jinja. <3 Syntax that doesn't make my eyes bleed.
 local _M = {}
 
-local tags = {}
-local template = {}
+-- Just to make our life slightly simpler. Needs to be updated to reflect the
+-- magic characters of the types table.
+-- / is used as dummy to fetch the results at the end of the template.
+local typesString = '%%{/'
+local types = {
+	-- Variable
+	['{'] = function(var)
+		return ('io.write(%s)'):format(var)
+	end,
 
-function _M:RegisterTemplate(name, html)
-	template[name] = html
+	-- String of Lua code
+	['%'] = function(code)
+		return code
+	end,
+}
+
+local trim = function(s)
+	return s:match('^()%s*$') and '' or s:match('^%s*(.*%S)')
 end
 
-function _M:RegisterTag(tag, func, template)
-	tags[tag] = {
-		func = func,
-		template = template,
-	}
-end
+local pattern = '([^{]*)(%b{})'
+--local pattern = '([^{]*){([' .. typesString .. '])%s*(.-)%s*[' .. typesString .. ']-}'
 
-function _M:RenderTags(html)
-	return html:gsub("<lua:(%S+)%s*(.-)/>", function(tag, args)
-		local a = {}
-		local out
+function _M:Generate(templateData)
+	templateData = templateData .. '{//}'
+	local out = {}
+	for html, tag in templateData:gmatch(pattern) do
+		local identifier = tag:sub(2, 2)
+		local code = tag:sub(3, -3)
 
-		if tags[tag] then
-			-- Parse arguments
-			for k, v in args:gmatch("%s*(.-)=%\"(.-)%\"") do
-				a[k] = v
-			end
+		-- Strip away spaces between {{}}.
+		-- NOTE: We aren't required to actually run this, it just makes the
+		-- output slightly easier to unit test. IF it causes issues we can
+		-- simply remove it.
+		code = trim(code)
+		-- Spaces between tags can yield padded lines.
+		html = trim(html)
 
-			if tags[tag].template and template[tags[tag].template] and type(tags[tag].func) == "table" then
-				out = self:RenderTemplate(tags[tag].template, tags[tag].func, a)
-			else
-				out = tags[tag].func(a)
-			end
+		-- We fetch 0 or more of not {, so it can give is a empty string :(
+		if(#html ~= 0) then
+			table.insert(out, ('io.write[=[%s]=]'):format(html))
 		end
 
-		return out
-	end)
-end
-
-function _M:RenderTemplate(name, func, args)
-	local t = template[name]
-	for i,v in pairs(func) do
-		if args[v] then
-			t = t:gsub(v, args[v])
+		-- Prevent our function from blowing if we try do use some undefined
+		-- template type.
+		local kind = types[identifier]
+		if(kind) then
+			table.insert(out, kind(code))
 		end
 	end
 
-	return t
+	-- Strip out extra newlines here, should be safe...
+	return table.concat(out, '\n'):gsub('[\n]+', '\n')
+end
+
+function _M:Render(templateData, env)
+	local genTemplate = self:Generate(templateData)
+
+	-- Accidently the page if we fail.
+	local func, err = loadstring(genTemplate, 'template')
+	if(not func) then
+		error(err)
+	end
+
+	setfenv(func, env)
+	return func, genTemplate
+end
+
+function _M:RenderView(view, env)
+	local template = io.open('views/' .. view, 'r')
+	local templateData = template:read'*a'
+	templateFile:close()
+
+	return self:Render(templateData, env)
 end
 
 return _M
