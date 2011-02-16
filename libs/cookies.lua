@@ -29,17 +29,14 @@ do
 	end
 end
 
-local parseCookies
-do
-	function parseCookies(str, pat)
-		local cookies = {}
-		str:gsub(';%s*', ';'):gsub('[^;]+', function(cookie)
-			local key, value = cookie:match'([^=]+)=(.*)$'
-			cookies[key] = value
-		end)
+local parseCookies = function(str)
+	local cookies = {}
+	str:gsub(';%s*', ';'):gsub('[^;]+', function(cookie)
+		local key, value = cookie:match'([^=]+)=(.*)$'
+		cookies[key] = value
+	end)
 
-		return cookies
-	end
+	return cookies
 end
 
 local handlers = {
