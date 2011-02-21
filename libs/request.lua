@@ -76,11 +76,10 @@ if(method == 'POST') then
 				fields = true
 			else
 				if(fields) then
-					if(line == '') then
-						-- fields are separated by last: field\n\n
+					if(line == '\r') then
 						fields = nil
 					else
-						local field, value, extra = line:match'([^:]+):([^;]*);?(.*)'
+						local field, value, extra = line:match'([^:]+):([^;]*);?(.*)\r'
 						tmp[field:lower()] = value
 						if(extra ~= '') then
 							injectFields(tmp, extra)
