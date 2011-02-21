@@ -7,10 +7,7 @@ function _M:save(uid)
 
 	local id = mongo.GenerateID()
 
-	local padding = "x"
-	padding = padding:rep(100)
-
-	db:insert("ningyou.sessions", { _id = mongo.ObjectId(id), uid = uid, _padding = padding })
+	db:insert("ningyou.sessions", { _id = mongo.ObjectId(id), uid = uid, _padding = ("x"):rep(100) })
 	
 	return id
 end
@@ -20,12 +17,10 @@ function _M:get(id)
 
 	local q = db:query("ningyou.sessions", { _id = id })
 
-	for r in q:results() do
-		db:update("ningyou.sessions", { _id = id }, { _id = id, uid = r.uid })
-		return r.uid
-	end
+	local r = q:results()()
 
-	return
+	db:update("ningyou.sessions", { _id = id }, { _id = id, uid = r.uid })
+	return r.uid
 end
 
 return _M
