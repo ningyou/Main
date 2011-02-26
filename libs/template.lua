@@ -8,7 +8,7 @@ local typesString = '%%{/'
 local types = {
 	-- Variable
 	['{'] = function(var)
-		return ('io.write(%s)'):format(var)
+		return ('_O:write(%s)'):format(var)
 	end,
 
 	-- String of Lua code
@@ -24,9 +24,19 @@ end
 local pattern = '([^{]*)(%b{})'
 --local pattern = '([^{]*){([' .. typesString .. '])%s*(.-)%s*[' .. typesString .. ']-}'
 
-function _M:Generate(templateData)
+function _M:Generate(templateData, minor)
 	templateData = templateData .. '{//}'
-	local out = {}
+
+	local out
+	if(minor) then
+		out = {}
+	else
+		out = {
+			"local ob = require'ob'",
+			"local _O = ob.Get'Content'"
+		}
+	end
+
 	for html, tag in templateData:gmatch(pattern) do
 		local identifier = tag:sub(2, 2)
 		local code = tag:sub(3, -3)
@@ -41,7 +51,7 @@ function _M:Generate(templateData)
 
 		-- We fetch 0 or more of not {, so it can give is a empty string :(
 		if(#html ~= 0) then
-			table.insert(out, ('io.write[=[%s]=]'):format(html))
+			table.insert(out, ('_O:write[=[%s]=]'):format(html))
 		end
 
 		-- Prevent our function from blowing if we try do use some undefined
@@ -56,8 +66,8 @@ function _M:Generate(templateData)
 	return table.concat(out, '\n'):gsub('[\n]+', '\n')
 end
 
-function _M:Render(templateData, env)
-	local genTemplate = self:Generate(templateData)
+function _M:Render(templateData, minor, env)
+	local genTemplate = self:Generate(templateData, minor)
 
 	-- Accidently the page if we fail.
 	local func, err = loadstring(genTemplate, 'template')
@@ -69,12 +79,12 @@ function _M:Render(templateData, env)
 	return func, genTemplate
 end
 
-function _M:RenderView(view, env)
+function _M:RenderView(view, minor, env)
 	local template = io.open('views/' .. view, 'r')
 	local templateData = template:read'*a'
 	templateFile:close()
 
-	return self:Render(templateData, env)
+	return self:Render(templateData, minor,  minor,  env)
 end
 
 return _M
