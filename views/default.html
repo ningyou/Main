@@ -6,7 +6,25 @@
 
 		<div id="content">
 			<h2>Register</h2>
-			<p>Because we're this awesome!</p>
+			<p>I believe in your typing skills!</p>
+			<form action="/signup" id="signup" method="post">
+				<ul>
+					<li>
+						<label for="usr:login">Username:</label>
+						<input name="usr:login" size="30" type="text" />
+					</li>
+
+					<li>
+						<label for="usr:mail">Email address:</label>
+						<input name="usr:mail" size="30" type="text" />
+					</li>
+
+					<li>
+						<label for="usr:password">Password:</label>
+						<input name="usr:password" size="30" type="password" />
+					</li>
+				</ul>
+			</form>
 		</div>
 
 <%include footer.html %>
