@@ -1,1 +1,10 @@
-package.path = '../libs/?/init.lua;../libs/?.lua;?.lua;init/?/.lua' .. package.path
+package.path = table.concat({
+	'../libs/?/init.lua',
+	'../libs/?.lua',
+
+	'../models/?.lua',
+	'../models/?/init.lua',
+
+	'../?.lua',
+	'../?/init.lua',
+}, ';') .. package.path
