@@ -77,7 +77,7 @@ function _M:Render(templateData, minor, env)
 
 	-- We should create a custom env for this.
 	setfenv(func, env or _G)
-	return func, genTemplate
+	return func()
 end
 
 function _M:RenderView(view, minor, env)
