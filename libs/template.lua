@@ -75,7 +75,8 @@ function _M:Render(templateData, minor, env)
 		error(err)
 	end
 
-	setfenv(func, env)
+	-- We should create a custom env for this.
+	setfenv(func, env or _G)
 	return func, genTemplate
 end
 
