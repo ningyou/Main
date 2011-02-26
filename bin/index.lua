@@ -26,7 +26,7 @@ xpcall(
 		ob.Get'Header':flush()
 		ob.Get'Content':flush()
 
-		io.write('\n<!-- ', os.clock(), ' seconds', ' | ', collectgarbage'count', ' kB\n', ' -->')
+		io.write('\n<!-- ', os.clock(), ' seconds', ' | ', collectgarbage'count', ' kB', ' -->')
 	end,
 
 	function(err)
