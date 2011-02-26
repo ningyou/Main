@@ -1,9 +1,7 @@
-local ob = require'ob'
+local template = require'template'
 
 return {
 	index = function()
-		-- AMAZING CONTENT
-		ob.Get'Content':write'<h1>Landing page!</h1>'
-		ob.Get'Content':write'We has a landing page.'
+		template:RenderView('default')
 	end,
 }
