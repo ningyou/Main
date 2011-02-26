@@ -2,7 +2,13 @@
 local lfs = require'lfs'
 lfs.chdir'..'
 
-package.path = 'libs/?/init.lua;libs/?.lua;?.lua;init/?/.lua' .. package.path
+package.path = table.concat({
+	'libs/?/init.lua',
+	'libs/?.lua',
+
+	'models/?.lua',
+	'models/?/init.lua',
+}, ';') .. package.path
 
 local header = require'header'
 local routing = require'routing'
