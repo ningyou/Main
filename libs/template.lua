@@ -80,9 +80,9 @@ function _M:Render(templateData, minor, env)
 end
 
 function _M:RenderView(view, minor, env)
-	local template = io.open('views/' .. view, 'r')
+	local template = io.open('views/' .. view .. '.html', 'r')
 	local templateData = template:read'*a'
-	templateFile:close()
+	template:close()
 
 	return self:Render(templateData, minor,  minor,  env)
 end
