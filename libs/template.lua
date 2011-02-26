@@ -17,8 +17,27 @@ local types = {
 	end,
 }
 
+local replaces = {
+	['include'] = function(path)
+		local file
+		if(path:sub(1,1) == '/') then
+			file = io.open(path, 'r')
+		else
+			file = io.open('views/' .. path)
+		end
+
+		return file:read'*a'
+	end,
+}
+
 local trim = function(s)
 	return s:match('^()%s*$') and '' or s:match('^%s*(.*%S)')
+end
+
+local handleReplace = function(cmd, data)
+	if(replaces[cmd]) then
+		return replaces[cmd](data)
+	end
 end
 
 local pattern = '([^{]*)(%b{})'
@@ -36,6 +55,9 @@ function _M:Generate(templateData, minor)
 			"local _O = ob.Get'Content'"
 		}
 	end
+
+	-- Slightly lazy solution! :D
+	templateData = templateData:gsub('<%%(%w+)%s*([^%%]+) %%>', handleReplace)
 
 	for html, tag in templateData:gmatch(pattern) do
 		local identifier = tag:sub(2, 2)
