@@ -50,4 +50,34 @@ context('Model: User', function()
 			assert_false(user:ValidateMail(''))
 		end)
 	end)
+
+	context('user name validation', function()
+		test('name #1', function()
+			assert_true(user:ValidateName('haste'))
+		end)
+
+		test('name #2', function()
+			assert_true(user:ValidateName('haste134'))
+		end)
+
+		test('name #3', function()
+			assert_true(user:ValidateName('h'))
+		end)
+
+		test('name #4', function()
+			assert_false(user:ValidateName(' '))
+		end)
+
+		test('name #5', function()
+			assert_false(user:ValidateName(''))
+		end)
+
+		test('name #6', function()
+			assert_false(user:ValidateName('$#ha='))
+		end)
+
+		test('name #7', function()
+			assert_false(user:ValidateName('-haste'))
+		end)
+	end)
 end)
