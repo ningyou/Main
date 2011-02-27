@@ -15,9 +15,7 @@ end
 function _M:get(id)
 	id = mongo.ObjectId(id)
 
-	local q = db:query("ningyou.sessions", { _id = id })
-
-	local r = q:results()()
+	local r = db:query("ningyou.sessions", { _id = id }):results()()
 
 	if r and r.uid then
 		db:update("ningyou.sessions", { _id = id }, { _id = id, uid = r.uid })
