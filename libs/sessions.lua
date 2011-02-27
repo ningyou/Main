@@ -19,8 +19,10 @@ function _M:get(id)
 
 	local r = q:results()()
 
-	db:update("ningyou.sessions", { _id = id }, { _id = id, uid = r.uid })
-	return r.uid
+	if r and r.uid then
+		db:update("ningyou.sessions", { _id = id }, { _id = id, uid = r.uid })
+		return r.uid
+	end
 end
 
 return _M
