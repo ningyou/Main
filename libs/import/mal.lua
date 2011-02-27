@@ -27,7 +27,7 @@ local parse = function(self, data)
 	local entry
 
 	local handleFields = function(field, var)
-		if(importantFields[field]) then
+		if(importantFields[field] and var ~= '') then
 			entry[field:gsub('^%w+_', '')] = tonumber(var) or var
 		end
 	end
