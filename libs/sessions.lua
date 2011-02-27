@@ -3,8 +3,6 @@ local db = require"db"
 local _M = {}
 
 function _M:save(uid)
-	if not type(uid) == "number" then return end
-
 	local id = mongo.GenerateID()
 
 	db:insert("ningyou.sessions", { _id = mongo.ObjectId(id), uid = uid, _padding = ("x"):rep(100) })
