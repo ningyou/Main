@@ -21,16 +21,10 @@ local handleTVRage = function(str)
 end
 
 return function(self, search)
-	search = search:gsub("%s", "+")
-	local serie, status = http:get("http://services.tvrage.com/tools/quickinfo.php?show=" .. search)
-	if serie and status == 200 then
-		if serie:sub(1, 15) == "No Show Results" then
-			return
-		else
-			serie = serie:gsub("<pre>", "")
-			local data = handleTVRage(serie)
-
-			if data then return data else return end
+	local serie, status = http:get("http://services.tvrage.com/tools/quickinfo.php?show=" .. search:gsub("%s", "+"))
+	if(serie and status == 200) then
+		if(serie:sub(1, 15) ~= "No Show Results") then
+			return handleTVRage(serie:gsub("<pre>", ""))
 		end
 	end
 end
