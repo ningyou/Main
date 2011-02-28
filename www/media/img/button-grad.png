@@ -1,0 +1,11 @@
+--2011-02-28 18:12:48--  http://yukkuri.de/random/ningyou/btngrad.png
+Resolving yukkuri.de... 85.196.87.15
+Connecting to yukkuri.de|85.196.87.15|:80... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 1012 [image/png]
+Saving to: `btngrad.png'
+
+     0K                                                       100% 76.7M=0s
+
+2011-02-28 18:12:48 (76.7 MB/s) - `btngrad.png' saved [1012/1012]
+
