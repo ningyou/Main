@@ -11,7 +11,8 @@ function _M:ValidateMail(mail)
 end
 
 function _M:ValidateName(name)
-	return #name > 0 and not name:match('^%-') and not name:match('[^a-zA-Z0-9%-]')
+	local len = #name
+	return len > 0 and len < 31 and not name:match('^%-') and not name:match('[^a-zA-Z0-9%-]')
 end
 
 function _M:Register(name, password, mail)
