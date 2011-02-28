@@ -1,5 +1,5 @@
 local crypto = require"crypto"
-local hmac = require"crypto.hmac"
+local hmac = crypto.hmac
 local db = require"db"
 local hmackey = io.open"config/hmac":read"*all":gsub("\n$", "")
 
