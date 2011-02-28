@@ -130,7 +130,7 @@ ul#menu > li > a:visited {
 ul#menu > li > a:hover, ul#menu > li > a:link:hover,
 ul#menu > li > a:visited:hover, ul#menu > li > a:focus,
 ul#menu > li > a:active {
-	background: #1fc2ff url("media/img/button-grad.png") repeat-x scroll center bottom;
+	background: #1fc2ff url("/media/img/button-grad.png") repeat-x scroll center bottom;
 	color: #fff;
 	text-shadow: none;
 	text-decoration: underline;
