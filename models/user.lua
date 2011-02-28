@@ -1,7 +1,13 @@
 local crypto = require"crypto"
 local hmac = crypto.hmac
 local db = require"db"
-local hmackey = io.open"config/hmac":read"*all"
+
+local _, hmacFile = pcall(io.open, 'config/hmac')
+local hmackey
+if(hmacFile) then
+	hmackey = hmacFile:read'*a'
+	hmacFile:close()
+end
 
 local _M = {}
 
