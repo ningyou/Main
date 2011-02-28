@@ -27,22 +27,24 @@ function _M:Register(name, password, mail)
 end
 
 function _M:Login(login, password)
-	if password == nil then return end
+	if(not password) then return end
 
 	local field
-
-	if self:ValidateName(login) then
-		field = "name"
-	elseif self:ValidateMail(login) then
+	if(self:ValidateMail(login)) then
 		field = "mail"
+	elseif(self:ValidateName(login)) then
+		field = "name"
+	else
+		-- XXX: Redirect user to invalid username and/or passowrd.
 	end
 
 	local r = db:query("ningyou.users", { [field] = login:lower() }):results()()
-
 	if r then
 		password = hmac.digest("sha256", password, hmackey)
 		if password == r.password then
 			return r._id
+		else
+			-- XXX: Redirect user to invalid username and/or passowrd.
 		end
 	end
 end
