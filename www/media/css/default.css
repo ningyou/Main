@@ -302,3 +302,31 @@ div#footer {
 }
 
 /* End toggle styles */
+
+
+/* signup form */
+
+form#signup {
+	width: 310px;
+}
+
+form#signup label {
+	display: block;
+	font-weight: bold;
+}
+
+form#signup input[type="submit"] {
+	width: auto;
+	float: right;
+}
+
+form#signup input {
+	background-color: #f0f0f0;
+	border: 1px outset rgba(128, 128, 128, 0.4);
+	*border: 1px outset rgb(128, 128, 128);
+	border-radius: 5px;
+	padding: 5px;
+	margin: 5px;
+	width: 300px;
+	font-size: 16px;
+}
