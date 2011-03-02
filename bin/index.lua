@@ -14,8 +14,6 @@ local header = require'header'
 local routing = require'routing'
 local ob = require'ob'
 
-
-
 xpcall(
 	function()
 		header:Init()
