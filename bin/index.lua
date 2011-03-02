@@ -20,6 +20,7 @@ end
 
 xpcall(
 	function()
+		header:Init()
 		routing:Route()
 
 		header:Generate()

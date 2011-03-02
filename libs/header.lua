@@ -1,8 +1,6 @@
 local ob = require'ob'
 
-local headerFields = {
-	{'Content-Type', 'text/html'},
-}
+local headerFields
 
 local _M = setmetatable({}, {
 	__call = function(self, field, value)
@@ -19,6 +17,12 @@ function _M:Generate()
 	end
 
 	buffer:write'\n\n'
+end
+
+function _M:Init()
+	headerFields = {
+		{'Content-Type', 'text/html'},
+	}
 end
 
 return _M
