@@ -14,13 +14,13 @@ local header = require'header'
 local routing = require'routing'
 local ob = require'ob'
 
-for _, route in ipairs(dofile'config/routing.lua') do
-	routing:Register(unpack(route))
-end
+
 
 xpcall(
 	function()
 		header:Init()
+		routing:Init(dofile'config/routing.lua')
+
 		routing:Route()
 
 		header:Generate()

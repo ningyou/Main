@@ -1,7 +1,5 @@
 local ob = require'ob'
 
-local routes = {}
-
 local _M = {}
 
 function _M:Path()
@@ -16,6 +14,7 @@ function _M:Path()
 	end
 end
 
+local routes
 function _M:Route()
 	local pathInfo, pathSplit = self:Path()
 	if(not pathInfo) then return end
@@ -33,8 +32,12 @@ function _M:Route()
 	return dofile'controller/404.lua'.index(unpack(pathSplit))
 end
 
-function _M:Register(ptrn, controller, handler)
-	table.insert(routes, {ptrn, controller, handler})
+function _M:Init(tbl)
+	routes = {}
+
+	for _, route in ipairs(tbl) do
+		table.insert(routes, {unpack(route)})
+	end
 end
 
 return _M
