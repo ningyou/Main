@@ -26,18 +26,12 @@ context('Library: Output buffer', function()
 	test('can single write', function()
 		buffer:write('test')
 
-		local out
-		buffer:flush(function(s) out = s end)
-
-		assert_equal(out, 'test')
+		assert_equal(buffer:flush(), 'test')
 	end)
 
 	test('can multi write', function()
 		buffer:write('this', 'is', 'a', 'test')
 
-		local out
-		buffer:flush(function(s) out = s end)
-
-		assert_equal(out, 'thisisatest')
+		assert_equal(buffer:flush(), 'thisisatest')
 	end)
 end)
