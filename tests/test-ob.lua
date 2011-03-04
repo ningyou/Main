@@ -16,6 +16,13 @@ context('Library: Output buffer', function()
 		assert_equal(buffer, ob.Get('Test 1'))
 	end)
 
+	test('flush resets buffer', function()
+		buffer:write'no'
+		buffer:flush()
+
+		assert_equal(buffer:flush(), '')
+	end)
+
 	test('can reset', function()
 		buffer:write('test')
 		buffer:reset()
