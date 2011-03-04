@@ -10,8 +10,10 @@ local bufferMetatable = {
 		end,
 
 		flush = function(self, custom)
-			(custom or io.write) (table.concat(self.__buffer))
+			local tmp = (custom or table.concat) (self.__buffer)
 			self:reset()
+
+			return tmp
 		end,
 
 		reset = function(self)

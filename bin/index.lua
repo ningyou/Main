@@ -1,6 +1,8 @@
 #!/usr/bin/env lua
-local lfs = require'lfs'
-lfs.chdir'..'
+if(not magnet) then
+	local lfs = require'lfs'
+	lfs.chdir'..'
+end
 
 package.path = table.concat({
 	'libs/?/init.lua',
@@ -21,11 +23,16 @@ xpcall(
 
 		routing:Route()
 
-		header:Generate()
-		ob.Get'Header':flush()
-		ob.Get'Content':flush()
+		ob.Get'Content':write('\n<!-- ', os.clock(), ' seconds', ' | ', collectgarbage'count', ' kB', ' -->')
+		local content = ob.Get'Content':flush()
 
-		io.write('\n<!-- ', os.clock(), ' seconds', ' | ', collectgarbage'count', ' kB', ' -->')
+		header('Content-Length', #content)
+		header:Generate()
+
+		print(
+			ob.Get'Header':flush() ..
+			content
+		)
 	end,
 
 	function(err)

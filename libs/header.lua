@@ -1,9 +1,33 @@
 local ob = require'ob'
 
+local headerEnd
+if(magnet) then
+	headerEnd = '\r\n\r\n'
+else
+	headerEnd = '\n\n'
+end
+
+-- This is just a short list over fields we might set multiple times. The later
+-- definition should always override the previous.
+local uniqueFields = {
+	['Content-Type'] = true,
+	['Status'] = true,
+}
+
 local headerFields
 
 local _M = setmetatable({}, {
 	__call = function(self, field, value)
+		if(uniqueFields[field]) then
+			for i=1, #headerFields do
+				local key = unpack(headerFields[i])
+				if(key == field) then
+					headerFields[i] = {field, value}
+					return
+				end
+			end
+		end
+
 		table.insert(headerFields, {field, value})
 	end,
 })
@@ -16,7 +40,7 @@ function _M:Generate()
 		buffer:write(key, ': ', value, headerFields[i + 1] and '\r\n')
 	end
 
-	buffer:write'\n\n'
+	buffer:write(headerEnd)
 end
 
 function _M:Init()
