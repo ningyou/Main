@@ -38,6 +38,7 @@ q:before, q:after { content: ""; }
 blockquote, q { quotes: "" ""; }
 
 /* End setting defaults */
+
 /* Begin regular styles */
 
 ::selection {
@@ -52,7 +53,7 @@ html {
 body {
 	background-color: #fff;
 	color: #000;
-	font-family: "Verdana", sans-serif;
+	font-family: "Verdana", "Arial", sans-serif;
 	font-size: 12px;
 	font-weight: 400;
 	font-style: normal;
@@ -84,18 +85,21 @@ div#header {
 	padding: 0;
 }
 h1#title {
-	background: #fff url("/media/img/logo.png") no-repeat scroll left bottom;
 	display: block;
 	float: left;
 	font-family: "Arial";
-	font-size: 200%;
-	font-style: italic;
-	font-weight: 400;
-	height: 46px;
-	letter-spacing: -1px;
-	margin: 0;
-	padding: 20px 0 0;
-	width: 279px;
+	font-size: 52px;
+	font-style: normal;
+	font-weight: 700;
+	letter-spacing: -2px;
+	line-height: 1em;
+	margin: 10px 0 0;
+}
+h1#title > span {
+	/*color: #1fc2ff;*/
+	font-family: "メイリオ", "Meiryo", "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro",
+		"Shin Go", "Heisei Kaku Gothic W5", "ＭＳ Ｐゴシック", sans-serif;
+	font-size: 44px;
 }
 
 ul#menu {
@@ -106,8 +110,12 @@ ul#menu {
 }
 ul#menu > li:first-of-type > a {
 	border-bottom-left-radius: 5px;
+	-moz-border-bottom-left-radius: 5px;
+	-webkit-border-bottom-left-radius: 5px;
 } ul#menu > li:last-of-type > a {
 	border-top-right-radius: 5px;
+	-moz-border-top-right-radius: 5px;
+	-webkit-border-top-right-radius: 5px;
 }
 ul#menu > li {
 	display: inline;
@@ -137,49 +145,147 @@ ul#menu > li > a:active {
 }
 
 div#content {
+	margin: 15px 0 0;
 	padding-bottom: 50px; /* height of the footer */
 	text-align: left;
 	text-shadow: 1px 1px 0px #fff;
 }
 
-#options {
+#welcome {
+	background-color: #f0f0f0;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	float: left;
+	line-height: 1.5em;
+	padding: 5px;
+	width: 40%;
+}
+#welcome > h2 {
+	display: block;
+	font-family: "Verdana";
+	font-size: 24px;
+	font-style: normal;
+	font-weight: 400;
+	line-height: 1.0em;
+	padding-bottom: 0.5em;
+}
+#welcome > p > strong {
+	font-style: italic;
+	font-weight: 700;
+}
+
+form {
+	margin: 10px 0 0;
+}
+
+#content > #options {
 	margin: 20px 0;
 }
 #options > li {
-	display: inline;
+	display: inline-block;
 }
-#options > li > a {
+a.button, a.button:link,
+a.button:visited, button {
 	background-color: #f0f0f0;
 	border: 1px outset rgba(128, 128, 128, 0.4);
-	*border: 1px outset rgb(128, 128, 128);
 	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	color: #444;
+	cursor: pointer;
 	display: inline-block;
+	font-family: "Verdana";
+	font-size: 12px;
+	font-weight: 400;
 	height: 24px;
 	line-height: 24px;
 	padding: 0 10px;
+	text-decoration: none;
 	user-select: none;
 	-moz-user-select: none;
 	-webkit-user-select: none;
+	vertical-align: middle;
+} button { /* Temp hacks */
+	height: 26px;
+	line-height: 1em;
+	text-shadow: 1px 1px 0px #fff;
 }
-#options > li > a:hover {
+a.button:hover,
+a.button:visited:hover,
+a.button.active,
+button:hover {
 	background-color: #1fc2ff;
 	color: #fff;
 	text-decoration: none;
 	text-shadow: none;
 }
-#options > li > a:active {
+a.button:active,
+button:active {
 	border: 1px inset rgb(128, 128, 128);
 	text-decoration: none;
 }
-#options > li > a:focus {
-	text-decoration: none;
+a.button:focus,
+button:focus { text-decoration: none; }
+button.disabled { color: #bbb; }
+button.disabled:hover { background-color: #fff; }
+button.disabled:active,
+button.disabled:focus { border: 1px outset rgba(128, 128, 128, 0.4); }
+
+#signup > #options > li:nth-of-type(2) {
+	vertical-align: middle;
+}
+
+#signup {
+	float: left;
+	line-height: 2em;
+	padding-left: 15px;
+}
+
+input:focus, button:focus { outline: none; }
+input {
+	background: transparent url("/media/img/pixel.gif") repeat scroll 0 0;
+	border: 1px inset #aaa;
+	border: 1px inset rgba(128, 128, 128, 0.4);
+	border-radius: 2px;
+	display: block;
+	height: 20px;
+	line-height: 20px;
+	padding: 1px 3px;
+	width: 140px;
+}
+input:focus, input.hasContent {
+	border: 1px inset #000;
+	background-color: #fff;
+}
+
+form div > input {
+	position: relative;
+	z-index: 1;
+}
+
+form span {
+	color: #aaa;
+	display: none;
+	font-style: italic;
+	font-size: 11px;
+	margin-left: 5px;
+	position: absolute;
+	z-index: 0;
+}
+
+#f_submit {
+	display: block;
+	clear: left;
+	margin-top: 10px;
 }
 
 div#profile {
 	background-color: #f0f0f0;
 	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
 	padding: 5px;
-	margin: 15px 0;
 }
 img#pic {
 	cursor: pointer;
@@ -191,6 +297,8 @@ img#pic {
 div#bigpic {
 	background-color: #f0f0f0;
 	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
 	box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
 	cursor: pointer;
 	display: none;
@@ -200,7 +308,7 @@ div#bigpic {
 }
 #profile > h2 {
 	display: inline;
-	font-family: "Verdana", sans-serif;
+	font-family: "Verdana";
 	font-size: 24px;
 	font-style: normal;
 	font-weight: 400;
@@ -302,31 +410,3 @@ div#footer {
 }
 
 /* End toggle styles */
-
-
-/* signup form */
-
-form#signup {
-	width: 310px;
-}
-
-form#signup label {
-	display: block;
-	font-weight: bold;
-}
-
-form#signup input[type="submit"] {
-	width: auto;
-	float: right;
-}
-
-form#signup input {
-	background-color: #f0f0f0;
-	border: 1px outset rgba(128, 128, 128, 0.4);
-	*border: 1px outset rgb(128, 128, 128);
-	border-radius: 5px;
-	padding: 5px;
-	margin: 5px;
-	width: 300px;
-	font-size: 16px;
-}
