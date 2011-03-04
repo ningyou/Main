@@ -5,21 +5,17 @@ context('Library: Header', function()
 	local buffer = ob.Get('Header')
 
 	test('can generate', function()
+		header:Init()
 		header:Generate()
 
-		local out
-		buffer:flush(function(s) out = s end)
-
-		assert_equal(out, 'Content-Type: text/html\n\n')
+		assert_equal(buffer:flush(), 'Content-Type: text/html\n\n')
 	end)
 
 	test('can add', function()
+		header:Init()
 		header('Ningyou', 'Doll')
 		header:Generate()
 
-		local out
-		buffer:flush(function(s) out = s end)
-
-		assert_equal(out, 'Content-Type: text/html\r\nNingyou: Doll\n\n')
+		assert_equal(buffer:flush(), 'Content-Type: text/html\r\nNingyou: Doll\n\n')
 	end)
 end)
