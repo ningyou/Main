@@ -15,10 +15,13 @@ package.path = table.concat({
 local header = require'header'
 local routing = require'routing'
 local ob = require'ob'
+local request = require'request'
 
 xpcall(
 	function()
 		header:Init()
+		request:Init()
+
 		routing:Init(dofile'config/routing.lua')
 
 		routing:Route()
