@@ -41,7 +41,7 @@ function _M:Login(login, password)
 	elseif(self:ValidateName(login)) then
 		field = "name"
 	else
-		-- XXX: Redirect user to invalid username and/or passowrd.
+		return
 	end
 
 	local r = db:query("ningyou.users", { [field] = login:lower() }):results()()
@@ -50,8 +50,28 @@ function _M:Login(login, password)
 		if password == r.password then
 			return r._id
 		else
-			-- XXX: Redirect user to invalid username and/or passowrd.
+			return
 		end
+	end
+end
+
+function _M:IDToName(id)
+	local r = db:query("ningyou.users", { _id = mongo.ObjectId(id) }):results()()
+
+	if r then
+		return r.name
+	else
+		return
+	end
+end
+
+function _M:NameToID(name)
+	local r = db:query("ningyou.users", { name = name:lower() }):results()()
+
+	if r then
+		return r.id
+	else
+		return
 	end
 end
 
