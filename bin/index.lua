@@ -16,12 +16,14 @@ local header = require'header'
 local routing = require'routing'
 local ob = require'ob'
 local request = require'request'
+local sessions = require'sessions'
 
 xpcall(
 	function()
 		header:Init()
 		request:Init()
 		routing:Init(dofile'config/routing.lua')
+		sessions:Init()
 
 		local customBuffer = routing:Route()
 		local content
