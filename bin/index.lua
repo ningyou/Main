@@ -21,13 +21,16 @@ xpcall(
 	function()
 		header:Init()
 		request:Init()
-
 		routing:Init(dofile'config/routing.lua')
 
-		routing:Route()
-
-		ob.Get'Content':write('\n<!-- ', os.clock(), ' seconds', ' | ', collectgarbage'count', ' kB', ' -->')
-		local content = ob.Get'Content':flush()
+		local customBuffer = routing:Route()
+		local content
+		if(customBuffer) then
+			content = ob.Get(customBuffer):flush()
+		else
+			ob.Get'Content':write('\n<!-- ', os.clock(), ' seconds', ' | ', collectgarbage'count', ' kB', ' -->')
+			content = ob.Get'Content':flush()
+		end
 
 		header('Content-Length', #content)
 		header:Generate()
