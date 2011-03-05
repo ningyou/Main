@@ -78,18 +78,15 @@ div.box
 .grid_11,
 .grid_12
 {
-	margin-top: 15px;
+	margin-bottom: 15px;
 }
 
 
 /* Header */
 div#header
 {
-	float: left;
-	display: inline;
 	background: transparent url("/media/img/logo-ridge.png") repeat-x scroll left bottom;
 	padding: 0 0 9px 0;
-	width: 100%;
 }
 
 h1#title
