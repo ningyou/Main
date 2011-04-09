@@ -25,8 +25,10 @@ end
 function _M:Init()
 	local sid = cookie:Get("sid")
 
+	self.ID = nil
+
 	if sid then
-		_M.ID = self:get(sid)
+		self.ID = self:get(sid)
 	end
 end
 
