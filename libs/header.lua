@@ -43,6 +43,20 @@ function _M:Generate()
 	buffer:write(headerEnd)
 end
 
+function _M:Redirect(url, code)
+	if(not code) then code = 302 end
+
+	self:Reset()
+	self('Status', code)
+	self('Location', url)
+
+	return false, 'redirect'
+end
+
+function _M:Reset()
+	headerFields = {}
+end
+
 function _M:Init()
 	headerFields = {
 		{'Content-Type', 'text/html'},
