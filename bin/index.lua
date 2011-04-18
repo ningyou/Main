@@ -10,6 +10,9 @@ package.path = table.concat({
 
 	'models/?.lua',
 	'models/?/init.lua',
+
+	-- To force a trailing ;.
+	'',
 }, ';') .. package.path
 
 local header = require'header'
