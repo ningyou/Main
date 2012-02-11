@@ -37,20 +37,19 @@ xpcall(
 
 		header:Generate()
 		if(content) then
-			print(
+			echo(
 				ob.Get'Header':flush() ..
 				content
 			)
 		else
-			print(ob.Get'Header':flush())
+			echo(ob.Get'Header':flush())
 		end
 	end,
 
 	function(err)
-		io.write'Content-Type: text/html\n\n'
-		io.write'<h1>I accidently the page!</h1>'
-		io.write('<pre>', err:gsub('/.-/ningyou/', ''), '</pre>')
-		io.write'<h2>Debug stack:</h2>'
-		io.write('<pre>', debug.traceback():gsub('\t/.-/ningyou/', '\t'), '</pre>')
+		echo'<h1>I accidently the page!</h1>'
+		echo('<pre>', err:gsub('/.-/ningyou/', ''), '</pre>')
+		echo'<h2>Debug stack:</h2>'
+		echo('<pre>', debug.traceback():gsub('\t/.-/ningyou/', '\t'), '</pre>')
 	end
 )
