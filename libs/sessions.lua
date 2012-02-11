@@ -3,32 +3,30 @@ local cookie = require"cookies"
 
 local _M = {}
 
-function _M:save(uid)
-	local id = mongo.GenerateID()
+function _M:save(user_id)
+	local session_id = string.SHA256(math.random(1305534,30598239) .. os.time())
 
-	db:insert("ningyou.sessions", { _id = mongo.ObjectId(id), uid = uid, _padding = ("x"):rep(100) })
+	db:insert("ningyou.sessions", { session_id = session_id, user_id = user_id, _padding = ("x"):rep(100) })
 	
 	return id
 end
 
-function _M:get(id)
-	id = mongo.ObjectId(id)
+function _M:get(session_id)
+	local r = db:find_one("ningyou.sessions", { session_id = session_id })
 
-	local r = db:query("ningyou.sessions", { _id = id }):results()()
-
-	if r and r.uid then
-		db:update("ningyou.sessions", { _id = id }, { _id = id, uid = r.uid })
-		return r.uid
+	if r and r.user_id then
+		db:update("ningyou.sessions", { session_id = session_id }, { session_id = session_id, user_id = r.user_id })
+		return r.user_id
 	end
 end
 
 function _M:Init()
-	local sid = cookie:Get("sid")
+	local session_id = cookie:Get("session_id")
 
-	self.ID = nil
+	self.user_id = nil
 
-	if sid then
-		self.ID = self:get(sid)
+	if session_id then
+		self.user_id = self:get(session_id)
 	end
 end
 

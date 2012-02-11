@@ -1,5 +1,3 @@
-local crypto = require"crypto"
-local hmac = crypto.hmac
 local db = require"db"
 
 local _, hmacFile = pcall(io.open, 'config/hmac')
@@ -23,11 +21,11 @@ end
 
 function _M:Register(name, password, mail)
 	if self:ValidateMail(mail) and self:ValidateName(name) and password ~= nil then
-		local id = mongo.GenerateID()
-		password = hmac.digest("sha256", password, hmackey)
+		local user_id = db:find_one("ningyou.counters", { _id = "userid" })["c"] + 1
+		password = tring.SHA256(password)
 
-		db:insert("ningyou.users", { _id = mongo.ObjectId(id), name = name:lower(), mail = mail:lower(), password = password })
-
+		db:insert("ningyou.users", { user_id = user_id, name = name:lower(), mail = mail:lower(), password = password })
+		db:update("ningyou.counters", { _id = "userid" }, { c = id })
 		return id
 	end
 end
@@ -44,19 +42,19 @@ function _M:Login(login, password)
 		return
 	end
 
-	local r = db:query("ningyou.users", { [field] = login:lower() }):results()()
+	local r = db:find_one("ningyou.users", { [field] = login:lower() })
 	if r then
-		password = hmac.digest("sha256", password, hmackey)
+		password = string.SHA256(password)
 		if password == r.password then
-			return r._id
+			return r.user_id
 		else
 			return
 		end
 	end
 end
 
-function _M:IDToName(id)
-	local r = db:query("ningyou.users", { _id = mongo.ObjectId(id) }):results()()
+function _M:IDToName(user_id)
+	local r = db:find_one("ningyou.users", { user_id = user_id })
 
 	if r then
 		return r.name
@@ -66,10 +64,10 @@ function _M:IDToName(id)
 end
 
 function _M:NameToID(name)
-	local r = db:query("ningyou.users", { name = name:lower() }):results()()
+	local r = db:find_one("ningyou.users", { name = name:lower() })
 
 	if r then
-		return r.id
+		return r.user_id
 	else
 		return
 	end
