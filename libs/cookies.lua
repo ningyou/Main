@@ -1,4 +1,3 @@
-local header = require'header'
 local _M = {}
 
 local urlEncode
