@@ -27,7 +27,7 @@ function _M:Route()
 		end
 	end
 
-	return dofile'controller/404.lua'.index(unpack(pathSplit))
+	return setReturnCode(404)
 end
 
 function _M:Init(tbl)
