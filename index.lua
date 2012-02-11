@@ -9,14 +9,12 @@ package.path = table.concat({
 	'',
 }, ';') .. package.path
 
-local header = require'header'
 local routing = require'routing'
 local ob = require'ob'
 local request = require'request'
 
 xpcall(
 	function()
-		header:Init()
 		request:Init()
 		routing:Init(dofile'config/routing.lua')
 
@@ -33,14 +31,10 @@ xpcall(
 			header('Content-Length', #content)
 		end
 
-		header:Generate()
 		if(content) then
 			echo(
-				ob.Get'Header':flush() ..
 				content
 			)
-		else
-			echo(ob.Get'Header':flush())
 		end
 	end,
 
