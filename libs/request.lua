@@ -1,5 +1,3 @@
-local lfcgi = require'lfcgi'
-
 local _M = {}
 
 local urlDecode
@@ -51,12 +49,7 @@ local doPost = function()
 		if(contentType == 'application/x-www-form-urlencoded') then
 			_POST = parseRequest(io.stdin:read'*a')
 		elseif(contentType:match('multipart/form%-data')) then
-			local data
-			if(magnet) then
-				data = lfcgi.stdin
-			else
-				data = io.stdin
-			end
+			local data = io.stdin
 
 			local boundary = contentType:match'boundary=%-*([0-9A-Za-z]+)'
 			local boundaryPattern = '%-*' .. boundary
