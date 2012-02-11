@@ -3,15 +3,13 @@ local ob = require'ob'
 local _M = {}
 
 function _M:Path()
-	local pathInfo = os.getenv'PATH_INFO' or os.getenv'SCRIPT_NAME' or os.getenv'SCRIPT_URL'
-	if(pathInfo) then
-		local split = {}
-		for str in pathInfo:gmatch'[^/]+' do
-			table.insert(split, str)
-		end
-
-		return pathInfo, split
+	local pathInfo = getEnv()['Path-Info'] or '/'
+	local split = {}
+	for str in pathInfo:gmatch'[^/]+' do
+		table.insert(split, str)
 	end
+
+	return pathInfo, split
 end
 
 local routes
