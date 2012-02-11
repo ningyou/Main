@@ -28,7 +28,7 @@ xpcall(
 		end
 
 		if(kind ~= 'redirect') then
-			header('Content-Length', #content)
+			header('Content-Length', tostring(#content))
 		end
 
 		if(content) then
