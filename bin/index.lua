@@ -1,9 +1,4 @@
 #!/usr/bin/env lua
-if(not magnet) then
-	local lfs = require'lfs'
-	lfs.chdir'..'
-end
-
 package.path = table.concat({
 	'libs/?/init.lua',
 	'libs/?.lua',
