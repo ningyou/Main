@@ -46,4 +46,7 @@ return {
 			content:write("You have logged out.")
 		end
 	end,
+	google_oauth_callback = function()
+		content:write("More to come..")
+	end,
 }
