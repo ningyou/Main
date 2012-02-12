@@ -29,8 +29,10 @@ return {
 		elseif post["submit"] then
 			local login = user:Login(post["name"], string.SHA256(post["password"]))
 			if login then
+				local timeout
+				if not post["remember"] then timeout = (os.time() + 7200) end
 				content:write("Success! <br/>")
-				sessions:Save(login)
+				sessions:Save(login, timeout)
 			else
 				content:write("Wrong Username or Password")
 			end

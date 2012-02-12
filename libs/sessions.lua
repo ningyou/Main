@@ -3,10 +3,10 @@ local cookie = require"cookies"
 
 local _M = {}
 
-function _M:Save(user_id)
+function _M:Save(user_id, timeout)
 	local session_id = string.SHA256(math.random(1305534,30598239) .. os.time())
 
-	db:insert("ningyou.sessions", { session_id = session_id, user_id = user_id })
+	db:insert("ningyou.sessions", { session_id = session_id, user_id = user_id, timeout = timeout})
 	cookie:Set("session_id", session_id)
 
 	return session_id
@@ -15,8 +15,7 @@ end
 function _M:Get(session_id)
 	local r = db:find_one("ningyou.sessions", { session_id = session_id })
 	if r and r.user_id then
-		db:update("ningyou.sessions", { session_id = session_id }, { session_id = session_id, user_id = r.user_id })
-		return r.user_id
+		return r.user_id, r.timeout
 	else
 		return
 	end
@@ -36,10 +35,19 @@ function _M:Init()
 	local session_id = cookie:Get("session_id")
 
 	_M.user_id = nil
+	_M.session_id = nil
 
 	if session_id then
-		_M.session_id = session_id
-		_M.user_id = self:Get(session_id)
+		local user_id, timeout = _M:Get(session_id)
+		if not timeout then
+			_M.session_id = session_id
+			_M.user_id = user_id
+		elseif timeout and timeout > os.time() then
+			_M.session_id = session_id
+			_M.user_id = user_id
+		else
+			_M:Delete(session_id)
+		end
 	end
 end
 

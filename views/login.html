@@ -1,5 +1,14 @@
-<form action="/login" method="POST">
-	Username/Email: <input type="text" name="name" /><br />
-	Password: <input type="password" name="password" /><br />
-	<input type="submit" value="Submit" name="submit" />
-</form>
+<%include header.html %>
+
+<div class="row">
+	<div class="span3 offset4">
+		<form action="/login" method="POST">
+			<fieldset>
+				<input tabindex="1" class="input-large" type="text" value="" name="name" placeholder="Username/E-mail" /><br />
+				<input tabindex="2" class="input-large" type="password" value="" name="password" placeholder="Password"/ ><br />
+				<input tabindex="3" class="input-large" type="checkbox" name="remember" /> Remember me.
+				<input tabindex="4" class="btn btn-primary btn-large pull-right" type="submit" value="Log in!" name="submit" />
+			</fieldset>
+		</form>
+	</div>
+</div>
