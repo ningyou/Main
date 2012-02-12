@@ -1,12 +1,4 @@
 local db = require"db"
-
-local _, hmacFile = pcall(io.open, 'config/hmac')
-local hmackey
-if(hmacFile) then
-	hmackey = hmacFile:read'*a'
-	hmacFile:close()
-end
-
 local _M = {}
 
 function _M:ValidateMail(mail)
