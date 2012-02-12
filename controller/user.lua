@@ -12,18 +12,17 @@ return {
 	end,
 	signup = function()
 		if post["submit"] then
-			local register = user:Register(post["name"], post["password"], post["mail"])
+			local register, err = user:Register(post["name"], post["password"], post["mail"])
 			if register then
 				ob.Get'Content':write("Success!")
 			else
-				ob.Get'Content':write("Something went wrong.")
+				ob.Get'Content':write(err)
 			end
 		else
 			template:RenderView('signup')
 		end
 	end,
 	login = function()
-		ob.Get'Content':write(sessions.user_id)
 		if sessions.user_id then
 			ob.Get'Content':write("Already logged in")
 		elseif post["submit"] then

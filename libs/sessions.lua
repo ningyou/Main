@@ -30,9 +30,6 @@ function _M:Init()
 
 	if session_id then
 		_M.user_id = self:Get(session_id)
-		echo(session_id)
-	else
-		echo"no session id"
 	end
 end
 

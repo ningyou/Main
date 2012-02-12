@@ -22,11 +22,10 @@ end
 
 function _M:Register(name, password, mail)
 	if self:ValidateMail(mail) and self:ValidateName(name) and password ~= nil then
-		local check_user = db:find_one("ningyou.users", { name = name })
-		local check_mail = db:find_one("ningyou.users", { mail = mail })
-		local user_id = db:find_one("ningyou.counters", { _id = "userid" }).c + 1
+		if db:find_one("ningyou.users", { name = name }) then return nil, "User Exists" end
+		if db:find_one("ningyou.users", { mail = mail }) then return nil, "Mail Exists" end
+
 		db:insert("ningyou.users", { name = name:lower(), mail = mail:lower(), password = string.SHA256(password) })
-		db:update("ningyou.counters", { _id = "userid" }, { c = id })
 		return name
 	end
 end
