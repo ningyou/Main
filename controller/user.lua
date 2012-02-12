@@ -5,6 +5,7 @@ local user = require'user'
 local sessions = require'sessions'
 
 local post = request._POST
+local content = ob.Get'Content'
 
 return {
 	index = function(user)
@@ -14,9 +15,9 @@ return {
 		if post["submit"] then
 			local register, err = user:Register(post["name"], post["password"], post["mail"])
 			if register then
-				ob.Get'Content':write("Success!")
+				content:write("Success!")
 			else
-				ob.Get'Content':write(err)
+				content:write(err)
 			end
 		else
 			template:RenderView('signup')
@@ -24,17 +25,25 @@ return {
 	end,
 	login = function()
 		if sessions.user_id then
-			ob.Get'Content':write("Already logged in")
+			content:write("Already logged in")
 		elseif post["submit"] then
 			local login = user:Login(post["name"], string.SHA256(post["password"]))
 			if login then
-				ob.Get'Content':write("Success! <br/>")
+				content:write("Success! <br/>")
 				sessions:Save(login)
 			else
-				ob.Get'Content':write("Wrong Username or Password")
+				content:write("Wrong Username or Password")
 			end
 		else
 			template:RenderView('login')
+		end
+	end,
+	logout = function()
+		if not sessions.user_id then
+			content:write("You are not logged in.")
+		else
+			sessions:Delete(sessions.sessions_id)
+			content:write("You have logged out.")
 		end
 	end,
 }

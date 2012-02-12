@@ -26,6 +26,7 @@ function _M:Delete(session_id)
 	local r = db:find_one("ningyou.sessions", { session_id = session_id })
 	if r and r.user_id then
 		db:remove("ningyou.sessions", { session_id = session_id })
+		cookie:Delete("session_id")
 	else
 		return
 	end
