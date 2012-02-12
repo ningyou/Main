@@ -1,52 +1,27 @@
 <%include header.html %>
 
-		<div class="container_24">
-			<div class="grid_24" id="header">
-				<h1 class="grid_10" id="title"><span>人形</span>Ningyou.</h1>
-				<ul id="menu">
-					<li><a href="#">Features</a></li>
-				</ul>
-			</div>
-
-			<div class="grid_19">
-				<div class="box">
+			<div class="row">
+				<div class="span9">
 					<h2>Welcome to the Ningyou-Project!</h2>
-					<p>Here, you can <strong>create</strong> and <strong>maintain</strong> a <strong>list</strong> of TV programmes, movies, etc. that you have indulged in.</p>
+					<div class="well">
+						<p>
+							Here, you can <strong>create</strong> and
+							<strong>maintain</strong> a <strong>list</strong> of TV
+							programmes, movies, etc. that you have indulged in.
+						</p>
+					</div>
 				</div>
-			</div>
-
-			<div class="grid_5" id="signup">
-				<ul id="options">
-					<li><a id="btn_signup" class="button active" href="/signup/" onclick="ningyou.signup.call(this); return false;">Sign up</a></li>
-					<li>or</li>
-					<li><a id="btn_login" class="button" href="/login/" onclick="ningyou.login.call(this); return false;">Log in</a></li>
-				</ul>
-
-				<form>
-					<label for="f_user">Username:</label>
-					<div>
-						<span class="for_signup">Choose a username...</span>
-						<span class="for_login">Type your username...</span>
-						<input tabindex="1" id="f_user" type="text" value="" />
-					</div>
-
-					<label for="f_pass">Password:</label>
-					<div>
-						<span class="for_signup">Choose a password...</span>
-						<span class="for_login">Type your password...</span>
-						<input tabindex="2" id="f_pass" type="password" value="" />
-					</div>
-
-					<div id="for_signup">
-						<label for="f_email">E-mail:</label>
-						<div>
-							<span class="for_signup">Type your e-mail...</span>
-							<input tabindex="3" id="f_email" type="text" value="" />
-						</div>
-					</div>
-
-					<button tabindex="4" id="f_submit" type="submit">Submit</button>
-				</form>
+				<div class="span3">
+					<h2>Become awesome</h2>
+					<form>
+						<fieldset>
+							<input tabindex="1" id="f_user" class="input-large" type="text" value="" placeholder="Username" />
+							<input tabindex="2" id="f_pass" class="input-large" type="password" value="" placeholder="Password" />
+							<input tabindex="3" id="f_email" class="input-large" type="text" value="" placeholder="E-mail" />
+							<input tabindex="4" id="f_submit" type="submit" class="btn btn-primary btn-large pull-right" value="Enlightenment" />
+						</fieldset>
+					</form>
+				</div>
 			</div>
 
 <%include footer.html %>
