@@ -1,3 +1,4 @@
+#!/usr/bin/env lua
 package.path = table.concat({
 	'libs/?/init.lua',
 	'libs/?.lua',
