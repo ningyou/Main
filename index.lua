@@ -9,6 +9,7 @@ package.path = table.concat({
 	'',
 }, ';') .. package.path
 
+local before = clock()
 local routing = require'routing'
 local ob = require'ob'
 local request = require'request'
@@ -21,7 +22,10 @@ xpcall(
 		local customBuffer, kind = routing:Route()
 		local content
 		if(not kind) then
-			ob.Get'Content':write('\n<!-- ', os.clock(), ' seconds', ' | ', collectgarbage'count', ' kB', ' -->')
+			local after = clock()
+			local diff = after.seconds * 1e9 + after.nanoseconds - (before.seconds * 1e9 + before.nanoseconds)
+
+			ob.Get'Content':write('\n<!-- ', diff / 1e6, ' ms', ' | ', collectgarbage'count', ' kB', ' -->')
 			content = ob.Get'Content':flush()
 		elseif(kind == 'content') then
 			content = ob.Get(customBuffer):flush()
