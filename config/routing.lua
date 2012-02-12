@@ -1,9 +1,9 @@
 return {
 	{'^/?$', 'static.lua'},
 	{'^/debug', 'debug.lua'},
-	{'^/signup', 'signup.lua'},
+	{'^/signup', 'user.lua', 'signup'},
 	{'^/404', '404.lua'},
-	{'^/login', 'login.lua'},
+	{'^/login', 'user.lua', 'login'},
 
 	{'^/[a-zA-Z0-9%-]+', 'user.lua'}
 }
