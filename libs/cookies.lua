@@ -66,7 +66,7 @@ function _M:Delete(name)
 end
 
 function _M:Get(name)
-	local cookies = getEnv()['HTTP_COOKIE']
+	local cookies = getEnv()['Cookie']
 	if(not cookies) then return end
 
 	return parseCookies(cookies)[name]
