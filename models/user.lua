@@ -53,7 +53,7 @@ function _M:Login(login, password)
 end
 
 function _M:IDToName(user_id)
-	local r = db:find_one("ningyou.users", { user_id = user_id })
+	local r = db:find_one("ningyou.users", { _id = mongo.ObjectId(user_id) })
 
 	if r then
 		return r.name
@@ -66,7 +66,7 @@ function _M:NameToID(name)
 	local r = db:find_one("ningyou.users", { name = name:lower() })
 
 	if r then
-		return r.user_id
+		return tostring(r._id)
 	else
 		return
 	end
