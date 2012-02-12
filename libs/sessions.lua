@@ -14,10 +14,18 @@ end
 
 function _M:Get(session_id)
 	local r = db:find_one("ningyou.sessions", { session_id = session_id })
-
 	if r and r.user_id then
 		db:update("ningyou.sessions", { session_id = session_id }, { session_id = session_id, user_id = r.user_id })
 		return r.user_id
+	else
+		return
+	end
+end
+
+function _M:Delete(session_id)
+	local r = db:find_one("ningyou.sessions", { session_id = session_id })
+	if r and r.user_id then
+		db:remove("ningyou.sessions", { session_id = session_id })
 	else
 		return
 	end
@@ -29,6 +37,7 @@ function _M:Init()
 	_M.user_id = nil
 
 	if session_id then
+		_M.session_id = session_id
 		_M.user_id = self:Get(session_id)
 	end
 end
