@@ -6,7 +6,7 @@ local _M = {}
 function _M:Save(user_id)
 	local session_id = string.SHA256(math.random(1305534,30598239) .. os.time())
 
-	db:insert("ningyou.sessions", { session_id = session_id, user_id = user_id, _padding = ("x"):rep(100) })
+	db:insert("ningyou.sessions", { session_id = session_id, user_id = user_id })
 	cookie:Set("session_id", session_id)
 
 	return session_id
