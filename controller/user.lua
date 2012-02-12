@@ -25,7 +25,7 @@ return {
 	end,
 	login = function()
 		if sessions.user_id then
-			content:write("Already logged in as " .. user:IDToName(sessions.user_id))
+			content:write("Already logged in as " .. user:Name(sessions.user_id))
 		elseif post["submit"] then
 			local login = user:Login(post["name"], string.SHA256(post["password"]))
 			if login then
