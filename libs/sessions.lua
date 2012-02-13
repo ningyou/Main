@@ -38,7 +38,10 @@ end
 function _M:Timeout(session_id, timeout)
 	local r = db:find_one("ningyou.sessions", { session_id = session_id })
 	if r and r.user_id then
-		db:update("ningyou.sessions", { session_id = session_id }, { ["$set"] = { timeout = timeout } })
+		if timeout then
+			db:update("ningyou.sessions", { session_id = session_id }, { ["$set"] = { timeout = timeout } })
+		else
+			db:update("ningyou.sessions", { session_id = session_id }, { ["$unset"] = { timeout = 1 } })
 	end
 end
 
