@@ -15,6 +15,10 @@ end
 function _M:Get(session_id)
 	local r = db:find_one("ningyou.sessions", { session_id = session_id })
 	if r and r.user_id then
+		if r.timeout and r.timeout > os.time() then
+			r.timeout = os.time()+7200
+			db:update("ningyou.sessions", { session_id = session_id }, r)
+		end
 		return r.user_id, r.timeout
 	else
 		return
