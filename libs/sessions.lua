@@ -17,7 +17,7 @@ function _M:Get(session_id)
 	if r and r.user_id then
 		if r.timeout and r.timeout > os.time() then
 			r.timeout = os.time()+7200
-			db:update("ningyou.sessions", { session_id = session_id }, r)
+			db:update("ningyou.sessions", { session_id = session_id }, { ["$set"] = { timeout = r.timeout } })
 		end
 		return r.user_id, r.timeout
 	else
@@ -38,8 +38,7 @@ end
 function _M:Timeout(session_id, timeout)
 	local r = db:find_one("ningyou.sessions", { session_id = session_id })
 	if r and r.user_id then
-		r.timeout = timeout
-		db:update("ningyou.sessions", { session_id = session_id }, r)
+		db:update("ningyou.sessions", { session_id = session_id }, { ["$set"] = { timeout = timeout } })
 	end
 end
 
