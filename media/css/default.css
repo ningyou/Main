@@ -6,7 +6,7 @@
 	margin: 0 0 8px 0;
 }
 
-div#title h1
+#title h1
 {
 	font-size: 52px;
 	font-style: normal;
@@ -16,13 +16,23 @@ div#title h1
 	margin: 10px 0 0;
 }
 
-div#title h1 > span
+#title h1 span
 {
-	/*color: #1fc2ff;*/
 	font-size: 44px;
 }
 
-div#title ul {
+#title h1 a
+{
+	color: inherit;
+	text-decoration: none;
+}
+
+#title h1 a:hover span
+{
+	color: #1fc2ff;
+}
+
+#title ul {
 	padding-top: 25px;
 	margin-bottom: 10px;
 }
