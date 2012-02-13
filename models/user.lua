@@ -1,6 +1,20 @@
 local db = require"db"
 local _M = {}
 
+local blacklist = {
+	["google"] = true,
+	["lua"] = true,
+	["yahoo"] = true,
+	["login"] = true,
+	["lostpassword"] = true,
+	["debug"] = true,
+	[404] = true,
+	["404"] = true,
+	["logout"] = true,
+	["twitter"] = true,
+}
+
+
 function _M:ValidateMail(mail)
 	-- STRICT AS HELL!
 	return not not mail:match('.+@.+%..+')
@@ -16,6 +30,7 @@ function _M:Register(name, password, mail)
 	if self:ValidateMail(mail) and self:ValidateName(name) and password ~= nil then
 		if db:find_one("ningyou.users", { name = name }) then return nil, "User Exists" end
 		if db:find_one("ningyou.users", { mail = mail }) then return nil, "Mail Exists" end
+		if blacklist[name] then return nil, "User forbidden" end
 
 		db:insert("ningyou.users", { name = name:lower(), mail = mail:lower(), password = string.SHA256(password) })
 		return name
