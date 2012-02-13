@@ -24,4 +24,31 @@
 				</div>
 			</div>
 
+		<div id="login-modal" class="modal hide">
+			<div class="modal-header">
+				<a class="close" data-dismiss="modal">×</a>
+				<h3>Login</h3>
+			</div>
+			<form id="login" action="http://www.ningyou-project.org/login" method="POST">
+				<div class="modal-body">
+					<label>Username/E-mail</label>
+					<input tabindex="1" class="span4" type="text" value="" name="name" />
+					<label>Password</label>
+					<input tabindex="2" class="span4" type="password" value="" name="password" />
+					<div class="row">
+						<div class="span4">
+							<label class="checkbox">
+								<input tabindex="3" type="checkbox" name="remember" /> Remember me
+								<a class="pull-right" href="/login/lost-password">Lost password?</a>
+							</label>
+						</div>
+					</div>
+
+				</div>
+				<div class="modal-footer">
+					<input tabindex="4" type="submit" class="btn btn-primary" value="Login" />
+				</div>
+			</form>
+		</div>
+
 <%include footer.html %>
