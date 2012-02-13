@@ -35,6 +35,14 @@ function _M:Delete(session_id)
 	end
 end
 
+function _M:Timeout(session_id, timeout)
+	local r = db:find_one("ningyou.sessions", { session_id = session_id })
+	if r and r.user_id then
+		r.timeout = timeout
+		db:update("ningyou.sessions", { session_id = session_id }, r)
+	end
+end
+
 function _M:Init()
 	local session_id = cookie:Get("session_id")
 
