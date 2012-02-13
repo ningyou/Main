@@ -39,10 +39,7 @@ function _M:Init()
 
 	if session_id then
 		local user_id, timeout = _M:Get(session_id)
-		if not timeout then
-			_M.session_id = session_id
-			_M.user_id = user_id
-		elseif timeout and timeout > os.time() then
+		if not timeout or (timeout and timeout > os.time()) then
 			_M.session_id = session_id
 			_M.user_id = user_id
 		else
