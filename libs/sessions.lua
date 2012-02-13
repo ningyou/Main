@@ -42,6 +42,7 @@ function _M:Timeout(session_id, timeout)
 			db:update("ningyou.sessions", { session_id = session_id }, { ["$set"] = { timeout = timeout } })
 		else
 			db:update("ningyou.sessions", { session_id = session_id }, { ["$unset"] = { timeout = 1 } })
+		end
 	end
 end
 
