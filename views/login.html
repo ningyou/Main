@@ -1,14 +1,42 @@
-<%include header.html %>
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8"/>
+		<title>人形Ningyou.</title>
+		<!--[if lt IE 9]>
+		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+		<link href="media/css/bootstrap.css" rel="stylesheet" />
+		<link href="media/css/default.css" rel="stylesheet" />
+	</head>
+	<body>
+		<div class="container">
+			<div class="row">
+				<div id="title" class="span4 offset4">
+					<h1><a href="/"><span>人形</span>Ningyou.</a></h1>
+				</div>
+			</div>
+		</div>
 
-<div class="row">
-	<div class="span3 offset4">
-		<form action="/login" method="POST">
-			<fieldset>
-				<input tabindex="1" class="input-large" type="text" value="" name="name" placeholder="Username/E-mail" /><br />
-				<input tabindex="2" class="input-large" type="password" value="" name="password" placeholder="Password"/ ><br />
-				<input tabindex="3" class="input-large" type="checkbox" name="remember" /> Remember me.
-				<input tabindex="4" class="btn btn-primary btn-large pull-right" type="submit" value="Log in!" name="submit" />
-			</fieldset>
-		</form>
-	</div>
-</div>
+		<div class="well">
+			<div class="container">
+				<div class="row">
+					<div class="span4 offset4">
+						<form action="/login" method="POST">
+							<label>Username/E-mail</label>
+							<input tabindex="1" class="span4" type="text" value="" name="name" />
+							<label>Password</label>
+							<input tabindex="2" class="span4" type="password" value="" name="password" />
+							<label class="checkbox">
+								<input tabindex="3" type="checkbox" name="remember" /> Remember me
+								<a class="pull-right" href="/login/lost-password">Lost password?</a>
+							</label>
+							<button tabindex="4" class="btn btn-primary" type="submit" name="submit">Login</button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
+
