@@ -107,7 +107,7 @@ function _M:RenderView(view, minor, env)
 	local templateData = template:read'*a'
 	template:close()
 
-	return self:Render(templateData, minor,  minor,  env)
+	return self:Render(templateData, minor,  env)
 end
 
 return _M
