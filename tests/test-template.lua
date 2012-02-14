@@ -1,6 +1,5 @@
 local template = require'template'
 
-
 context('Library: Template', function()
 	context('static template', function()
 		test('simple', function()
