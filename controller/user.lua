@@ -33,7 +33,7 @@ return {
 				if not post["remember"] then timeout = (os.time() + 7200) end
 				content:write("Great success!")
 				sessions:Save(login, timeout)
-				header("refresh", "1;/")
+				header("refresh", "0;/")
 			else
 				content:write("Wrong Username or Password")
 			end
@@ -44,11 +44,11 @@ return {
 	logout = function()
 		if not sessions.session_id then
 			content:write("You are not logged in.")
-			header("refresh", "1;/")
+			header("refresh", "0;/")
 		else
 			sessions:Delete(sessions.session_id)
 			content:write("You have logged out.")
-			header("refresh", "1;/")
+			header("refresh", "0;/")
 		end
 	end,
 	google_oauth_callback = function()
