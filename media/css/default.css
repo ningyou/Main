@@ -36,7 +36,7 @@ h1 a:hover span
 
 .nav.pull-right .dropdown-menu {
 	left: auto;
-	right: 0;
+	right: -1px;
 	min-width: 0;
 }
 
