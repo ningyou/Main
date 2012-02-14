@@ -33,6 +33,7 @@ return {
 				if not post["remember"] then timeout = (os.time() + 7200) end
 				content:write("Success! <br/>")
 				sessions:Save(login, timeout)
+				header("Location", "/index")
 			else
 				content:write("Wrong Username or Password")
 			end
