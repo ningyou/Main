@@ -31,9 +31,9 @@ return {
 			if login then
 				local timeout
 				if not post["remember"] then timeout = (os.time() + 7200) end
-				content:write("Success! <br/>")
+				content:write("Great success!")
 				sessions:Save(login, timeout)
-				header("Location", "/index")
+				header("refresh", "1;/")
 			else
 				content:write("Wrong Username or Password")
 			end

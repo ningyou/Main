@@ -1,7 +1,13 @@
 local template = require'template'
+local sessions = require'sessions'
+local user = require'user'
 
 return {
 	index = function()
-		template:RenderView('default')
+		local default_env = {
+			["user_id"] = sessions.user_id,
+			["user"] = user:Name(sessions.user_id)
+		}
+		template:RenderView('default', nil, default_env)
 	end,
 }

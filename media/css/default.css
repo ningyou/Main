@@ -34,7 +34,13 @@ h1 a:hover span
 	color: #1fc2ff;
 }
 
-#title ul
+.nav.pull-right .dropdown-menu {
+	left: auto;
+	right: 0;
+	min-width: 0;
+}
+
+#title > ul
 {
 	padding-top: 25px;
 	margin-bottom: 11px;
