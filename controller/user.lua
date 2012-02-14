@@ -42,11 +42,11 @@ return {
 		end
 	end,
 	logout = function()
-		if not sessions.user_id then
+		if not sessions.session_id then
 			content:write("You are not logged in.")
 			header("refresh", "1;/")
 		else
-			sessions:Delete(sessions.sessions_id)
+			sessions:Delete(sessions.session_id)
 			content:write("You have logged out.")
 			header("refresh", "1;/")
 		end
