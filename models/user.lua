@@ -14,7 +14,6 @@ local blacklist = {
 	["twitter"] = true,
 }
 
-
 function _M:ValidateMail(mail)
 	-- STRICT AS HELL!
 	return not not mail:match('.+@.+%..+')
@@ -43,10 +42,8 @@ function _M:Login(login, password)
 	local field
 	if(self:ValidateMail(login)) then
 		field = "mail"
-	elseif(self:ValidateName(login)) then
-		field = "name"
 	else
-		return
+		field = "name"
 	end
 
 	local r = db:find_one("ningyou.users", { [field] = login:lower() })
