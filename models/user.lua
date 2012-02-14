@@ -20,7 +20,10 @@ function _M:ValidateMail(mail)
 end
 
 function _M:ValidateName(name)
-	-- Check for existing users.
+	if(blacklist[name:lower()]) then
+		return nil, "Invalid username"
+	end
+
 	local len = #name
 	return len > 0 and len < 31 and not name:match('^%-') and not name:match('[^a-zA-Z0-9%-]')
 end
@@ -29,7 +32,6 @@ function _M:Register(name, password, mail)
 	if self:ValidateMail(mail) and self:ValidateName(name) and password ~= nil then
 		if db:find_one("ningyou.users", { name = name }) then return nil, "User Exists" end
 		if db:find_one("ningyou.users", { mail = mail }) then return nil, "Mail Exists" end
-		if blacklist[name] then return nil, "User forbidden" end
 
 		db:insert("ningyou.users", { name = name:lower(), mail = mail:lower(), password = string.SHA256(password) })
 		return name
