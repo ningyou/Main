@@ -2,17 +2,27 @@ local db = require"db"
 local _M = {}
 
 local blacklist = {
-	["google"] = true,
-	["lua"] = true,
-	["yahoo"] = true,
-	["login"] = true,
-	["lostpassword"] = true,
-	["debug"] = true,
-	[404] = true,
-	["404"] = true,
-	["logout"] = true,
-	["twitter"] = true,
+	'about', 'account', 'add', 'admin', 'adminstrator', 'api', 'app', 'apps',
+	'auth', 'blog', 'browserid', 'cache', 'changelog', 'compare', 'config',
+	'connect', 'create', 'delete', 'edit', 'explore', 'export', 'faq',
+	'favorites', 'feeds', 'friends', 'help', 'history', 'home', 'info', 'lists',
+	'login', 'logout', 'logs', 'news', 'oauth', 'openid', 'popular', 'profile',
+	'remove', 'rss', 'search', 'settings', 'signup', 'sitemap', 'ssl', 'status',
+	'terms', 'tour', 'trends', 'url', 'user', 'wiki', 'xml',
+
+	-- Status codes
+	'404',
 }
+
+local isBlacklisted = function(name)
+	name = name:lower()
+
+	for i=1, #blacklist do
+		if(name == blacklist[i]) then
+			return true
+		end
+	end
+end
 
 function _M:ValidateMail(mail)
 	-- STRICT AS HELL!
@@ -20,7 +30,7 @@ function _M:ValidateMail(mail)
 end
 
 function _M:ValidateName(name)
-	if(blacklist[name:lower()]) then
+	if(isBlacklisted(name)) then
 		return nil, "Invalid username"
 	end
 
