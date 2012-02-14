@@ -97,6 +97,11 @@ function _M:Render(templateData, minor, env)
 		error(err)
 	end
 
+	-- Allow the custom environment access to _G.
+	if(env) then
+		env = setmetatable(env, {__index = _G })
+	end
+
 	-- We should create a custom env for this.
 	setfenv(func, env or _G)
 	return func()
