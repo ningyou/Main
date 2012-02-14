@@ -44,9 +44,11 @@ return {
 	logout = function()
 		if not sessions.user_id then
 			content:write("You are not logged in.")
+			header("refresh", "1;/")
 		else
 			sessions:Delete(sessions.sessions_id)
 			content:write("You have logged out.")
+			header("refresh", "1;/")
 		end
 	end,
 	google_oauth_callback = function()
