@@ -35,7 +35,6 @@ return {
 				local timeout
 				if not _POST["remember"] then timeout = (os.time() + 7200) end
 				sessions:Save(login, timeout)
-				content:write("Great success!")
 				header("Location", uri)
 				setReturnCode(302)
 			else
@@ -47,12 +46,10 @@ return {
 	end,
 	logout = function()
 		if not sessions.session_id then
-			content:write("You are not logged in.")
 			header("Location", "/")
 			setReturnCode(302)
 		else
 			sessions:Delete(sessions.session_id)
-			content:write("You have logged out.")
 			header("Location", "/")
 			setReturnCode(302)
 		end
