@@ -1,10 +1,8 @@
 local template = require'template'
 local ob = require'ob'
-local request = require'request'
 local user = require'user'
 local sessions = require'sessions'
 
-local post = request._POST
 local content = ob.Get'Content'
 
 return {
@@ -12,8 +10,8 @@ return {
 		return 404
 	end,
 	signup = function()
-		if post["submit"] then
-			local register, err = user:Register(post["name"], post["password"], post["mail"])
+		if _POST["submit"] then
+			local register, err = user:Register(_POST["name"], _POST["password"], _POST["mail"])
 			if register then
 				content:write("Success!")
 			else
@@ -26,12 +24,12 @@ return {
 	login = function()
 		if sessions.user_id then
 			content:write("Already logged in as " .. user:Name(sessions.user_id))
-		elseif post["submit"] then
-			local uri = post["referer"] or "/"
-			local login = user:Login(post["name"], string.SHA256(post["password"]))
+		elseif _POST["submit"] then
+			local uri = _POST["referer"] or "/"
+			local login = user:Login(_POST["name"], string.SHA256(_POST["password"]))
 			if login then
 				local timeout
-				if not post["remember"] then timeout = (os.time() + 7200) end
+				if not _POST["remember"] then timeout = (os.time() + 7200) end
 				sessions:Save(login, timeout)
 				content:write("Great success!")
 				header("Location", uri)

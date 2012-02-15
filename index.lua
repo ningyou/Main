@@ -13,12 +13,15 @@ package.path = table.concat({
 local before = clock()
 local routing = require'routing'
 local ob = require'ob'
-local request = require'request'
 local sessions = require'sessions'
+
+-- We probably want to wrap these in some metatable magic to prevent them
+-- from being called unnecessary.
+_GET = parseGet()
+_POST = parsePost()
 
 xpcall(
 	function()
-		request:Init()
 		routing:Init(dofile'config/routing.lua')
 		sessions:Init()
 
