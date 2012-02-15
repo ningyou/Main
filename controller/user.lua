@@ -27,13 +27,14 @@ return {
 		if sessions.user_id then
 			content:write("Already logged in as " .. user:Name(sessions.user_id))
 		elseif post["submit"] then
+			local uri = post["referer"] or "/"
 			local login = user:Login(post["name"], string.SHA256(post["password"]))
 			if login then
 				local timeout
 				if not post["remember"] then timeout = (os.time() + 7200) end
 				sessions:Save(login, timeout)
 				content:write("Great success!")
-				header("Location", "/")
+				header("Location", uri)
 				setReturnCode(302)
 			else
 				content:write("Wrong Username or Password")
