@@ -9,7 +9,7 @@ local content = ob.Get'Content'
 
 return {
 	index = function(user)
-		setReturnCode(404)
+		return 404
 	end,
 	signup = function()
 		if post["submit"] then
