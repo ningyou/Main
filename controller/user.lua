@@ -25,7 +25,11 @@ return {
 		if sessions.user_id then
 			content:write("Already logged in as " .. user:Name(sessions.user_id))
 		elseif _POST["submit"] then
-			local uri = _POST["referer"] or "/"
+			local uri = _POST["referer"]
+			if(uri == '') then
+				uri = '/'
+			end
+
 			local login = user:Login(_POST["name"], string.SHA256(_POST["password"]))
 			if login then
 				local timeout
