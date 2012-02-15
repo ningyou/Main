@@ -7,7 +7,7 @@ return {
 		local default_env = {
 			["user_id"] = sessions.user_id,
 			["user"] = user:Name(sessions.user_id),
-			["uri"] = getEnv()['Path-Info']
+			["uri"] = "http://" .. getEnv()["Host"] .. (getEnv()['Path-Info'] or "/")
 		}
 		template:RenderView('default', nil, default_env)
 	end,
