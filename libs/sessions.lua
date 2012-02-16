@@ -7,6 +7,7 @@ function _M:Save(user_id, timeout)
 	local session_id = string.SHA256(math.random(1305534,30598239) .. os.time())
 
 	db:insert("ningyou.sessions", { session_id = session_id, user_id = user_id, timeout = timeout})
+	db:ensure_index("ningyou.sessions", { session_id = 1 })
 	cookie:Set("session_id", session_id)
 
 	return session_id

@@ -44,6 +44,7 @@ function _M:Register(name, password, mail)
 		if db:find_one("ningyou.users", { mail = mail }) then return nil, "Mail Exists" end
 
 		db:insert("ningyou.users", { name = name:lower(), mail = mail:lower(), password = string.SHA256(password) })
+		db:ensure_index("ningyou.users", { name = 1, mail = 1 }, 1)
 		return name
 	end
 end
