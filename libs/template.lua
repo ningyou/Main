@@ -41,8 +41,6 @@ local handleReplace = function(cmd, data)
 end
 
 local pattern = '([^{]*)(%b{})'
---local pattern = '([^{]*){([' .. typesString .. '])%s*(.-)%s*[' .. typesString .. ']-}'
-
 function _M:Generate(templateData, minor)
 	templateData = templateData .. '{//}'
 
