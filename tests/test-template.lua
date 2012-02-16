@@ -86,5 +86,21 @@ context('Library: Template', function()
 				assert_equal(gen, 'if(true) then\nlocal a = "test"\n_O:write(a)\nprint(a)\nend')
 			end)
 		end)
+
+		context('javascript', function()
+			test('simple jQuery', function()
+				local input = [[
+					$('#login-modal').on('shown', function () {
+						$("#login :input:first").focus();
+					})
+				]]
+
+				local gen = template:Generate(input, true)
+				assert_equal(gen, [==[
+_O:write[=[$('#login-modal').on('shown', function ()]=]
+_O:write[=[{$("#login :input:first").focus();}]=]
+_O:write[=[)]=]]==])
+			end)
+		end)
 	end)
 end)

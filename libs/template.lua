@@ -71,8 +71,8 @@ function _M:Generate(templateData, minor)
 		-- Spaces between tags can yield padded lines.
 		html = trim(html)
 
-		-- We fetch 0 or more of not {, so it can give is a empty string :(
-		if(#html ~= 0) then
+		-- We fetch 0 or more of not {, so it can give us an empty string :(
+		if(#html > 0) then
 			table.insert(out, ('_O:write[=[%s]=]'):format(html))
 		end
 
@@ -81,6 +81,8 @@ function _M:Generate(templateData, minor)
 		local kind = types[identifier]
 		if(kind) then
 			table.insert(out, kind(code))
+		elseif(#code > 0) then
+			table.insert(out, ('_O:write[=[{%s}]=]'):format(code))
 		end
 	end
 
