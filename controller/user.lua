@@ -6,8 +6,15 @@ local sessions = require'sessions'
 local content = ob.Get'Content'
 
 return {
-	index = function(user)
-		return 404
+	index = function(name)
+		local user_id = user:ID(name)
+		if not user_id then return 404 end
+		
+		local user_env = {
+			user = name,
+			user_id = user_id,
+		}
+		template:RenderView('user', nil, user_env)
 	end,
 	signup = function()
 		if _POST["submit"] then
