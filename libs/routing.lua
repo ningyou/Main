@@ -1,4 +1,4 @@
-local ob = require'ob'
+local controller = require'controller'
 
 local _M = {}
 
@@ -19,12 +19,12 @@ function _M:Route(path)
 
 	local redirect, found
 	for i=1, #routes do
-		local ptrn, controller, handler = unpack(routes[i])
+		local ptrn, name, handler = unpack(routes[i])
 		if(pathInfo:match(ptrn)) then
 			if(not handler) then handler = 'index' end
 
 			-- pwetty!
-			redirect = dofile('controller/' .. controller)[handler](unpack(pathSplit))
+			redirect = controller:Call(name, handler, unpack(pathSplit))
 			found = true
 			break
 		end
@@ -34,7 +34,7 @@ function _M:Route(path)
 		return self:Route('/' .. redirect)
 	elseif(not found) then
 		-- Return error/404
-		return dofile('controller/404.lua').index(unpack(pathSplit))
+		return controller:Call(404, nil, unpack(pathSplit))
 	end
 end
 
