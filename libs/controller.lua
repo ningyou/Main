@@ -36,7 +36,7 @@ function _M:Load(name)
 
 	local success, controller = pcall(contFunc)
 	if(not success) then
-		error(err)
+		error(controller, 0)
 	end
 
 	self.__controllers[name] = controller
