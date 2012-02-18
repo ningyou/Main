@@ -40,7 +40,7 @@ end
 
 function _M:Register(name, password, mail)
 	if self:ValidateMail(mail) and self:ValidateName(name) and password ~= nil then
-		if db:find_one("ningyou.users", { lower_name = name:lower() }) then return nil, "User Exists" end
+		if db:find_one("ningyou.users", { name_lower = name:lower() }) then return nil, "User Exists" end
 		if db:find_one("ningyou.users", { mail = mail:lower() }) then return nil, "Mail Exists" end
 
 		db:insert("ningyou.users", { name = name, name_lower = name:lower(), mail = mail:lower(), password = string.SHA256(password) })
