@@ -40,11 +40,11 @@ end
 
 function _M:Register(name, password, mail)
 	if self:ValidateMail(mail) and self:ValidateName(name) and password ~= nil then
-		if db:find_one("ningyou.users", { name = name }) then return nil, "User Exists" end
-		if db:find_one("ningyou.users", { mail = mail }) then return nil, "Mail Exists" end
+		if db:find_one("ningyou.users", { lower_name = name:lower() }) then return nil, "User Exists" end
+		if db:find_one("ningyou.users", { mail = mail:lower() }) then return nil, "Mail Exists" end
 
-		db:insert("ningyou.users", { name = name:lower(), mail = mail:lower(), password = string.SHA256(password) })
-		db:ensure_index("ningyou.users", { name = 1, mail = 1 }, 1)
+		db:insert("ningyou.users", { name = name, name_lower = name:lower(), mail = mail:lower(), password = string.SHA256(password) })
+		db:ensure_index("ningyou.users", { name_lower = 1, mail = 1 }, 1)
 		return name
 	end
 end
@@ -56,7 +56,7 @@ function _M:Login(login, password)
 	if(self:ValidateMail(login)) then
 		field = "mail"
 	else
-		field = "name"
+		field = "name_lower"
 	end
 
 	local r = db:find_one("ningyou.users", { [field] = login:lower() })
@@ -80,7 +80,7 @@ function _M:Name(user_id)
 end
 
 function _M:ID(name)
-	local r = db:find_one("ningyou.users", { name = name:lower() })
+	local r = db:find_one("ningyou.users", { name_lower = name:lower() })
 
 	if r then
 		return tostring(r._id)
