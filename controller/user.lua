@@ -11,7 +11,9 @@ return {
 		if not user_id then return 404 end
 		
 		local user_env = {
-			user = name,
+			logged_user = user:Name(sessions.user_id),
+			logged_user_id = sessions.user_id,
+			user = user:Name(user_id),
 			user_id = user_id,
 		}
 		template:RenderView('user', nil, user_env)
