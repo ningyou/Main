@@ -21,7 +21,7 @@ local replaces = {
 	['include'] = function(path)
 		local file
 		if(path:sub(1,1) == '/') then
-			file = io.open(path, 'r')
+			file = io.open(path)
 		else
 			file = io.open('views/' .. path)
 		end
