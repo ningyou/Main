@@ -14,11 +14,15 @@ local before = clock()
 local routing = require'routing'
 local ob = require'ob'
 local sessions = require'sessions'
+local mongo = require"mongo"
 
 -- We probably want to wrap these in some metatable magic to prevent them
 -- from being called unnecessary.
 _GET = parseGet()
 _POST = parsePost()
+_DB = mongo.Connection.New()
+_DB:connect"localhost"
+
 
 xpcall(
 	function()

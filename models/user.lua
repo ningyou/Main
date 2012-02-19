@@ -1,4 +1,3 @@
-local db = require"db"
 local _M = {}
 
 local blacklist = {
@@ -40,11 +39,11 @@ end
 
 function _M:Register(name, password, mail)
 	if self:ValidateMail(mail) and self:ValidateName(name) and password ~= nil then
-		if db:find_one("ningyou.users", { name_lower = name:lower() }) then return nil, "User Exists" end
-		if db:find_one("ningyou.users", { mail = mail:lower() }) then return nil, "Mail Exists" end
+		if _DB:find_one("ningyou.users", { name_lower = name:lower() }) then return nil, "User Exists" end
+		if _DB:find_one("ningyou.users", { mail = mail:lower() }) then return nil, "Mail Exists" end
 
-		db:insert("ningyou.users", { name = name, name_lower = name:lower(), mail = mail:lower(), password = string.SHA256(password) })
-		db:ensure_index("ningyou.users", { name_lower = 1, mail = 1 }, 1)
+		_DB:insert("ningyou.users", { name = name, name_lower = name:lower(), mail = mail:lower(), password = string.SHA256(password) })
+		_DB:ensure_index("ningyou.users", { name_lower = 1, mail = 1 }, 1)
 		return name
 	end
 end
@@ -59,7 +58,7 @@ function _M:Login(login, password)
 		field = "name_lower"
 	end
 
-	local r = db:find_one("ningyou.users", { [field] = login:lower() })
+	local r = _DB:find_one("ningyou.users", { [field] = login:lower() })
 	if r then
 		if password == r.password then
 			return tostring(r._id)
@@ -70,7 +69,7 @@ function _M:Login(login, password)
 end
 
 function _M:Name(user_id)
-	local r = db:find_one("ningyou.users", { _id = mongo.ObjectId(user_id) })
+	local r = _DB:find_one("ningyou.users", { _id = mongo.ObjectId(user_id) })
 
 	if r then
 		return r.name
@@ -80,7 +79,7 @@ function _M:Name(user_id)
 end
 
 function _M:ID(name)
-	local r = db:find_one("ningyou.users", { name_lower = name:lower() })
+	local r = _DB:find_one("ningyou.users", { name_lower = name:lower() })
 
 	if r then
 		return tostring(r._id)
