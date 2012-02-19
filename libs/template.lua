@@ -26,7 +26,10 @@ local replaces = {
 			file = io.open('views/' .. path)
 		end
 
-		return file:read'*a'
+		local content = file:read'*a'
+		file:close()
+
+		return content
 	end,
 }
 
