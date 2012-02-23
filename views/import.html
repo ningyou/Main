@@ -1,0 +1,21 @@
+<%include header.html %>
+
+			<div class="row">
+				<div class="span3">
+					<form action="/import" method="post" enctype="multipart/form-data">
+						<fieldset>
+							<select name="site" class="input-large">
+								<option>Select site</option>
+								<option value="anidb">AniDB.net</option>
+								<option value="mal">MyAnimeList.net</option>
+							</select>
+							<input class="input-large" type="file" name="import_file" />
+							<input class="btn btn-primary pull-right" name="submit" type="submit" value="Import" />
+						</fieldset>
+					</form>
+				</div>
+			</div>
+
+<%include login-modal.html %>
+
+<%include footer.html %>

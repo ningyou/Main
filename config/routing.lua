@@ -6,6 +6,7 @@ return {
 	{'^/login', 'user', 'login'},
 	{'^/logout', 'user', 'logout'},
 	{'^/google', 'user', 'google_oauth_callback'},
+	{'^/import', 'user', 'import'},
 
 	{'^/[a-zA-Z0-9%-]+', 'user'}
 }

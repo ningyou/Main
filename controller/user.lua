@@ -2,20 +2,23 @@ local template = require'template'
 local ob = require'ob'
 local user = require'user'
 local sessions = require'sessions'
+local zlib = require'zlib'
 
 local content = ob.Get'Content'
 
 return {
-	index = function(name)
+	index = function(name, second)
+		print(second)
 		local user_id = user:ID(name)
 		if not user_id then return 404 end
-		
+
 		local user_env = {
 			logged_user = user:Name(sessions.user_id),
 			logged_user_id = sessions.user_id,
 			user = user:Name(user_id),
 			user_id = user_id,
 		}
+	
 		template:RenderView('user', nil, user_env)
 	end,
 	signup = function()
@@ -61,5 +64,21 @@ return {
 	end,
 	google_oauth_callback = function()
 		content:write("More to come..")
+	end,
+	import = function()
+		local user_env = {
+			logged_user = user:Name(sessions.user_id),
+			logged_user_id = sessions.user_id,
+			user = user:Name(user_id),
+			user_id = user_id,
+		}
+
+		if _POST["import_file"] and _POST["site"] == "mal" then
+			local xml = zlib.inflate() (_POST["import_file"][2])
+
+			echo(tostring(xml))
+		else
+			template:RenderView('import', nil, user_env)
+		end
 	end,
 }
