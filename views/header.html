@@ -13,6 +13,9 @@
 		<link href="/media/css/default.css" rel="stylesheet" />
 	</head>
 	<body>
+		{% if alert then %}
+		<div id="top-alert">{{ alert }}</div>
+		{% end %}
 		<div class="container">
 			<div class="row">
 				<div id="title" class="span12">

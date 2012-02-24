@@ -18,7 +18,7 @@ return {
 			user = user:Name(user_id),
 			user_id = user_id,
 		}
-	
+
 		template:RenderView('user', nil, user_env)
 	end,
 	signup = function()
