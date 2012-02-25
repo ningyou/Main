@@ -2,7 +2,7 @@ local zmq = require"zmq"
 
 local _M = {}
 
-local _M:send = function(string)
+function _M:Send(string)
 	if type(string) ~= "string" then return end
 	local ctx = zmq.init(1)
 	local s = ctx:socket(zmq.PUB)
