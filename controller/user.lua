@@ -7,8 +7,7 @@ local zlib = require'zlib'
 local content = ob.Get'Content'
 
 return {
-	index = function(name, second)
-		print(second)
+	index = function(name)
 		local user_id = user:ID(name)
 		if not user_id then return 404 end
 
