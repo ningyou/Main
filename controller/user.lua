@@ -10,6 +10,11 @@ require'redis'
 
 local content = ob.Get'Content'
 
+local user_env = {
+	logged_user = user:Name(sessions.user_id),
+	logged_user_id = sessions.user_id,
+}
+
 local function find_id(title, site)
 	local r = _DB:find_one("ningyou." .. site .. "titles", { title_lower = title:lower() }, { [site.."_id"] = 1, _id = 0 })
 	if r then return tonumber(r[site.."_id"]) end
@@ -20,10 +25,13 @@ local function find_title(id, site)
 	if r then return r.title end
 end
 
-local user_env = {
-	logged_user = user:Name(sessions.user_id),
-	logged_user_id = sessions.user_id,
-}
+local function add_to_list(list, id, episodes, status, rating)
+	local key = "lists.".. list .. ".ids."..id
+	if not list and not id and not episodes and not status then return end
+	if _DB:find_one("ningyou.lists", { user = "steino", [key] = { ["$exists"] = "true" }}) then return end
+
+	return _DB:update("ningyou.lists", { user = user_env["logged_user"] }, { ["$set"] = { [key] = { episodes = episodes, status = status, rating = rating }}})
+end
 
 return {
 	index = function(name)
