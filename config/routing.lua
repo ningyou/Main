@@ -8,6 +8,7 @@ return {
 	{'^/google', 'user', 'google_oauth_callback'},
 	{'^/import', 'user', 'import'},
 	{'^/lists', 'user', 'lists'},
+	{'^/search', 'user', 'search'},
 
 	{'^/[a-zA-Z0-9%-]+', 'user'}
 }

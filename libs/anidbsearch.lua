@@ -10,7 +10,9 @@ local insert = function(tbl, aid, weight)
 	weight = math.floor(weight)
 	if(weight < THRESHOLD) then return end
 
-	local title = _DB:find_one("ningyou.anidbtitles", { anidb_id = aid, type = "main"}, { title = 1 }).title
+	local title = _DB:find_one("ningyou.anidbtitles", { anidb_id = aid, type = "official", lang = "en" }, { title = 1 }) or _DB:find_one("ningyou.anidbtitles", { anidb_id = aid, type = "main" }, { title = 1 })
+	title = title.title
+
 	local data = tbl[aid]
 	if(data and data[2] < weight) then
 		data[2] = weight
@@ -33,7 +35,6 @@ local compare = function(tbl, aid, type, pattern, title)
 end
 
 local doSearch = function(pattern)
-	local t = socket.gettime()
 	local matches = {}
 	local search = pattern:lower():gsub('([-?]+)', '%%%1'):gsub("'", '`')
 	-- Search, lol!
@@ -50,8 +51,8 @@ local doSearch = function(pattern)
 	end
 
 	table.sort(output, function(a,b) return a.weight > b.weight end)
-
-	local diff = socket.gettime() - t
+	
+	return output
 end
 
 return {

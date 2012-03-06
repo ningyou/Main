@@ -6,6 +6,7 @@ local sessions = require'sessions'
 local zlib = require'zlib'
 local lom = require'lxp.lom'
 local xpath = require'xpath'
+local anidbsearch = require'anidbsearch'
 require'redis'
 
 local content = ob.Get'Content'
@@ -30,7 +31,7 @@ local function add_to_list(list, id, episodes, status, rating)
 	if not list and not id and not episodes and not status then return end
 	if _DB:find_one("ningyou.lists", { user = "steino", [key] = { ["$exists"] = "true" }}) then return end
 
-	return _DB:update("ningyou.lists", { user = user_env["logged_user"] }, { ["$set"] = { [key] = { episodes = episodes, status = status, rating = rating }}})
+	return _DB:update("ningyou.lists", { user = user_env["logged_user"] }, { ["$set"] = { [key] = { episodes = episodes, status = status, rating = rating }}})
 end
 
 return {
@@ -133,6 +134,18 @@ return {
 			end
 		else
 			template:RenderView('import', nil, user_env)
+		end
+	end,
+	search = function()
+		if _POST["search"] then
+			local results = anidbsearch.lookup(_POST["search"])
+			if results then
+				template:RenderView('searchresults', nil, { results = results })
+			else
+				echo("Could not find: " .. _POST["search"])
+			end
+		else
+			template:RenderView('search')
 		end
 	end,
 }

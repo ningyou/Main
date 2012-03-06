@@ -1,0 +1,8 @@
+<table class="table table-striped">
+	<thead><tr><th>Title</th><th>Episodes</th><th>Seen</th><th>Add</th></tr></thead>
+	<tbody>
+	{% for _,h in next, results do %}
+		<tr><td><a href="http://anidb.net/a{{h.aid}}" target="_blank" title="Show description...">{{ h.title }}</a></td><td>??</td><td>??</td><td>??</td></tr>
+	{% end %}
+	</tbody>
+</table>

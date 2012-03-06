@@ -24,5 +24,18 @@
 				$("#login :input:first").focus();
 			})
 		</script>
+		<script>
+			function anidbsearch()
+			{
+				$.ajax({
+					type: "POST",
+					url: "/search",
+					data: $("#anidbsearch").serializeArray(),
+				}).done(function(data){
+					$("#search").val('');
+					$("#result").empty().append(data);
+				});
+			}
+		</script>
 	</body>
 </html>
