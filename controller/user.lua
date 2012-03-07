@@ -96,7 +96,6 @@ return {
 				local cache = Redis.connect('127.0.0.1', 6379)
 				local animes = xpath.selectNodes(xml_tree, '/myanimelist/anime/')
 				local nomatch = {}
-				local list = {}
 				local not_in_cache = {}
 				table.insert(not_in_cache, "anidb")
 				
@@ -107,6 +106,7 @@ return {
 					title = title:gsub("[%s%s]+", " ")
 
 					local watched = t[12][1]
+					local rating = t[18][1]
 					local status = t[28][1]
 					local id = find_id(title, "anidb")
 					if not id then
@@ -115,22 +115,11 @@ return {
 						if not cache:exists("anidb:"..id) then
 							table.insert(not_in_cache, id)
 						end
-						table.insert(list, id)
+					add_to_list(_POST["list"], id, watched, status, rating)
 					end
 				end
-
-				echo"We found these:<br/>"
-				for _,id in next, list do
-					echo(find_title(id, "anidb") .. "<br/>")
-				end
-				echo"<br/>"
-				echo"We didnt find:<br/>"
-				for _,t in pairs(nomatch) do
-					echo(t.title .. "<br/>")
-				end
-
-				echo"<br/>"
 				echo(table.concat(not_in_cache, ","))
+				cache:quit()
 			end
 		else
 			template:RenderView('import', nil, user_env)
