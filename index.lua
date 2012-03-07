@@ -29,27 +29,14 @@ xpcall(
 		routing:Init(dofile'config/routing.lua')
 		sessions:Init()
 
-		local customBuffer, kind = routing:Route()
-		local content
-		if(not kind) then
+		local _, silent = routing:Route()
+		if(not silent) then
 			local after = clock()
 			local diff = after.seconds * 1e9 + after.nanoseconds - (before.seconds * 1e9 + before.nanoseconds)
-
 			ob.Get'Content':write('\n<!-- ', diff / 1e6, ' ms', ' | ', collectgarbage'count', ' kB', ' -->')
-			content = ob.Get'Content':flush()
-		elseif(kind == 'content') then
-			content = ob.Get(customBuffer):flush()
 		end
 
-		if(kind ~= 'redirect') then
-			header('Content-Length', tostring(#content))
-		end
-
-		if(content) then
-			echo(
-				content
-			)
-		end
+		echo(ob.Get'Content':flush())
 	end,
 
 	function(err)
