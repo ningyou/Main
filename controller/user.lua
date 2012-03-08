@@ -11,6 +11,10 @@ require'redis'
 
 local content = ob.Get'Content'
 
+local sites = {
+	["anime"] = "anidb",
+}
+
 local user_env = {
 	logged_user = user:Name(sessions.user_id),
 	logged_user_id = sessions.user_id,
@@ -22,7 +26,7 @@ local function find_id(title, site)
 end
 
 local function find_title(id, site)
-	local r = _DB:find_one("ningyou." .. site .. "titles", { [site.."_id"] = id, type = "main" }, { title = 1, _id = 0})
+	local r = _DB:find_one("ningyou." .. site .. "titles", { [site.."_id"] = id, type = "official", lang = "en" }, { title = 1, _id = 0}) or _DB:find_one("ningyou." .. site .. "titles", { [site.."_id"] = id, type = "main" }, { title = 1, _id = 0})
 	if r then return r.title end
 end
 
@@ -35,13 +39,49 @@ local function add_to_list(list, id, episodes, status, rating)
 end
 
 return {
-	index = function(name)
+	index = function(name, list)
 		local user_id = user:ID(name)
 		if not user_id then return 404 end
 
 		user_env["user"] = user:Name(user_id)
 		user_env["user_id"] = user_id
-		template:RenderView('user', nil, user_env)
+		
+		if list then
+			list = list:lower()
+			local list_info = _DB:find_one("ningyou.lists", { user = name:lower() }, { ["lists."..list] = 1 })
+			if not list_info then return 404 end
+			local cache = Redis.connect('127.0.0.1', 6379)
+
+			list_info = list_info.lists[list]
+
+			user_env.lists = {}
+
+			for id, info in next, list_info.ids do
+				local key = sites[list_info.type]..":"..id
+				if not user_env.lists[info.status] then user_env.lists[info.status] = {} end
+				info.title = find_title(tonumber(id), sites[list_info.type])
+				info.type = cache:hget(key, "type") or "??"
+				info.total = cache:hget(key, "episodecount") or "??"
+				info.id = id
+				table.insert(user_env.lists[info.status], info)
+			end
+
+			for _, ids in next, user_env.lists do
+				table.sort(ids, function(a,b) return a.title < b.title end)
+			end
+
+			user_env.list_name = list_info.name
+			user_env.status = {
+				"On-Hold",
+				"Watching",
+				"Completed",
+			}
+
+			cache:quit()
+			template:RenderView('list', nil, user_env)
+		else
+			template:RenderView('user', nil, user_env)
+		end
 	end,
 	signup = function()
 		if _POST["submit"] then
