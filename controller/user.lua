@@ -27,7 +27,7 @@ local function find_title(id, site)
 end
 
 local function add_to_list(list, id, episodes, status, rating)
-	local key = "lists.".. list .. ".ids."..id
+	local key = "lists.".. list:lower() .. ".ids."..id
 	if not list and not id and not episodes and not status then return end
 	if _DB:find_one("ningyou.lists", { user = user_env["logged_user"], [key] = { ["$exists"] = "true" }}) then return end
 
@@ -122,6 +122,8 @@ return {
 				cache:quit()
 			end
 		else
+			local lists = _DB:find_one("ningyou.lists", { user = user_env["logged_user"] })
+			user_env.lists = lists.lists
 			template:RenderView('import', nil, user_env)
 		end
 	end,
