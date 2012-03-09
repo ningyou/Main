@@ -3,13 +3,13 @@
 			<div class="row">
 				<div class="span12">
 					<h2>{{list_name}}</h2>
-					{% for _, status in next, status do %}
-					<table class="table table-bordered table-striped" id="{{status}}">
+					{% for i = 1, #status do %}
+					<table class="table table-bordered table-striped" id="{{status[i]}}">
 						<thead>
-							<tr><th class="span12">{{status}}</th><th style="text-align: center;">Type</th><th style="text-align: center;">Progress</th></tr??>
+							<tr><th class="span12">{{status[i]}}</th><th style="text-align: center;">Type</th><th style="text-align: center;">Progress</th></tr>
 						</thead>
 						<tbody>
-							{% for _, info in next, lists[status] do %}
+							{% for _, info in next, lists[status[i]] do %}
 							<tr><td class="span12"><a href="http://anidb.net/a{{info.id}}" target="_blank">{{info.title}}</a></td><td style="text-align: center;">{{info.type}}</td><td style="text-align: center;">{{info.episodes}}/{{info.total}}</td></tr>
 							{% end %}
 						</tbody>

@@ -163,7 +163,10 @@ return {
 			end
 		else
 			local lists = _DB:find_one("ningyou.lists", { user = user_env["logged_user"] })
-			user_env.lists = lists.lists
+			if lists then
+				user_env.lists = lists.lists
+			end
+
 			template:RenderView('import', nil, user_env)
 		end
 	end,
