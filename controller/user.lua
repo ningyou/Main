@@ -181,8 +181,10 @@ return {
 			else
 				echo("Could not find: " .. _POST["search"])
 			end
-		else
+		elseif sessions.user_id then
 			template:RenderView('search')
+		else 
+			return 404
 		end
 	end,
 }
