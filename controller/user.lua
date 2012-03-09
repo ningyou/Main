@@ -15,6 +15,8 @@ local sites = {
 	["anime"] = "anidb",
 }
 
+user_env = nil
+
 local user_env = {
 	logged_user = user:Name(sessions.user_id),
 	logged_user_id = sessions.user_id,
@@ -161,13 +163,14 @@ return {
 				echo(table.concat(not_in_cache, ","))
 				cache:quit()
 			end
-		else
+		elseif sessions.user_id then
 			local lists = _DB:find_one("ningyou.lists", { user = user_env["logged_user"] })
 			if lists then
 				user_env.lists = lists.lists
 			end
-
 			template:RenderView('import', nil, user_env)
+		else
+			return 404
 		end
 	end,
 	search = function()
