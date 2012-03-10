@@ -182,7 +182,7 @@ return {
 				echo("Could not find: " .. _POST["search"])
 			end
 		elseif sessions.user_id then
-			template:RenderView('search')
+			template:RenderView('search', nil, user_env)
 		else 
 			return 404
 		end
