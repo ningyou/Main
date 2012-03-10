@@ -76,9 +76,11 @@ return {
 
 			user_env.list_name = list_info.name
 			user_env.status = {
-				"On-Hold",
 				"Watching",
 				"Completed",
+				"Plan to Watch",
+				"On-Hold",
+				"Dropped",
 			}
 
 			cache:quit()
