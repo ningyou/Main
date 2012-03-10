@@ -1,12 +1,20 @@
 <%include header.html %>
 
 			<div class="row">
-				<div class="span12">
+				<div class="span9">
 					<h2>{{user}}</h2>
 					<div class="well">
 						<p>Placeholder text.
 						</p>
 					</div>
+				</div>
+				<div class="span3">
+					<h3>Lists:</h3>
+					<ul class="unstyled">
+						{% if lists then for i = 1, #lists do %}
+						<li><a href="/{{user}}/{{lists[i].name_lower}}">{{lists[i].name}}</a><small class="pull-right">{{lists[i].type}}</small></li>
+						{% end end %}
+					</ul>
 				</div>
 			</div>
 

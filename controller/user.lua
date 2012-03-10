@@ -45,6 +45,7 @@ return {
 		local user_id = user:ID(name)
 		if not user_id then return 404 end
 
+
 		user_env["user"] = user:Name(user_id)
 		user_env["user_id"] = user_id
 		
@@ -82,6 +83,16 @@ return {
 			cache:quit()
 			template:RenderView('list', nil, user_env)
 		else
+			local list_info = _DB:find_one("ningyou.lists", { user = name:lower() }, { ["lists"] = 1 })
+	
+			if list_info then
+				user_env.lists = {}
+				for name, info in next, list_info.lists do
+					table.insert(user_env.lists, { name = info.name, type = info.type, name_lower = name })
+				end
+				table.sort(user_env.lists, function(a,b) return a.name < b.name end)
+			end
+
 			template:RenderView('user', nil, user_env)
 		end
 	end,
