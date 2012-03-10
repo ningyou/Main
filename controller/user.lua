@@ -45,7 +45,6 @@ return {
 		local user_id = user:ID(name)
 		if not user_id then return 404 end
 
-
 		user_env["user"] = user:Name(user_id)
 		user_env["user_id"] = user_id
 		
@@ -53,9 +52,11 @@ return {
 			list = list:lower()
 			local list_info = _DB:find_one("ningyou.lists", { user = name:lower() }, { ["lists."..list] = 1 })
 			if not list_info then return 404 end
-			local cache = Redis.connect('127.0.0.1', 6379)
-
 			list_info = list_info.lists[list]
+
+			if not list_info.ids then return 404 end
+
+			local cache = Redis.connect('127.0.0.1', 6379)
 
 			user_env.lists = {}
 
