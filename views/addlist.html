@@ -1,0 +1,27 @@
+<%include header.html %>
+
+<form class="form-horizontal" method="POST">
+	<fieldset>
+		<legend>Add a new list.</legend>
+		<div class="control-group">
+			<label class="control-label" for="name01">Name</label>
+			<div class="controls">
+				<input type="text" class="input-large" name="name" id="name01">
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label" for="type01">Type</label>
+			<div class="controls">
+				<select name="type" class="input-large" id="type01">
+					<option>Select type</option>
+					<option value="anime">Anime</option>
+				</select>
+			</div>
+		</div>
+		<div class="form-actions">
+			<button name="submit" class="btn btn-primary" type="submit">Add list</button>
+		</div>
+	</fieldset>
+</form>
+
+<%include footer.html %>

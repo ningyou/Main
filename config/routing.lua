@@ -9,6 +9,7 @@ return {
 	{'^/import', 'user', 'import'},
 	{'^/lists', 'user', 'lists'},
 	{'^/search', 'user', 'search'},
+	{'^/add', 'user', 'add'},
 
 	{'^/[a-zA-Z0-9%-]+', 'user'}
 }

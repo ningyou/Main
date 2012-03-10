@@ -198,4 +198,25 @@ return {
 			return 404
 		end
 	end,
+	add = function(_,t)
+		if t == "list" then
+			if _POST["submit"] then
+				local key = "lists." .. _POST["name"]:lower()
+				if _DB:find_one("ningyou.lists", { user = user_env["logged_user"], [key] = { ["$exists"] = "true" }}) then
+					header("Location", "/")
+					setReturnCode(302)
+				end
+
+				if not _DB:find_one("ningyou.lists", { user = user_env["logged_user"]}) then
+					_DB:insert("ningyou.lists", { user = user_env["logged_user"], lists = { [_POST["name"]:lower()] = { name = _POST["name"], type = _POST["type"] }}})
+				else
+					_DB:update("ningyou.lists", { user = user_env["logged_user"] }, { ["$set"] = { [key] = { name = _POST["name"], type = _POST["type"] }}})
+				end
+				header("Location", "/")
+				setReturnCode(302)
+			else
+				template:RenderView('addlist', nil, user_env)
+			end
+		end
+	end
 }
