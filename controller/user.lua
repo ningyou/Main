@@ -238,6 +238,7 @@ return {
 				else
 					_DB:update("ningyou.lists", { user = user_env["logged_user"] }, { ["$set"] = { [key] = { name = _POST["name"], type = _POST["type"] }}})
 				end
+				_DB:ensure_index("ningyou.lists", { user = 1 })
 				header("Location", "/")
 				setReturnCode(302)
 			else
