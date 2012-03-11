@@ -99,7 +99,7 @@ return {
 				for name, info in next, list_info.lists do
 					table.insert(user_env.lists, { name = info.name, type = info.type, name_lower = name })
 				end
-				table.sort(user_env.lists, function(a,b) return a.name < b.name end)
+				table.sort(user_env.lists, function(a,b) return a.name:lower() < b.name:lower() end)
 			end
 
 			template:RenderView('user', nil, user_env)
