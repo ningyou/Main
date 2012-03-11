@@ -68,8 +68,8 @@ return {
 				local key = sites[list_info.type]..":"..id
 				if not user_env.lists[info.status] then user_env.lists[info.status] = {} end
 				info.title = find_title(tonumber(id), sites[list_info.type])
-				info.type = cache:hget(key, "type") or "??"
-				info.total = cache:hget(key, "episodecount") or "??"
+				info.type = cache:hget(key, "type") or "N/A"
+				info.total = cache:hget(key, "episodecount") or "N/A"
 				info.id = id
 				table.insert(user_env.lists[info.status], info)
 			end
