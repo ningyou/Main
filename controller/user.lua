@@ -87,7 +87,7 @@ return {
 				"Dropped",
 			}
 
-			local send = tostring(table.concat(not_in_cache, ","))
+			local send = table.concat(not_in_cache, ",")
 			bunraku:Send(send)
 			cache:quit()
 			template:RenderView('list', nil, user_env)
