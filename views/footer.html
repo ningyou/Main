@@ -19,23 +19,11 @@
 		<script src="/media/js/bootstrap-carousel.js"></script>
 		<script src="/media/js/bootstrap-typeahead.js"></script>
 		<script src="/media/js/top-alert.js"></script>
+		<script src="/media/js/search.js"></script>
 		<script>
 			$('#login-modal').on('shown', function () {
 				$("#login :input:first").focus();
 			})
-		</script>
-		<script>
-			function anidbsearch()
-			{
-				$.ajax({
-					type: "POST",
-					url: "/search",
-					data: $("#anidbsearch").serializeArray(),
-				}).done(function(data){
-					$("#search").val('');
-					$("#result").empty().append(data);
-				});
-			}
 		</script>
 	</body>
 </html>

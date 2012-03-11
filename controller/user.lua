@@ -199,9 +199,13 @@ return {
 		end
 	end,
 
-	search = function()
+	search = function(_,searchtype)
 		if _POST["search"] then
-			local results = anidbsearch.lookup(_POST["search"])
+			local results
+			if searchtype == "anime" then
+				results = anidbsearch.lookup(_POST["search"])
+			end
+			
 			if results then
 				template:RenderView('searchresults', nil, { results = results })
 			else
