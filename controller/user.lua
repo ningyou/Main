@@ -75,7 +75,7 @@ return {
 			end
 
 			for _, ids in next, user_env.lists do
-				table.sort(ids, function(a,b) return a.title < b.title end)
+				table.sort(ids, function(a,b) return a.title:lower() < b.title:lower() end)
 			end
 
 			user_env.list_name = list_info.name
