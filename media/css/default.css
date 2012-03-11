@@ -71,3 +71,8 @@ h1 a:hover span
 	color: #fff;
 	opacity: .9;
 }
+
+.table .center
+{
+	text-align: center;
+}

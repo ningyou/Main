@@ -6,11 +6,11 @@
 					{% for i = 1, #status do %}
 					<table class="table table-bordered table-striped">
 						<thead>
-							<tr><th class="span12">{{status[i]}}</th><th class="span2" style="text-align: center;">Type</th><th style="text-align: center;">Progress</th></tr>
+							<tr><th class="span12">{{status[i]}}</th><th class="span2 center">Type</th><th class="center">Progress</th></tr>
 						</thead>
 						<tbody>
 							{% for _, info in next, lists[status[i]] do %}
-							<tr><td class="span12"><a href="http://anidb.net/a{{info.id}}" target="_blank">{{info.title}}</a></td><td class="span2" style="text-align: center;">{{info.type}}</td><td style="text-align: center;">{{info.episodes}}/{{info.total}}</td></tr>
+							<tr><td class="span12"><a href="http://anidb.net/a{{info.id}}" target="_blank">{{info.title}}</a></td><td class="span2 center">{{info.type}}</td><td class="center">{{info.episodes}}/{{info.total}}</td></tr>
 							{% end %}
 						</tbody>
 					</table>
