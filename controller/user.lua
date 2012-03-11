@@ -47,7 +47,7 @@ return {
 
 		user_env["user"] = user:Name(user_id)
 		user_env["user_id"] = user_id
-		
+
 		if list then
 			list = list:lower()
 			local list_info = _DB:find_one("ningyou.lists", { user = name:lower() }, { ["lists."..list] = 1 })
@@ -93,7 +93,7 @@ return {
 			template:RenderView('list', nil, user_env)
 		else
 			local list_info = _DB:find_one("ningyou.lists", { user = name:lower() }, { ["lists"] = 1 })
-	
+
 			if list_info then
 				user_env.lists = {}
 				for name, info in next, list_info.lists do
@@ -105,6 +105,7 @@ return {
 			template:RenderView('user', nil, user_env)
 		end
 	end,
+
 	signup = function()
 		if _POST["submit"] then
 			local register, err = user:Register(_POST["name"], _POST["password"], _POST["mail"])
@@ -117,6 +118,7 @@ return {
 			template:RenderView('signup')
 		end
 	end,
+
 	login = function()
 		if sessions.user_id then
 			content:write("Already logged in as " .. user:Name(sessions.user_id))
@@ -136,6 +138,7 @@ return {
 			template:RenderView('login')
 		end
 	end,
+
 	logout = function()
 		if not sessions.session_id then
 			header("Location", "/")
@@ -146,9 +149,11 @@ return {
 			setReturnCode(302)
 		end
 	end,
+
 	google_oauth_callback = function()
 		content:write("More to come..")
 	end,
+
 	import = function()
 		if _POST["import_file"] and _POST["site"] == "mal" then
 			local xml = zlib.inflate() (_POST["import_file"][2])
@@ -160,7 +165,7 @@ return {
 				local nomatch = {}
 				local not_in_cache = {}
 				table.insert(not_in_cache, "anidb")
-				
+
 				for _,t in pairs(animes) do
 					local title = t[4][1]
 					title = title:gsub("'", "`")
@@ -193,6 +198,7 @@ return {
 			return 404
 		end
 	end,
+
 	search = function()
 		if _POST["search"] then
 			local results = anidbsearch.lookup(_POST["search"])
@@ -203,10 +209,11 @@ return {
 			end
 		elseif sessions.user_id then
 			template:RenderView('search', nil, user_env)
-		else 
+		else
 			return 404
 		end
 	end,
+
 	add = function(_,t)
 		if t == "list" then
 			if _POST["submit"] then
