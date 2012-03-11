@@ -29,7 +29,7 @@ local replaces = {
 		local content = file:read'*a'
 		file:close()
 
-		return content
+		return content:gsub('\t*({[{%%])', '%1')
 	end,
 }
 
@@ -45,7 +45,7 @@ end
 
 local pattern = '([^{]*)(%b{})'
 function _M:Generate(templateData, minor)
-	templateData = templateData .. '{//}'
+	templateData = templateData:gsub('\t*({[{%%])', '%1') .. '{//}'
 
 	local out
 	if(minor) then
@@ -69,8 +69,6 @@ function _M:Generate(templateData, minor)
 		-- output slightly easier to unit test. IF it causes issues we can
 		-- simply remove it.
 		code = trim(code)
-		-- Spaces between tags can yield padded lines.
-		html = trim(html)
 
 		-- We fetch 0 or more of not {, so it can give us an empty string :(
 		if(#html > 0) then
