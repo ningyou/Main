@@ -7,6 +7,7 @@ local zlib = require'zlib'
 local lom = require'lxp.lom'
 local xpath = require'xpath'
 local anidbsearch = require'anidbsearch'
+local mangasearch = require'mangasearch'
 require'redis'
 
 local content = ob.Get'Content'
@@ -202,12 +203,17 @@ return {
 	search = function(_,searchtype)
 		if _POST["search"] then
 			local results
+			local url
 			if searchtype == "anime" then
 				results = anidbsearch.lookup(_POST["search"])
+				url = "http://anidb.net/a"
+			elseif searchtype == "manga" then
+				results = mangasearch.lookup(_POST["search"])
+				url = "http://www.animenewsnetwork.com/encyclopedia/anime.php?id="
 			end
 			
 			if results then
-				template:RenderView('searchresults', nil, { results = results })
+				template:RenderView('searchresults', nil, { results = results, url = url })
 			else
 				echo("Could not find: " .. _POST["search"])
 			end

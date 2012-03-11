@@ -47,7 +47,7 @@ local doSearch = function(pattern)
 	
 	local output = {}
 	for k,v in next, matches do
-		table.insert(output, {aid = k, title = v[1], weight = v[2]})
+		table.insert(output, {id = k, title = v[1], weight = v[2]})
 	end
 
 	table.sort(output, function(a,b) return a.weight > b.weight end)
