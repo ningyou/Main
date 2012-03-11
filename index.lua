@@ -21,7 +21,7 @@ local mongo = require"mongo"
 _GET = parseGet()
 _POST = parsePost()
 _DB = mongo.Connection.New()
-_DB:connect"localhost"
+assert(_DB:connect"localhost")
 
 
 xpcall(
