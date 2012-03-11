@@ -53,14 +53,18 @@ return {
 			local list_info = _DB:find_one("ningyou.lists", { user = name:lower() }, { ["lists."..list] = 1 })
 			if not list_info then return 404 end
 			list_info = list_info.lists[list]
-
 			if not list_info.ids then return 404 end
 
 			local cache = Redis.connect('127.0.0.1', 6379)
-
 			user_env.lists = {}
+			local not_in_cache = {}
+			table.insert(not_in_cache, sites[list_info.type])
 
 			for id, info in next, list_info.ids do
+				if not cache:exists(sites[list_info.type]..":"..id) then
+					table.insert(not_in_cache, id)
+				end
+
 				local key = sites[list_info.type]..":"..id
 				if not user_env.lists[info.status] then user_env.lists[info.status] = {} end
 				info.title = find_title(tonumber(id), sites[list_info.type])
@@ -83,6 +87,8 @@ return {
 				"Dropped",
 			}
 
+			local send = tostring(table.concat(not_in_cache, ","))
+			bunraku:Send(send)
 			cache:quit()
 			template:RenderView('list', nil, user_env)
 		else
