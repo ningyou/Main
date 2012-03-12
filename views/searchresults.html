@@ -1,8 +1,8 @@
 <table class="table table-striped">
-	<thead><tr><th>Title</th><th>Episodes</th><th>Seen</th><th>Status</th><th>Add</th></tr></thead>
+	<thead><tr><th>Title</th><th class="center">Type</th><th class="center">Episodes</th><th>Add</th></tr></thead>
 	<tbody>
 	{% for _,h in next, results do %}
-	<tr><td><a href="{{url}}{{h.id}}" target="_blank">{{ h.title }}</a></td><td>??</td><td>??</td><td>??</td><td>??</td></tr>
+	<tr><td><a href="{{url}}{{h.id}}" target="_blank">{{ h.title }}</a></td><td class="center">{{h.type}}</td><td class="center">{{h.total}}</td><td>??</td></tr>
 	{% end %}
 	</tbody>
 </table>

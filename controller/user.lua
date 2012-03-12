@@ -14,6 +14,7 @@ local content = ob.Get'Content'
 
 local sites = {
 	["anime"] = "anidb",
+	["manga"] = "manga",
 }
 
 user_env = nil
@@ -87,9 +88,12 @@ return {
 				"On-Hold",
 				"Dropped",
 			}
+			
+			if not_in_cache[2] then
+				local send = table.concat(not_in_cache, ",")
+				bunraku:Send(send)
+			end
 
-			local send = table.concat(not_in_cache, ",")
-			bunraku:Send(send)
 			cache:quit()
 			template:RenderView('list', nil, user_env)
 		else
@@ -204,6 +208,7 @@ return {
 		if _POST["search"] then
 			local results
 			local url
+			
 			if searchtype == "anime" then
 				results = anidbsearch.lookup(_POST["search"])
 				url = "http://anidb.net/a"
@@ -213,6 +218,26 @@ return {
 			end
 			
 			if results then
+				local not_in_cache = {}
+				table.insert(not_in_cache, sites[searchtype])
+				local cache = Redis.connect('127.0.0.1', 6379)
+				for i = 1, #results do
+					local key = sites[searchtype]..":"..results[i].id
+
+					if not cache:exists(key) then
+						table.insert(not_in_cache, results[i].id)
+					end
+
+					results[i].type = cache:hget(key, "type") or "N/A"
+					results[i].total = cache:hget(key, "episodecount") or "N/A"
+				end
+				cache:quit()
+
+				if not_in_cache[2] then
+					local send = table.concat(not_in_cache, ",")
+					bunraku:Send(send)
+				end
+
 				template:RenderView('searchresults', nil, { results = results, url = url })
 			else
 				echo("Could not find: " .. _POST["search"])
