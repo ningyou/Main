@@ -63,7 +63,8 @@ return {
 			table.insert(not_in_cache, sites[list_info.type])
 
 			for id, info in next, list_info.ids do
-				if not cache:exists(sites[list_info.type]..":"..id) then
+				local key = sites[list_info.type]..":"..id
+				if not (cache:exists(key) and (cache:ttl(key) > 86400 or cache:ttl(key) == -1)) then
 					table.insert(not_in_cache, id)
 				end
 
@@ -184,7 +185,8 @@ return {
 					if not id then
 						table.insert(nomatch, { title = title })
 					else
-						if not cache:exists("anidb:"..id) then
+						local key = "anidb:"..id
+						if not (cache:exists(key) and (cache:ttl(key) > 86400 or cache:ttl(key) == -1)) then
 							table.insert(not_in_cache, id)
 						end
 					add_to_list(_POST["list"], id, watched, status, rating)
@@ -223,11 +225,9 @@ return {
 				local cache = Redis.connect('127.0.0.1', 6379)
 				for i = 1, #results do
 					local key = sites[searchtype]..":"..results[i].id
-
-					if not cache:exists(key) then
+					if not (cache:exists(key) and (cache:ttl(key) > 86400 or cache:ttl(key) == -1)) then
 						table.insert(not_in_cache, results[i].id)
 					end
-
 					results[i].type = cache:hget(key, "type") or "N/A"
 					results[i].total = cache:hget(key, "episodecount") or "N/A"
 				end
