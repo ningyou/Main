@@ -10,7 +10,7 @@
 						</thead>
 						<tbody>
 							{% for _, info in next, lists[status[i]] do %}
-							<tr><td class="span12"><a href="http://anidb.net/a{{info.id}}" target="_blank">{{info.title}}</a></td><td class="span2 center">{{info.type}}</td><td class="center">{{info.episodes}}/{{info.total}}</td></tr>
+							<tr><td class="span12"><a href="http://anidb.net/a{{info.id}}" target="_blank">{{info.title}}</a></td><td class="span2 center">{{info.type}}</td><td class="center">{% if user == logged_user then %}<a href="#" id="add_link_{{info.id}}">{{info.episodes}}/{{info.total}}</a><input type="number" id="add_input_{{info.id}}" class="center span1 hide" />{% else %}{{info.episodes}}/{{info.total}}{% end %}</td></tr>
 							{% end %}
 						</tbody>
 					</table>

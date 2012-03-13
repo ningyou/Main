@@ -37,9 +37,9 @@ end
 local function add_to_list(list, id, episodes, status, rating)
 	local key = "lists.".. list:lower() .. ".ids."..id
 	if not list and not id and not episodes and not status then return end
-	if _DB:find_one("ningyou.lists", { user = user_env["logged_user"], [key] = { ["$exists"] = "true" }}) then return end
+	if _DB:find_one("ningyou.lists", { user = user_env["logged_user"]:lower(), [key] = { ["$exists"] = "true" }}) then return end
 
-	return _DB:update("ningyou.lists", { user = user_env["logged_user"] }, { ["$set"] = { [key] = { episodes = episodes, status = status, rating = rating }}})
+	return _DB:update("ningyou.lists", { user = user_env["logged_user"]:lower() }, { ["$set"] = { [key] = { episodes = episodes, status = status, rating = rating }}})
 end
 
 return {
@@ -268,6 +268,15 @@ return {
 				setReturnCode(302)
 			else
 				template:RenderView('addlist', nil, user_env)
+			end
+		end
+		
+		if t == "episode" then
+			if user_env["logged_user"]:lower() == _POST["user"]:lower() then
+				if _POST["id"] then
+					local key = "lists.".. _POST["list_name"]:lower() .. ".ids." .. _POST["id"] .. ".episodes"
+					_DB:update("ningyou.lists", { user = _POST["user"] }, { ["$set"] = { [key] = _POST["episodes"] }})
+				end
 			end
 		end
 	end
