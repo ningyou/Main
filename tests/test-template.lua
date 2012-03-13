@@ -37,21 +37,21 @@ context('Library: Template', function()
 				local input = '{{ var }} {{ var }}'
 				local gen = template:Generate(input, true)
 
-				assert_equal(gen, '_O:write(var)\n_O:write(var)')
+				assert_equal(gen, '_O:write(var)\n_O:write[=[ ]=]\n_O:write(var)')
 			end)
 
 			test('double with space', function()
 				local input = '{{ var }} {{ var }}'
 				local gen = template:Generate(input, true)
 
-				assert_equal(gen, '_O:write(var)\n_O:write(var)')
+				assert_equal(gen, '_O:write(var)\n_O:write[=[ ]=]\n_O:write(var)')
 			end)
 
 			test('double with several spaces', function()
 				local input = '{{ var }}           {{ var }}'
 				local gen = template:Generate(input, true)
 
-				assert_equal(gen, '_O:write(var)\n_O:write(var)')
+				assert_equal(gen, '_O:write(var)\n_O:write[=[           ]=]\n_O:write(var)')
 			end)
 		end)
 
@@ -74,7 +74,7 @@ context('Library: Template', function()
 				local input = '{% if(true) then\nlocal a = "test"\n %}\n<p>Clearly</p>\n{% print(a)\nend %}'
 				local gen = template:Generate(input, true)
 
-				assert_equal(gen, 'if(true) then\nlocal a = "test"\n_O:write[=[<p>Clearly</p>]=]\nprint(a)\nend')
+				assert_equal(gen, 'if(true) then\nlocal a = "test"\n_O:write[=[\n<p>Clearly</p>\n]=]\nprint(a)\nend')
 			end)
 		end)
 
@@ -83,7 +83,7 @@ context('Library: Template', function()
 				local input = '{% if(true) then\nlocal a = "test"\n %}\n{{ a }}\n{% print(a)\nend %}'
 				local gen = template:Generate(input, true)
 
-				assert_equal(gen, 'if(true) then\nlocal a = "test"\n_O:write(a)\nprint(a)\nend')
+				assert_equal(gen, 'if(true) then\nlocal a = "test"\n_O:write[=[\n]=]\n_O:write(a)\n_O:write[=[\n]=]\nprint(a)\nend')
 			end)
 		end)
 
@@ -97,9 +97,10 @@ context('Library: Template', function()
 
 				local gen = template:Generate(input, true)
 				assert_equal(gen, [==[
-_O:write[=[$('#login-modal').on('shown', function ()]=]
+_O:write[=[					$('#login-modal').on('shown', function () ]=]
 _O:write[=[{$("#login :input:first").focus();}]=]
-_O:write[=[)]=]]==])
+_O:write[=[)
+				]=]]==])
 			end)
 		end)
 	end)
