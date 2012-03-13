@@ -17,8 +17,8 @@ $('#login-modal').on('shown', function () {
 	$("#login :input:first").focus();
 })
 
-function execSearch()
-{
+$('#search').submit(function(event) {
+	event.preventDefault()
 	var searchType = $("#searchtype").val()
 	$.ajax({
 		type: "POST",
@@ -28,4 +28,4 @@ function execSearch()
 		$("#searchbox").val('');
 		$("#result").empty().append(data);
 	});
-}
+})
