@@ -20,7 +20,7 @@ context('Library: Template', function()
 			local input = "<p>Simple</p>"
 			local gen = template:Generate(input)
 
-			assert_equal(gen, "local ob = require'ob'\nlocal _O = ob.Get'Content'\n_O:write[=[<p>Simple</p>]=]")
+			assert_equal(gen, "local _O = require'ob'.Get'Content'\nlocal _T = require'template'\n_O:write[=[<p>Simple</p>]=]")
 		end)
 	end)
 

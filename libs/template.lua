@@ -19,17 +19,13 @@ local types = {
 
 local replaces = {
 	['include'] = function(path)
-		local file
-		if(path:sub(1,1) == '/') then
-			file = io.open(path)
-		else
-			file = io.open('views/' .. path)
+		if(path:match('%.%w+$')) then
+			local cut = path:match('()%.%w+$')
+			path = path:sub(1, cut - 1)
 		end
 
-		local content = file:read'*a'
-		file:close()
-
-		return content:gsub('\t*({[{%%])', '%1')
+		-- getfenv(1) is the function environment of the caller.
+		return string.format("{{ _T:RenderView('%s', nil, getfenv(1)) }}", path)
 	end,
 }
 
@@ -44,7 +40,7 @@ local handleReplace = function(cmd, data)
 end
 
 local pattern = '([^{]*)(%b{})'
-function _M:Generate(templateData, minor)
+function _M:Generate(templateData)
 	templateData = templateData:gsub('\t*({[{%%])', '%1') .. '{//}'
 
 	local out
@@ -52,8 +48,8 @@ function _M:Generate(templateData, minor)
 		out = {}
 	else
 		out = {
-			"local ob = require'ob'",
-			"local _O = ob.Get'Content'"
+			"local _O = require'ob'.Get'Content'",
+			"local _T = require'template'",
 		}
 	end
 
@@ -85,17 +81,18 @@ function _M:Generate(templateData, minor)
 		end
 	end
 
+
 	-- Strip out extra newlines here, should be safe...
 	return table.concat(out, '\n'):gsub('[\n]+', '\n')
 end
 
 function _M:Render(name, templateData, minor, env)
-	local genTemplate = self:Generate(templateData, minor)
+	local genTemplate = self:Generate(templateData, minor, env)
 
 	-- Accidently the page if we fail.
 	local func, err = loadstring(genTemplate, 'template:' .. name)
 	if(not func) then
-		error(err)
+		error(err, 2)
 	end
 
 	-- Allow the custom environment access to _G.
@@ -113,7 +110,7 @@ function _M:RenderView(view, minor, env)
 	local templateData = template:read'*a'
 	template:close()
 
-	return self:Render(view, templateData, minor,  env)
+	return self:Render(view, templateData, minor, env)
 end
 
 return _M
