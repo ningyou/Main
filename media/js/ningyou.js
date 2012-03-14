@@ -31,6 +31,35 @@ $('#search').submit(function(event) {
 })
 
 if(user = logged) {
+	$('a[id^="incr"]').on('click', function()
+	{
+		var row_id = $(this).attr('id').split('_')[1];
+		var ep = $('#add_link_'+row_id).html().split('/')[0];
+		var total = $('#add_link_'+row_id).html().split('/')[1] | 0;
+		var complete = false;
+		ep++;
+		if(total) {
+			if(ep >= total) { ep = total; complete = true; }
+		} else {
+			total = "??";
+		}
+		$('#add_link_'+row_id).empty().append(ep+"/"+total);
+		if(this.request) { clearTimeout(this.request) }
+		this.request = setTimeout(function() { 
+			$.ajax({
+			type: "POST",
+			url: "/add/episode",
+			data: { 
+				"id" : row_id, 
+				"episodes" : ep,
+				"list_name" : list_name,
+				"user" : logged,
+				"complete" : complete,
+			}
+			});
+		}, 500)
+		return false;
+	});
 	$('a[id^="add_link"]').on('click', function()
 	{
 		var row_id = $(this).attr('id').split('_')[2];

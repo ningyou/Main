@@ -6,11 +6,11 @@
 					{% for i = 1, #status do %}
 					<table class="table table-bordered table-striped">
 						<thead>
-							<tr><th class="span12">{{status[i]}}</th><th class="span2 center">Type</th><th class="center">Progress</th></tr>
+							<tr><th class="span12">{{status[i]}}</th><th class="span2 center">Type</th><th class="span2 center">Progress</th></tr>
 						</thead>
 						<tbody>
 							{% for _, info in next, lists[status[i]] do %}
-							<tr><td class="span12"><a href="http://anidb.net/a{{info.id}}" target="_blank">{{info.title}}</a></td><td class="span2 center">{{info.type}}</td><td class="center">{% if user == logged_user then %}<a href="#" id="add_link_{{info.id}}">{{info.episodes}}/{{info.total}}</a><input type="number" id="add_input_{{info.id}}" class="center span1 hide" />{% else %}{{info.episodes}}/{{info.total}}{% end %}</td></tr>
+							<tr><td class="span12"><a href="http://anidb.net/a{{info.id}}" target="_blank">{{info.title}}</a></td><td class="span2 center">{{info.type}}</td><td class="span2 center">{% if user == logged_user then %}<a href="#" id="add_link_{{info.id}}">{{info.episodes}}/{{info.total}}</a> <a href="#" id="incr_{{info.id}}">+</a><input type="number" id="add_input_{{info.id}}" class="center span1 hide" />{% else %}{{info.episodes}}/{{info.total}}{% end %}</td></tr>
 							{% end %}
 						</tbody>
 					</table>
