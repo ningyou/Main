@@ -46,7 +46,7 @@ if(user = logged) {
 			var ep = $(this).val() | 0;
 			var total = $('#add_link_'+row_id).html().split('/')[1] | 0;
 			if(total) {
-				if(ep >= total) { ep = total; }
+				if(ep >= total) { ep = total; complete = true; }
 			} else {
 				total = "??";
 			}
@@ -61,6 +61,7 @@ if(user = logged) {
 					"episodes" : ep,
 					"list_name" : list_name,
 					"user" : logged,
+					"complete" : complete,
 				}
 			});
 		}
