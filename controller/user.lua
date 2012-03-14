@@ -276,6 +276,10 @@ return {
 				if _POST["id"] then
 					local key = "lists.".. _POST["list_name"]:lower() .. ".ids." .. _POST["id"] .. ".episodes"
 					_DB:update("ningyou.lists", { user = _POST["user"] }, { ["$set"] = { [key] = _POST["episodes"] }})
+					if _POST["complete"] == "true" then
+						local key = "lists.".. _POST["list_name"]:lower() .. ".ids." .. _POST["id"] .. ".status"
+						_DB:update("ningyou.lists", { user = _POST["user"] }, { ["$set"] = { [key] = "Completed" }})
+					end
 				end
 			end
 		end

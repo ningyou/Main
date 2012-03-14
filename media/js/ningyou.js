@@ -45,6 +45,7 @@ if(user = logged) {
 		if(event.keyCode == 13) {
 			var ep = $(this).val() | 0;
 			var total = $('#add_link_'+row_id).html().split('/')[1] | 0;
+			var complete = false;
 			if(total) {
 				if(ep >= total) { ep = total; complete = true; }
 			} else {
