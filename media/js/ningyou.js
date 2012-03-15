@@ -65,6 +65,7 @@ if(user = logged) {
 		var row_id = $(this).attr('id').split('_')[2];
 		var ep = $(this).html().split('/')[0];
 		$(this).hide();
+		$('#incr_'+row_id).hide();
 		$('#add_input_'+row_id).show().val(ep).select();
 		return false;
 	});
@@ -104,5 +105,6 @@ if(user = logged) {
 		var row_id = $(this).attr('id').split('_')[2];
 		$(this).hide();
 		$('#add_link_'+row_id).show();
+		$('#incr_'+row_id).show();
 	});
 }
