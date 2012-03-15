@@ -91,7 +91,7 @@ function _M:Render(name, templateData, env)
 	end
 
 	-- Allow the custom environment access to _G.
-	if(env) then
+	if(env and env ~= _G) then
 		env = setmetatable(env, {__index = _G })
 	end
 
