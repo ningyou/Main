@@ -72,7 +72,9 @@ return {
 				if not user_env.lists[info.status] then user_env.lists[info.status] = {} end
 				info.title = find_title(tonumber(id), sites[list_info.type])
 				info.type = cache:hget(key, "type") or "N/A"
-				info.total = cache:hget(key, "episodecount") or "N/A"
+				if cache:hexists(key, "enddate") then
+					info.total = cache:hget(key, "episodecount") or "N/A"
+				end
 				info.id = id
 				table.insert(user_env.lists[info.status], info)
 			end
