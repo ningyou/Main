@@ -25,7 +25,7 @@ local replaces = {
 		end
 
 		-- getfenv(1) is the function environment of the caller.
-		return string.format("{{ _T:RenderView('%s', nil, getfenv(1)) }}", path)
+		return string.format("{{ _T:RenderView('%s', getfenv(1)) }}", path)
 	end,
 }
 
@@ -43,15 +43,10 @@ local pattern = '([^{]*)(%b{})'
 function _M:Generate(templateData)
 	templateData = templateData:gsub('\t*({[{%%])', '%1') .. '{//}'
 
-	local out
-	if(minor) then
-		out = {}
-	else
-		out = {
-			"local _O = require'ob'.Get'Content'",
-			"local _T = require'template'",
-		}
-	end
+	local out = {
+		"local _O = require'ob'.Get'Content'",
+		"local _T = require'template'",
+	}
 
 	-- Slightly lazy solution! :D
 	templateData = templateData:gsub('<%%(%w+)%s*([^%%]+) %%>', handleReplace)
@@ -86,8 +81,8 @@ function _M:Generate(templateData)
 	return table.concat(out, '\n'):gsub('[\n]+', '\n')
 end
 
-function _M:Render(name, templateData, minor, env)
-	local genTemplate = self:Generate(templateData, minor, env)
+function _M:Render(name, templateData, env)
+	local genTemplate = self:Generate(templateData)
 
 	-- Accidently the page if we fail.
 	local func, err = loadstring(genTemplate, 'template:' .. name)
@@ -105,12 +100,12 @@ function _M:Render(name, templateData, minor, env)
 	return func()
 end
 
-function _M:RenderView(view, minor, env)
+function _M:RenderView(view, env)
 	local template = io.open('views/' .. view .. '.html', 'r')
 	local templateData = template:read'*a'
 	template:close()
 
-	return self:Render(view, templateData, minor, env)
+	return self:Render(view, templateData, env)
 end
 
 return _M
