@@ -11,7 +11,7 @@ return {
 			local default_env = {
 				["uri"] = "http://" .. getEnv()["Host"] .. (getEnv()['Path-Info'] or "/")
 			}
-			template:RenderView('default', nil, default_env)
+			template:RenderView('default', default_env)
 		end
 	end,
 }
