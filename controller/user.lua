@@ -96,7 +96,7 @@ return {
 			end
 
 			cache:quit()
-			template:RenderView('list', nil, user_env)
+			template:RenderView('list', user_env)
 		else
 			local list_info = _DB:find_one("ningyou.lists", { user = name:lower() }, { ["lists"] = 1 })
 
@@ -108,7 +108,7 @@ return {
 				table.sort(user_env.lists, function(a,b) return a.name:lower() < b.name:lower() end)
 			end
 
-			template:RenderView('user', nil, user_env)
+			template:RenderView('user', user_env)
 		end
 	end,
 
@@ -200,7 +200,7 @@ return {
 			if lists then
 				user_env.lists = lists.lists
 			end
-			template:RenderView('import', nil, user_env)
+			template:RenderView('import', user_env)
 		else
 			return 404
 		end
@@ -238,12 +238,12 @@ return {
 					bunraku:Send(send)
 				end
 
-				template:RenderView('searchresults', nil, { results = results, url = url })
+				template:RenderView('searchresults', { results = results, url = url })
 			else
 				echo("Could not find: " .. _POST["search"])
 			end
 		elseif sessions.user_id then
-			template:RenderView('search', nil, user_env)
+			template:RenderView('search', user_env)
 		else
 			return 404
 		end
@@ -267,7 +267,7 @@ return {
 				header("Location", "/")
 				setReturnCode(302)
 			else
-				template:RenderView('addlist', nil, user_env)
+				template:RenderView('addlist', user_env)
 			end
 		end
 		
