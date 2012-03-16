@@ -69,11 +69,13 @@ return {
 				end
 
 				local key = sites[list_info.type]..":"..id
+				local today = os.date('%Y-%m-%d')
 				if not user_env.lists[info.status] then user_env.lists[info.status] = {} end
 				info.title = find_title(tonumber(id), sites[list_info.type])
 				info.type = cache:hget(key, "type") or "N/A"
 				if cache:hexists(key, "enddate") then
 					info.total = cache:hget(key, "episodecount") or "N/A"
+					info.aired = cache:hget(key, "enddate") < today
 				end
 				info.id = id
 				table.insert(user_env.lists[info.status], info)

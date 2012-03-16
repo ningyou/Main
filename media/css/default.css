@@ -77,7 +77,7 @@ h1 a:hover span
 	text-align: center;
 }
 
-table td 
+.table .nowrap
 {
 	white-space: nowrap;
 }
