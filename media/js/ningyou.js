@@ -66,7 +66,7 @@ if(user = logged) {
 		var ep = $(this).html().split('/')[0];
 		$(this).hide();
 		$('#incr_'+row_id).hide();
-		$('#add_input_'+row_id).show().val(ep).select();
+		$('#add_input_'+row_id).show("fast").val(ep).select();
 		return false;
 	});
 	$('input[id^="add_input"]').keyup(function(event)
