@@ -3,11 +3,11 @@ local cookies = require'cookies'
 
 return {
 	index = function()
-		local h = assert(io.popen('env', 'r'))
-		local o = h:read'*all'
-
+		local env = getEnv()
 		ob.Get'Content':write'<pre>'
-		ob.Get'Content':write(o)
+		for k,v in next, env do
+			ob.Get'Content':write(k, ' = ', v, '\n')
+		end
 
 		ob.Get'Content':write'_GET:\n'
 		for k,v in next, _GET do
