@@ -76,3 +76,8 @@ h1 a:hover span
 {
 	text-align: center;
 }
+
+table td 
+{
+	white-space: nowrap;
+}
