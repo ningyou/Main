@@ -8,10 +8,7 @@ return {
 		if(sessions.user_id) then
 			controller:Call('user', nil, user:Name(sessions.user_id))
 		else
-			local default_env = {
-				["uri"] = "http://" .. getEnv()["Host"] .. (getEnv()['Path-Info'] or "/")
-			}
-			template:RenderView('default', default_env)
+			template:RenderView('default')
 		end
 	end,
 }

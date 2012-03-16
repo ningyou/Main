@@ -131,7 +131,7 @@ return {
 		if sessions.user_id then
 			content:write("Already logged in as " .. user:Name(sessions.user_id))
 		elseif _POST["submit"] then
-			local uri = _POST["referer"] or "http://" .. getEnv()["Host"] .. "/"
+			local uri = getEnv()["Referer"]
 			local login = user:Login(_POST["name"], string.SHA256(_POST["password"]))
 			if login then
 				local timeout
