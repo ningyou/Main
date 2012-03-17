@@ -6,7 +6,20 @@
 					{% for i = 1, #status do %}
 					<table class="table table-bordered table-striped">
 						<thead>
-							<tr><th class="span12">{{status[i]}}</th><th class="span2 center">Type</th><th class="center">Progress</th></tr>
+							<tr>
+								<th class="span12">
+									{{status[i]}}
+									{% if user == logged_user then %}
+									<a href="#" class="pull-right">edit</a>
+									{% end %}
+								</th>
+								<th class="span2 center">
+									Type
+								</th>
+								<th class="center">
+									Progress
+								</th>
+							</tr>
 						</thead>
 						<tbody>
 							{% for _, info in next, lists[status[i]] do %}
@@ -15,6 +28,13 @@
 									<a href="http://anidb.net/a{{info.id}}" target="_blank">{{info.title}}</a>
 									{% if not info.aired then %}
 									<small class="pull-right">Airing</small>
+									{% end %}
+									{% if user == logged_user then %}
+									<select class="hide input-medium pull-right">
+										{% for i = 1, #status do %}
+										<option>{{status[i]}}</option>
+										{% end %}
+									</select>
 									{% end %}
 								</td>
 								<td class="center">{{info.type}}</td>

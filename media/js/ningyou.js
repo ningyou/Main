@@ -107,4 +107,13 @@ if(user = logged) {
 		$('#add_link_'+row_id).show();
 		$('#incr_'+row_id).show();
 	});
+	$('table > thead > tr > th > a').on("click", function()
+	{
+		var time = new Date().getTime();
+		$(this).parents('table').find('select').toggle();
+		$(this).parents('table').find('small').toggle();
+		var diff = new Date().getTime()-time;
+		console.log(diff);
+		return false;
+	});
 }
