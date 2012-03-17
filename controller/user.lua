@@ -241,8 +241,31 @@ return {
 					local send = table.concat(not_in_cache, ",")
 					bunraku:Send(send)
 				end
+				local list_info = _DB:find_one("ningyou.lists", { user = user_env["logged_user"]:lower() }, { ["lists"] = 1 })
+				local lists = {}
 
-				template:RenderView('searchresults', { results = results, url = url })
+				if list_info then
+					for name, info in next, list_info.lists do
+						table.insert(lists, { name = info.name, type = info.type, name_lower = name })
+					end
+					table.sort(lists, function(a,b) return a.name:lower() < b.name:lower() end)
+				end
+
+			local status = {
+				"Watching",
+				"Completed",
+				"Plan to Watch",
+				"On-Hold",
+				"Dropped",
+			}
+
+				template:RenderView('searchresults', { 
+					results = results, 
+					url = url, 
+					lists = lists, 
+					logged_user = user:Name(sessions.user_id),
+					status = status,
+				})
 			else
 				echo("Could not find: " .. _POST["search"])
 			end
@@ -280,9 +303,10 @@ return {
 				if _POST["id"] then
 					local key = "lists.".. _POST["list_name"]:lower() .. ".ids." .. _POST["id"] .. ".episodes"
 					_DB:update("ningyou.lists", { user = _POST["user"] }, { ["$set"] = { [key] = _POST["episodes"] }})
-					if _POST["complete"] == "true" then
+					if _POST["status"] then
+						local status = _POST["status"]
 						local key = "lists.".. _POST["list_name"]:lower() .. ".ids." .. _POST["id"] .. ".status"
-						_DB:update("ningyou.lists", { user = _POST["user"] }, { ["$set"] = { [key] = "Completed" }})
+						_DB:update("ningyou.lists", { user = _POST["user"] }, { ["$set"] = { [key] = status }})
 					end
 				end
 			end
