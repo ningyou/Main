@@ -86,3 +86,8 @@ h1 a:hover span
 {
 	white-space: nowrap;
 }
+
+td input
+{
+	margin: 0;
+}
