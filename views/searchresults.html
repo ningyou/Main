@@ -61,7 +61,6 @@
 		var list = $(this).find($('select[name="list_name"]')).val()
 		if(list)
 		{
-			$(this).parents('tr').hide();
 			var ep = $(this).find($('input[name="episodes"]')).val() | 0;
 			var total = $(this).parents('tr').find($('td:last-child')).html() | 0;
 			if(total) { if(ep >= total) { ep = total; }}
@@ -74,6 +73,7 @@
 			{
 				topalert("Show added.");
 			});
+			$(this).parents('tr').remove();
 		} else
 		{
 			topalert("No list found.")
