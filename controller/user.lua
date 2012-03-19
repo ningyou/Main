@@ -196,7 +196,16 @@ return {
 					add_to_list(_POST["list"], id, watched, status, rating)
 					end
 				end
-				echo(table.concat(not_in_cache, ","))
+
+				if not_in_cache[2] then
+					local send = table.concat(not_in_cache, ",")
+					bunraku:Send(send)
+				end
+
+				for _,t in next, nomatch do
+					echo(t.title, "<br/>")
+				end
+
 				cache:quit()
 			end
 		elseif sessions.user_id then
