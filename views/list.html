@@ -23,7 +23,7 @@
 						</thead>
 						<tbody>
 							{% for _, info in next, lists[status[i]] do %}
-							<tr id="{{info.id}}">
+							<tr data-id="{{info.id}}">
 								<td class="span12">
 									<a href="http://anidb.net/a{{info.id}}" target="_blank">{{info.title}}</a>
 									{% if not info.aired then %}

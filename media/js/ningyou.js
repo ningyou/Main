@@ -32,7 +32,7 @@ $('#search').submit(function(event) {
 
 $('table > tbody > tr > td:last-child > a:nth-child(2)').click(function()
 {
-	var id = $(this).parents('tr').attr('id');
+	var id = $(this).parents('tr').data('id');
 	var ep = $(this).parent().find('a:first').html().split('/')[0] | 0;
 	var total = $(this).parent().find('a:first').html().split('/')[1] | 0;
 	var status = $(this).parents('table').find('th').html().split("(")[0].trim();
@@ -72,7 +72,7 @@ $('table > tbody > tr > td:last-child > a:first-child').click(function()
 
 $('table > tbody > tr > td:last-child > input').keyup(function(event)
 {
-	var id = $(this).parents('tr').attr('id');
+	var id = $(this).parents('tr').data('id');
 	if(event.keyCode == 13) {
 		var ep = $(this).val() | 0;
 		var total = $(this).parent().find('a:first').html().split('/')[1] | 0;
@@ -120,7 +120,7 @@ $('table > thead > tr > th > a').on("click", function()
 
 $('table > tbody > tr > td > select').on("change", function()
 {
-	var id = $(this).parents('tr').attr('id');
+	var id = $(this).parents('tr').data('id');
 	var status = $(this).val();
 	$.ajax({
 		type: "POST",
