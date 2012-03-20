@@ -40,7 +40,7 @@ $('table > tbody > tr > td:last-child > a:nth-child(2)').click(function()
 	if(total) {
 		if(ep >= total) { ep = total; status = "Completed"; }
 	} else {
-		total = "??";
+		total = "?";
 	}
 	$(this).parent().find('a:first').empty().append(ep+'/'+total);
 	if(this.request) { clearTimeout(this.request) }
@@ -80,7 +80,7 @@ $('table > tbody > tr > td:last-child > input').keyup(function(event)
 		if(total) {
 			if(ep >= total) { ep = total; status = "Completed"; }
 		} else {
-			total = "??";
+			total = "?";
 		}
 		if(ep < 0) { ep = 0;}
 		$(this).hide().focusout();
