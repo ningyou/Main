@@ -40,9 +40,9 @@
 								<td class="center">{{info.type}}</td>
 								<td class="nowrap center">
 									{% if user == logged_user then %}
-									<a href="#" id="add_link_{{info.id}}">{{info.episodes}}/{{info.total or "?"}}</a>
-									<a href="#" id="incr_{{info.id}}">+</a>
-									<input type="number" id="add_input_{{info.id}}" class="center span1 hide" />
+									<a href="#">{{info.episodes}}/{{info.total or "?"}}</a>
+									<a href="#">+</a>
+									<input type="number" class="center span1 hide" />
 									{% else %}
 									{{info.episodes}}/{{info.total or "?"}}
 									{% end %}

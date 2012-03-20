@@ -30,11 +30,11 @@ $('#search').submit(function(event) {
 	});
 })
 
-$('a[id^="incr"]').on('click', function()
+$('table > tbody > tr > td:last-child > a:nth-child(2)').click(function()
 {
-	var row_id = $(this).attr('id').split('_')[1];
-	var ep = $('#add_link_'+row_id).html().split('/')[0];
-	var total = $('#add_link_'+row_id).html().split('/')[1] | 0;
+	var id = $(this).parents('tr').attr('id');
+	var ep = $(this).parent().find('a:first').html().split('/')[0] | 0;
+	var total = $(this).parent().find('a:first').html().split('/')[1] | 0;
 	var status = $(this).parents('table').find('th').html().split("(")[0].trim();
 	ep++;
 	if(total) {
@@ -42,14 +42,14 @@ $('a[id^="incr"]').on('click', function()
 	} else {
 		total = "??";
 	}
-	$('#add_link_'+row_id).empty().append(ep+"/"+total);
+	$(this).parent().find('a:first').empty().append(ep+'/'+total);
 	if(this.request) { clearTimeout(this.request) }
 	this.request = setTimeout(function() { 
 	$.ajax({
 		type: "POST",
 		url: "/add/episode",
 			data: { 
-			"id" : row_id, 
+			"id" : id,
 			"episodes" : ep,
 			"list_name" : list_name,
 			"user" : logged,
@@ -59,22 +59,23 @@ $('a[id^="incr"]').on('click', function()
 	}, 500)
 	return false;
 });
-$('a[id^="add_link"]').on('click', function()
+
+$('table > tbody > tr > td:last-child > a:first-child').click(function()
 {
-	var row_id = $(this).attr('id').split('_')[2];
 	var status = $(this).parents('table').find('th').html().split("(")[0].trim();
 	var ep = $(this).html().split('/')[0];
 	$(this).hide();
-	$('#incr_'+row_id).hide();
-	$('#add_input_'+row_id).show("fast").val(ep).select();
+	$(this).parent().find('a:last').hide()
+	$(this).parent().find('input').show('fast').val(ep).select();
 	return false;
 });
-$('input[id^="add_input"]').keyup(function(event)
+
+$('table > tbody > tr > td:last-child > input').keyup(function(event)
 {
-	var row_id = $(this).attr('id').split('_')[2];
+	var id = $(this).parents('tr').attr('id');
 	if(event.keyCode == 13) {
 		var ep = $(this).val() | 0;
-		var total = $('#add_link_'+row_id).html().split('/')[1] | 0;
+		var total = $(this).parent().find('a:first').html().split('/')[1] | 0;
 		var status = $(this).parents('table').find('th').html().split("(")[0].trim();
 		if(total) {
 			if(ep >= total) { ep = total; status = "Completed"; }
@@ -83,12 +84,12 @@ $('input[id^="add_input"]').keyup(function(event)
 		}
 		if(ep < 0) { ep = 0;}
 		$(this).hide().focusout();
-		$('#add_link_'+row_id).empty().append(ep+"/"+total);
+		$(this).parent().find('a:first').empty().append(ep+'/'+total);
 		$.ajax({
 			type: "POST",
 			url: "/add/episode",
 			data: { 
-				"id" : row_id, 
+				"id" : id,
 				"episodes" : ep,
 				"list_name" : list_name,
 				"user" : logged,
@@ -100,13 +101,13 @@ $('input[id^="add_input"]').keyup(function(event)
 		$(this).hide().focusout();
 	}
 });
-$('input[id^="add_input"]').focusout(function()
+
+$('table > tbody > tr > td:last-child > input').focusout(function()
 {
-	var row_id = $(this).attr('id').split('_')[2];
 	$(this).hide();
-	$('#add_link_'+row_id).show();
-	$('#incr_'+row_id).show();
+	$(this).parent().find('a').show()
 });
+
 $('table > thead > tr > th > a').on("click", function()
 {
 	var time = new Date().getTime();
@@ -116,6 +117,7 @@ $('table > thead > tr > th > a').on("click", function()
 	console.log(diff);
 	return false;
 });
+
 $('table > tbody > tr > td > select').on("change", function()
 {
 	var id = $(this).parents('tr').attr('id');
