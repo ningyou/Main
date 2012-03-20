@@ -89,9 +89,9 @@ h1 a:hover span
 
 td input
 {
-	margin: 0;
+	margin: -7px 0 -5px;
 }
 td select
 {
-	margin: 0;
+	margin: -5px 0 -5px;
 }
