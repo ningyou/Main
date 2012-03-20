@@ -116,3 +116,18 @@ $('table > thead > tr > th > a').on("click", function()
 	console.log(diff);
 	return false;
 });
+$('table > tbody > tr > td > select').on("change", function()
+{
+	var id = $(this).parents('tr').attr('id');
+	var status = $(this).val();
+	$.ajax({
+		type: "POST",
+		url: "/add/episode",
+		data: { 
+			"id" : id, 
+			"list_name" : list_name,
+			"user" : logged,
+			"status" : status,
+		}
+	});
+});

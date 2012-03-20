@@ -23,7 +23,7 @@
 						</thead>
 						<tbody>
 							{% for _, info in next, lists[status[i]] do %}
-							<tr>
+							<tr id="{{info.id}}">
 								<td class="span12">
 									<a href="http://anidb.net/a{{info.id}}" target="_blank">{{info.title}}</a>
 									{% if not info.aired then %}
@@ -31,8 +31,8 @@
 									{% end %}
 									{% if user == logged_user then %}
 									<select class="hide input-medium pull-right">
-										{% for i = 1, #status do %}
-										<option>{{status[i]}}</option>
+										{% for s = 1, #status do %}
+										<option{% if status[s] == status[i] then %} selected="yes"{% end %}>{{status[s]}}</option>
 										{% end %}
 									</select>
 									{% end %}

@@ -309,14 +309,14 @@ return {
 		
 		if t == "episode" then
 			if user_env["logged_user"]:lower() == _POST["user"]:lower() then
-				if _POST["id"] then
+				if _POST["id"] and _POST["episodes"] then
 					local key = "lists.".. _POST["list_name"]:lower() .. ".ids." .. _POST["id"] .. ".episodes"
 					_DB:update("ningyou.lists", { user = _POST["user"] }, { ["$set"] = { [key] = _POST["episodes"] }})
-					if _POST["status"] then
-						local status = _POST["status"]
-						local key = "lists.".. _POST["list_name"]:lower() .. ".ids." .. _POST["id"] .. ".status"
-						_DB:update("ningyou.lists", { user = _POST["user"] }, { ["$set"] = { [key] = status }})
-					end
+				end
+				if _POST["id"] and _POST["status"] then
+					local status = _POST["status"]
+					local key = "lists.".. _POST["list_name"]:lower() .. ".ids." .. _POST["id"] .. ".status"
+					_DB:update("ningyou.lists", { user = _POST["user"] }, { ["$set"] = { [key] = status }})
 				end
 			end
 		end
