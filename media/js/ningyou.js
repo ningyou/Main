@@ -35,7 +35,7 @@ $('a[id^="incr"]').on('click', function()
 	var row_id = $(this).attr('id').split('_')[1];
 	var ep = $('#add_link_'+row_id).html().split('/')[0];
 	var total = $('#add_link_'+row_id).html().split('/')[1] | 0;
-	var status = $(this).parents('table').find('th').html().split("(")[0].replace(/\s/g, "");
+	var status = $(this).parents('table').find('th').html().split("(")[0].trim();
 	ep++;
 	if(total) {
 		if(ep >= total) { ep = total; status = "Completed"; }
@@ -62,7 +62,7 @@ $('a[id^="incr"]').on('click', function()
 $('a[id^="add_link"]').on('click', function()
 {
 	var row_id = $(this).attr('id').split('_')[2];
-	var status = $(this).parents('table').find('th').html().split("(")[0].replace(/\s/g, "");
+	var status = $(this).parents('table').find('th').html().split("(")[0].trim();
 	var ep = $(this).html().split('/')[0];
 	$(this).hide();
 	$('#incr_'+row_id).hide();
@@ -75,7 +75,7 @@ $('input[id^="add_input"]').keyup(function(event)
 	if(event.keyCode == 13) {
 		var ep = $(this).val() | 0;
 		var total = $('#add_link_'+row_id).html().split('/')[1] | 0;
-		var status = $(this).parents('table').find('th').html().split("(")[0].replace(/\s/g, "");
+		var status = $(this).parents('table').find('th').html().split("(")[0].trim();
 		if(total) {
 			if(ep >= total) { ep = total; status = "Completed"; }
 		} else {
