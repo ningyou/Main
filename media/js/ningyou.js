@@ -108,15 +108,21 @@ $('table > tbody > tr > td:last-child > input').focusout(function()
 	$(this).parent().find('a').show()
 });
 
-$('table > thead > tr > th > a').on("click", function()
+$('table > thead > tr > th > div > a:last-child').click(function()
 {
 	$(this).parents('table').find('div[data-edit]').toggle();
 	$(this).parents('table').find('small').toggle();
 	return false;
 });
 
-$('table > tbody > tr > td > div > select').on("change", function()
+$('table > thead > tr > th > div > a:first-child').click(function()
 {
+	location.reload();
+});
+
+$('table > tbody > tr > td > div > select').change(function()
+{
+	$(this).parents('table').find('thead > tr > th > div > a:first-child').show();
 	var id = $(this).parents('tr').data('id');
 	var status = $(this).val();
 	$.ajax({

@@ -10,7 +10,10 @@
 								<th class="span12">
 									{{status[i]}} ({{#lists[status[i]]}})
 									{% if user == logged_user then %}
-									<a href="#" class="pull-right"><i class="icon-edit"></i></a>
+									<div class="pull-right">
+										<a href="#" class="hide"><i class="icon-refresh"></i></a>
+										<a href="#"><i class="icon-edit"></i></a>
+									</div>
 									{% end %}
 								</th>
 								<th class="span2 center">
