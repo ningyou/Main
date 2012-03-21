@@ -115,7 +115,7 @@ $('table > thead > tr > th > a').on("click", function()
 	return false;
 });
 
-$('table > tbody > tr > td > select').on("change", function()
+$('table > tbody > tr > td > div > select').on("change", function()
 {
 	var id = $(this).parents('tr').data('id');
 	var status = $(this).val();
