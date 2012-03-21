@@ -30,7 +30,7 @@
 									<small class="pull-right">Airing</small>
 									{% end %}
 									{% if user == logged_user then %}
-									<select class="hide input-medium pull-right">
+									<select class="hide input-medium pull-right select-margins">
 										{% for s = 1, #status do %}
 										<option{% if status[s] == status[i] then %} selected="yes"{% end %}>{{status[s]}}</option>
 										{% end %}
@@ -42,7 +42,7 @@
 									{% if user == logged_user then %}
 									<a href="#">{{info.episodes}}/{{info.total or "?"}}</a>
 									<a href="#">+</a>
-									<input type="number" class="center span1 hide" />
+									<input type="number" class="center span1 hide input-margins" />
 									{% else %}
 									{{info.episodes}}/{{info.total or "?"}}
 									{% end %}
