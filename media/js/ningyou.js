@@ -130,3 +130,19 @@ $('table > tbody > tr > td > div > select').on("change", function()
 		}
 	});
 });
+$('table > tbody > tr > td > div > a').click(function()
+{
+	var id = $(this).parents('tr').data('id');
+	$.ajax({
+		type: "POST",
+		url: "/del/show",
+		data: { 
+			"id" : id,
+			"list_name" : list_name,
+			"user" : logged,
+		}
+	});
+	$(this).parents('tr').remove();
+	return false;
+});
+

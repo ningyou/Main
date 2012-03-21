@@ -219,8 +219,8 @@ return {
 		end
 	end,
 
-	search = function(_,searchtype)
-		if _POST["search"] then
+ 	search = function(_,searchtype)
+ 		if _POST["search"] then
 			local results
 			local url
 			
@@ -323,5 +323,16 @@ return {
 			end
 		end
 		return nil, true
-	end
+	end,
+	
+	del = function(_,t)
+		if t == "show" then
+			if user_env["logged_user"]:lower() == _POST["user"]:lower() then
+				if _POST["id"] then
+					local key = "lists.".. _POST["list_name"]:lower() .. ".ids." .. _POST["id"]
+					_DB:update("ningyou.lists", { user = _POST["user"] }, { ["$unset"] = { [key] = 1 }})
+				end
+			end
+		end
+	end,
 }
