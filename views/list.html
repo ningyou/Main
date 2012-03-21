@@ -10,7 +10,7 @@
 								<th class="span12">
 									{{status[i]}} ({{#lists[status[i]]}})
 									{% if user == logged_user then %}
-									<a href="#" class="pull-right">edit</a>
+									<a href="#" class="pull-right"><i class="icon-edit"></i></a>
 									{% end %}
 								</th>
 								<th class="span2 center">
@@ -30,11 +30,14 @@
 									<small class="pull-right">Airing</small>
 									{% end %}
 									{% if user == logged_user then %}
-									<select class="hide input-medium pull-right select-margins">
-										{% for s = 1, #status do %}
-										<option{% if status[s] == status[i] then %} selected="yes"{% end %}>{{status[s]}}</option>
-										{% end %}
-									</select>
+									<div data-edit="true" class="hide pull-right">
+										<select class="input-medium select-margins">
+											{% for s = 1, #status do %}
+											<option{% if status[s] == status[i] then %} selected="yes"{% end %}>{{status[s]}}</option>
+											{% end %}
+										</select>
+										<a href="#" class="select-margins"><i class="icon-remove"></i></a>
+									</div>
 									{% end %}
 								</td>
 								<td class="center">{{info.type}}</td>

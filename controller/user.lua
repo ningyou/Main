@@ -322,5 +322,6 @@ return {
 				end
 			end
 		end
+		return nil, true
 	end
 }

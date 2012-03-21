@@ -110,11 +110,8 @@ $('table > tbody > tr > td:last-child > input').focusout(function()
 
 $('table > thead > tr > th > a').on("click", function()
 {
-	var time = new Date().getTime();
-	$(this).parents('table').find('select').toggle();
+	$(this).parents('table').find('div[data-edit]').toggle();
 	$(this).parents('table').find('small').toggle();
-	var diff = new Date().getTime()-time;
-	console.log(diff);
 	return false;
 });
 
