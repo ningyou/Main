@@ -275,6 +275,8 @@ return {
 					logged_user = user:Name(sessions.user_id),
 					status = status,
 				})
+
+				return nil, true
 			else
 				echo("Could not find: " .. _POST["search"])
 			end
