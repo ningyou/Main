@@ -33,6 +33,7 @@ $('#search').submit(function(event) {
 $('table > tbody > tr > td:last-child > a:nth-child(2)').click(function()
 {
 	var id = $(this).parents('tr').data('id');
+	var title = $(this).parents('tr').data('title');
 	var ep = $(this).parent().find('a:first').html().split('/')[0] | 0;
 	var total = $(this).parent().find('a:first').html().split('/')[1] | 0;
 	var status = $(this).parents('table').find('th').html().split("(")[0].trim();
@@ -60,7 +61,7 @@ $('table > tbody > tr > td:last-child > a:nth-child(2)').click(function()
 		{
 			if(status == "Completed")
 			{
-				topalert('Status set to Completed.');
+				topalert(title+': Status set to Completed.');
 				refresh.show()
 			}
 		});
@@ -81,6 +82,7 @@ $('table > tbody > tr > td:last-child > a:first-child').click(function()
 $('table > tbody > tr > td:last-child > input').keyup(function(event)
 {
 	var id = $(this).parents('tr').data('id');
+	var title = $(this).parents('tr').data('title');
 	if(event.keyCode == 13) {
 		var ep = $(this).val() | 0;
 		var total = $(this).parent().find('a:first').html().split('/')[1] | 0;
@@ -108,7 +110,7 @@ $('table > tbody > tr > td:last-child > input').keyup(function(event)
 		{;
 			if(status == "Completed")
 			{
-				topalert('Status set to Completed.');
+				topalert(title+': Status set to Completed.');
 				refresh.show();
 			}
 		});
