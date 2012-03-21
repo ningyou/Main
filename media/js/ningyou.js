@@ -134,6 +134,7 @@ $('table > thead > tr > th > div > a:last-child').click(function()
 $('table > thead > tr > th > div > a:first-child').click(function()
 {
 	location.reload();
+	return false;
 });
 
 $('table > tbody > tr > td > div > select').change(function()
