@@ -36,6 +36,7 @@ $('table > tbody > tr > td:last-child > a:nth-child(2)').click(function()
 	var ep = $(this).parent().find('a:first').html().split('/')[0] | 0;
 	var total = $(this).parent().find('a:first').html().split('/')[1] | 0;
 	var status = $(this).parents('table').find('th').html().split("(")[0].trim();
+	var refresh = $(this).parents('table').find('thead > tr > th > div > a:first-child')
 	ep++;
 	if(total) {
 		if(ep >= total) { ep = total; status = "Completed"; }
@@ -49,12 +50,19 @@ $('table > tbody > tr > td:last-child > a:nth-child(2)').click(function()
 		type: "POST",
 		url: "/add/episode",
 			data: { 
-			"id" : id,
-			"episodes" : ep,
-			"list_name" : list_name,
-			"user" : logged,
-			"status" : status,
-		}
+				"id" : id,
+				"episodes" : ep,
+				"list_name" : list_name,
+				"user" : logged,
+				"status" : status,
+			}
+		}).done(function()
+		{
+			if(status == "Completed")
+			{
+				topalert('Status set to Completed.');
+				refresh.show()
+			}
 		});
 	}, 500)
 	return false;
@@ -77,6 +85,7 @@ $('table > tbody > tr > td:last-child > input').keyup(function(event)
 		var ep = $(this).val() | 0;
 		var total = $(this).parent().find('a:first').html().split('/')[1] | 0;
 		var status = $(this).parents('table').find('th').html().split("(")[0].trim();
+		var refresh = $(this).parents('table').find('thead > tr > th > div > a:first-child')
 		if(total) {
 			if(ep >= total) { ep = total; status = "Completed"; }
 		} else {
@@ -94,6 +103,13 @@ $('table > tbody > tr > td:last-child > input').keyup(function(event)
 				"list_name" : list_name,
 				"user" : logged,
 				"status" : status,
+			}
+		}).done(function() 
+		{;
+			if(status == "Completed")
+			{
+				topalert('Status set to Completed.');
+				refresh.show();
 			}
 		});
 	}
