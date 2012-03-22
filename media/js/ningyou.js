@@ -36,7 +36,7 @@ $('table > tbody > tr > td:last-child > a:nth-child(2)').click(function()
 	var title = $(this).parents('tr').data('title');
 	var ep = $(this).parent().find('a:first').html().split('/')[0] | 0;
 	var total = $(this).parent().find('a:first').html().split('/')[1] | 0;
-	var status = $(this).parents('table').find('th').html().split("(")[0].trim();
+	var status = $(this).parents('table').find('th').data('status');
 	var refresh = $(this).parents('table').find('thead > tr > th > div > a:first-child')
 	ep++;
 	if(total) {
@@ -71,7 +71,6 @@ $('table > tbody > tr > td:last-child > a:nth-child(2)').click(function()
 
 $('table > tbody > tr > td:last-child > a:first-child').click(function()
 {
-	var status = $(this).parents('table').find('th').html().split("(")[0].trim();
 	var ep = $(this).html().split('/')[0];
 	$(this).hide();
 	$(this).parent().find('a:last').hide()
@@ -86,7 +85,7 @@ $('table > tbody > tr > td:last-child > input').keyup(function(event)
 	if(event.keyCode == 13) {
 		var ep = $(this).val() | 0;
 		var total = $(this).parent().find('a:first').html().split('/')[1] | 0;
-		var status = $(this).parents('table').find('th').html().split("(")[0].trim();
+		var status = $(this).parents('table').find('th').data('status');
 		var refresh = $(this).parents('table').find('thead > tr > th > div > a:first-child')
 		if(total) {
 			if(ep >= total) { ep = total; status = "Completed"; }

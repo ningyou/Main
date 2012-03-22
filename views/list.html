@@ -7,7 +7,7 @@
 					<table class="table table-bordered table-striped">
 						<thead>
 							<tr>
-								<th class="span12">
+								<th data-status="{{status[i]}}" class="span12">
 									{{status[i]}} ({{#lists[status[i]]}})
 									{% if user == logged_user then %}
 									<div class="pull-right">
