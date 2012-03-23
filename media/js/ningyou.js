@@ -52,7 +52,7 @@ $('table > tbody > tr > td:last-child > a:nth-child(2)').click(function()
 	$.ajax({
 		type: "POST",
 		url: "/add/episode",
-			data: { 
+			data: {
 				"id" : id,
 				"episodes" : ep,
 				"list_name" : list_name,
@@ -103,14 +103,14 @@ $('table > tbody > tr > td:last-child > input').keyup(function(event)
 		$.ajax({
 			type: "POST",
 			url: "/add/episode",
-			data: { 
+			data: {
 				"id" : id,
 				"episodes" : ep,
 				"list_name" : list_name,
 				"user" : logged,
 				"status" : status,
 			}
-		}).done(function() 
+		}).done(function()
 		{;
 			if(status == "Completed")
 			{
@@ -151,8 +151,8 @@ $('table > tbody > tr > td > div > select').change(function()
 	$.ajax({
 		type: "POST",
 		url: "/add/episode",
-		data: { 
-			"id" : id, 
+		data: {
+			"id" : id,
 			"list_name" : list_name,
 			"user" : logged,
 			"status" : status,
@@ -166,7 +166,7 @@ $('table > tbody > tr > td > div > a').click(function()
 	$.ajax({
 		type: "POST",
 		url: "/del/show",
-		data: { 
+		data: {
 			"id" : id,
 			"list_name" : list_name,
 			"user" : logged,
