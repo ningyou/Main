@@ -32,12 +32,14 @@ $('#search').submit(function(event) {
 
 $('table > tbody > tr > td:last-child > a:nth-child(2)').click(function()
 {
-	var id = $(this).parents('tr').data('id');
-	var title = $(this).parents('tr').data('title');
+	var table = $(this).closest('table');
+	var tr = $(this).closest('tr');
+	var id = tr.data('id');
+	var title = tr.data('title');
 	var ep = $(this).parent().find('a:first').html().split('/')[0] | 0;
 	var total = $(this).parent().find('a:first').html().split('/')[1] | 0;
-	var status = $(this).parents('table').find('th').data('status');
-	var refresh = $(this).parents('table').find('thead > tr > th > div > a:first-child')
+	var status = table.find('th').data('status');
+	var refresh = table.find('thead > tr > th > div > a:first-child')
 	ep++;
 	if(total) {
 		if(ep >= total) { ep = total; status = "Completed"; }
@@ -71,22 +73,25 @@ $('table > tbody > tr > td:last-child > a:nth-child(2)').click(function()
 
 $('table > tbody > tr > td:last-child > a:first-child').click(function()
 {
+	var table = $(this).parent()
 	var ep = $(this).html().split('/')[0];
 	$(this).hide();
-	$(this).parent().find('a:last').hide()
-	$(this).parent().find('input').show('fast').val(ep).select();
+	table.find('a:last').hide()
+	table.find('input').show('fast').val(ep).select();
 	return false;
 });
 
 $('table > tbody > tr > td:last-child > input').keyup(function(event)
 {
-	var id = $(this).parents('tr').data('id');
-	var title = $(this).parents('tr').data('title');
+	var table = $(this).closest('table');
+	var tr = $(this).closest('tr');
+	var id = tr.data('id');
+	var title = tr.data('title');
 	if(event.keyCode == 13) {
 		var ep = $(this).val() | 0;
 		var total = $(this).parent().find('a:first').html().split('/')[1] | 0;
-		var status = $(this).parents('table').find('th').data('status');
-		var refresh = $(this).parents('table').find('thead > tr > th > div > a:first-child')
+		var status = table.find('th').data('status');
+		var refresh = table.find('thead > tr > th > div > a:first-child')
 		if(total) {
 			if(ep >= total) { ep = total; status = "Completed"; }
 		} else {
@@ -121,14 +126,14 @@ $('table > tbody > tr > td:last-child > input').keyup(function(event)
 
 $('table > tbody > tr > td:last-child > input').focusout(function()
 {
-	$(this).hide();
-	$(this).parent().find('a').show()
+	$(this).hide().parent().find('a').show()
 });
 
 $('table > thead > tr > th > div > a:last-child').click(function()
 {
-	$(this).parents('table').find('div[data-edit]').toggle();
-	$(this).parents('table').find('small').toggle();
+	var table = $(this).closest('table');
+	table.find('div[data-edit]').toggle();
+	table.find('small').toggle();
 	return false;
 });
 
@@ -140,7 +145,7 @@ $('table > thead > tr > th > div > a:first-child').click(function()
 
 $('table > tbody > tr > td > div > select').change(function()
 {
-	$(this).parents('table').find('thead > tr > th > div > a:first-child').show();
+	$(this).closest('table').find('thead > tr > th > div > a:first-child').show();
 	var id = $(this).parents('tr').data('id');
 	var status = $(this).val();
 	$.ajax({
@@ -156,7 +161,8 @@ $('table > tbody > tr > td > div > select').change(function()
 });
 $('table > tbody > tr > td > div > a').click(function()
 {
-	var id = $(this).parents('tr').data('id');
+	var tr = $(this).closest('tr');
+	var id = tr.data('id');
 	$.ajax({
 		type: "POST",
 		url: "/del/show",
@@ -166,7 +172,7 @@ $('table > tbody > tr > td > div > a').click(function()
 			"user" : logged,
 		}
 	});
-	$(this).parents('tr').remove();
+	tr.remove();
 	return false;
 });
 
