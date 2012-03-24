@@ -58,19 +58,23 @@
 	$('table > tbody > tr > td > div > form').submit(function(event)
 	{
 		event.preventDefault();
+		var form = {};
+		jQuery.each($(this).serializeArray(), function(index,value) {
+			form[value.name] = value.value;
+		});
 		var tr = $(this).closest('tr')
-		var list = $(this).find($('select[name="list_name"]')).val()
 		var title = tr.data('title');
-		if(list)
+		console.log(form.list_name);
+		if(form.list_name)
 		{
-			var ep = $(this).find($('input[name="episodes"]')).val() | 0;
+			var ep = form.episodes| 0;
 			var total = tr.find($('td:last-child')).html() | 0;
 			if(total) { if(ep >= total) { ep = total; }}
-			$(this).find($('input[name="episodes"]')).val(ep);
+			form.episodes = ep;
 			$.ajax({
 				type: "POST",
 				url: "/add/episode",
-				data: $(this).serializeArray(),
+				data: form,
 			}).done(function()
 			{
 				topalert(title+" added.");
