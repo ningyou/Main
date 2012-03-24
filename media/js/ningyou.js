@@ -175,4 +175,12 @@ $('table > tbody > tr > td > div > a').click(function()
 	tr.remove();
 	return false;
 });
-
+$('table > tbody > tr > td > a:first-child').click(function(e)
+{
+	if(e.shiftKey) {
+		var tr = $(this).parent();
+		tr.find('div[data-edit]').toggle();
+		tr.find('small').toggle();
+		return false;
+	}
+});
