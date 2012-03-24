@@ -55,34 +55,34 @@ return {
 			local list_info = _DB:find_one("ningyou.lists", { user = name:lower() }, { ["lists."..list] = 1 })
 			if not list_info then return 404 end
 			list_info = list_info.lists[list]
-			if not list_info.ids then return 404 end
 
 			local cache = Redis.connect('127.0.0.1', 6379)
 			user_env.lists = {}
 			local not_in_cache = {}
 			table.insert(not_in_cache, sites[list_info.type])
 
-			for id, info in next, list_info.ids do
-				local key = sites[list_info.type]..":"..id
-				if not (cache:exists(key) and (cache:ttl(key) > 86400 or cache:ttl(key) == -1)) then
-					table.insert(not_in_cache, id)
+			if list_info.ids then
+				for id, info in next, list_info.ids do
+					local key = sites[list_info.type]..":"..id
+					if not (cache:exists(key) and (cache:ttl(key) > 86400 or cache:ttl(key) == -1)) then
+						table.insert(not_in_cache, id)
+					end
+	
+					local key = sites[list_info.type]..":"..id
+					local today = os.date('%Y-%m-%d')
+					if not user_env.lists[info.status] then user_env.lists[info.status] = {} end
+					info.title = find_title(tonumber(id), sites[list_info.type])
+					info.type = cache:hget(key, "type") or "N/A"
+					if cache:hexists(key, "enddate") then
+						info.total = cache:hget(key, "episodecount") or "N/A"
+						info.aired = cache:hget(key, "enddate") < today
+					end
+					info.id = id
+					table.insert(user_env.lists[info.status], info)
 				end
-
-				local key = sites[list_info.type]..":"..id
-				local today = os.date('%Y-%m-%d')
-				if not user_env.lists[info.status] then user_env.lists[info.status] = {} end
-				info.title = find_title(tonumber(id), sites[list_info.type])
-				info.type = cache:hget(key, "type") or "N/A"
-				if cache:hexists(key, "enddate") then
-					info.total = cache:hget(key, "episodecount") or "N/A"
-					info.aired = cache:hget(key, "enddate") < today
+				for _, ids in next, user_env.lists do
+					table.sort(ids, function(a,b) return a.title:lower() < b.title:lower() end)
 				end
-				info.id = id
-				table.insert(user_env.lists[info.status], info)
-			end
-
-			for _, ids in next, user_env.lists do
-				table.sort(ids, function(a,b) return a.title:lower() < b.title:lower() end)
 			end
 
 			user_env.list_name = list_info.name

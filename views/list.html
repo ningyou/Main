@@ -3,7 +3,7 @@
 			<div class="row">
 				<div class="span12">
 					<h2>{{list_name}}</h2>
-					{% for i = 1, #status do %}
+					{% for i = 1, #status do if lists[status[i]] then %}
 					<table class="table table-bordered table-striped">
 						<thead>
 							<tr>
@@ -57,7 +57,7 @@
 							{% end %}
 						</tbody>
 					</table>
-					{% end %}
+					{% end end %}
 				</div>
 			</div>
 
