@@ -11,7 +11,7 @@ local function tokenize(text)
 	local tokens = { ["$and"] = {}}
 	local unique = {}
 	for token in text:gmatch("[^%s]+") do
-		if #token and not unique[token] and token:len() > 1 then
+		if #token and not unique[token] then
 			table.insert(tokens["$and"], { _keywords = token })
 			unique[token] = true
 		end
