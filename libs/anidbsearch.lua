@@ -5,7 +5,6 @@ local scores = {
 	official = 1,
 }
 
-local delims = " \t\r\n"
 local THRESHOLD = 100
 
 local function tokenize(text)
@@ -32,19 +31,6 @@ local insert = function(tbl, aid, weight)
 		data[2] = weight
 	elseif(not data) then
 		tbl[aid] = {title, weight}
-	end
-end
-
-local compare = function(tbl, aid, type, pattern, title)
-	title = title:lower()
-
-	if(pattern == title) then
-		return insert(tbl, aid, 1e3 * scores[type])
-	else
-		local x, y = title:find(pattern)
-		if y then
-			return insert(tbl, aid, 1e3 * (1 + y - x) / #title *  scores[type])
-		end
 	end
 end
 
