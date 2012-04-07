@@ -12,7 +12,8 @@ local function tokenize(text)
 	local unique = {}
 	for token in text:gmatch("[^%s]+") do
 		if #token and not unique[token] then
-			table.insert(tokens["$and"], { _keywords = token })
+			local regex = mongo.RegEx("^" .. token .. ".*", "")
+			table.insert(tokens["$and"], { _keywords = regex })
 			unique[token] = true
 		end
 	end
