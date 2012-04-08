@@ -12,8 +12,12 @@ local function tokenize(text)
 	local unique = {}
 	for token in text:gmatch("[^%s]+") do
 		if #token and not unique[token] then
-			local regex = mongo.RegEx("^" .. token .. ".*", "")
-			table.insert(tokens["$and"], { _keywords = regex })
+			if token:len() > 3 then
+				keyword = mongo.RegEx("^" .. token .. ".*", "")
+			else
+				keyword = token
+			end
+			table.insert(tokens["$and"], { _keywords = keyword })
 			unique[token] = true
 		end
 	end
