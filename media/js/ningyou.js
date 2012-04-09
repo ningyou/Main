@@ -189,13 +189,20 @@ $('table > tbody > tr > td > a:first-child').click(function(e)
 
 $('table[id="importresults"] > tbody > tr > td a').click(function()
 {
-	var title = $(this).closest('tr').data('title');
+	var tr = $(this).closest('tr')
+	var title = tr.data('title');
+	var status = tr.data('status');
+	var episodes = tr.data('episodes');
+	var body = $('body');
+	body.data('info', { status: status, episodes: episodes });
 	$('#search-modal').show();
 	$.ajax({
 		type: "POST",
 		url: "/search/anime",
 		data: {
 			"search" : title,
+			"status" : status,
+			"episodes" : episodes,
 		},
 	}).done(function(data){
 		$('#modalsearch').val(title);
@@ -206,12 +213,17 @@ $('table[id="importresults"] > tbody > tr > td a').click(function()
 $('#modalsearch').keyup(function(event)
 {
 	if(event.keyCode == 13) {
-		var title = $(this).val()
+		var title = $(this).val();
+		var body = $('body');
+		var status = body.data('info').status;
+		var episodes = body.data('info').episodes;
 		$.ajax({
 			type: "POST",
 			url: "/search/anime",
 			data: {
 				"search" : title,
+				"status" : status,
+				"episodes" : episodes,
 			},
 		}).done(function(data){
 			$('#modalsearch').val(title);

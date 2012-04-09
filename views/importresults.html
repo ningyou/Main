@@ -16,13 +16,25 @@
 				<th class="span12">
 					Title
 				</th>
+				<th class="span2 center">
+					Status
+				</th>
+				<th class="center">
+					Progress
+				</th>
 			</tr>
 		</thead>
 		<tbody>
 		{% for _,h in next, nomatch do %}
-		<tr data-title="{{h.title}}">
+		<tr data-title="{{h.title}}" data-status="{{h.status}}" data-episodes="{{h.episodes}}">
 			<td>
 				<a data-toggle="modal" data-target="#search-modal" href="#">{{h.title}}</a>
+			</td>
+			<td class="center">
+				{{h.status}}
+			</td>
+			<td class="center">
+				{{h.episodes}}
 			</td>
 		</tr>
 		{% end %}

@@ -188,7 +188,7 @@ return {
 					local status = t[28][1]
 					local id = find_id(title, "anidb")
 					if not id then
-						table.insert(nomatch, { title = title })
+						table.insert(nomatch, { title = title, episodes = watched, status = status })
 					else
 						local key = "anidb:"..id
 						if not (cache:exists(key) and (cache:ttl(key) > 86400 or cache:ttl(key) == -1)) then
@@ -280,6 +280,8 @@ return {
 					lists = lists, 
 					logged_user = user:Name(sessions.user_id),
 					status = status,
+					selected_status = _POST["status"],
+					episodes = _POST["episodes"],
 				})
 
 				return nil, true
