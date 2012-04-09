@@ -181,13 +181,13 @@ $('table > tbody > tr > td > div > a').click(function()
 	return false;
 });
 
-$('table:not([id]) > tbody > tr > td').mouseover(function () {
+$('table:not([id]) > tbody > tr > td:first-child').mouseover(function () {
 	if($('body').data('user') == $('body').data('logged_user')) {
 		$(this).css('cursor', 'pointer');
 	}
 });
 
-$('table:not([id]) > tbody > tr > td').click(function(e)
+$('table:not([id]) > tbody > tr > td:first-child').click(function(e)
 {
 	if($('body').data('user') == $('body').data('logged_user')) {
 		if(e.toElement.tagName == "TD") {
