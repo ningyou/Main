@@ -11,17 +11,6 @@
 
 		<link href="/media/css/bootstrap.css" rel="stylesheet" />
 		<link href="/media/css/default.css" rel="stylesheet" />
-		<script>
-			{% if logged_user then %}
-			var logged = "{{logged_user}}"
-			{% end %}
-			{% if list_name then %}
-			var list_name = "{{list_name}}"
-			{% end %}
-			{% if user then %}
-			var user = "{{user}}"
-			{% end %}
-		</script>
 	</head>
 	<body>
 		<div id="top-alert"></div>

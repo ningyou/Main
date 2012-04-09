@@ -55,8 +55,8 @@ $('table > tbody > tr > td:last-child > a:nth-child(2)').click(function()
 			data: {
 				"id" : id,
 				"episodes" : ep,
-				"list_name" : list_name,
-				"user" : logged,
+				"list_name" : $('body').data('list_name'),
+				"user" : $('body').data('logged_user'),
 				"status" : status,
 			}
 		}).done(function()
@@ -106,8 +106,8 @@ $('table > tbody > tr > td:last-child > input').keyup(function(event)
 			data: {
 				"id" : id,
 				"episodes" : ep,
-				"list_name" : list_name,
-				"user" : logged,
+				"list_name" : $('body').data('list_name'),
+				"user" : $('body').data('logged_user'),
 				"status" : status,
 			}
 		}).done(function()
@@ -154,8 +154,8 @@ $('table > tbody > tr > td > div > select').change(function()
 		url: "/add/episode",
 		data: {
 			"id" : id,
-			"list_name" : list_name,
-			"user" : logged,
+			"list_name" : $('body').data('list_name'),
+			"user" : $('body').data('logged_user'),
 			"status" : status,
 		}
 	}).done(function()
@@ -182,19 +182,22 @@ $('table > tbody > tr > td > div > a').click(function()
 });
 
 $('table:not([id]) > tbody > tr > td').mouseover(function () {
+	if($('body').data('user') == $('body').data('logged_user')) {
 		$(this).css('cursor', 'pointer');
+	}
 });
 
 $('table:not([id]) > tbody > tr > td').click(function(e)
 {
-	if(e.toElement.tagName == "TD") {
-		var tr = $(this).parent();
-		tr.find('div[data-edit]').toggle();
-		tr.find('small').toggle();
-		return false;
+	if($('body').data('user') == $('body').data('logged_user')) {
+		if(e.toElement.tagName == "TD") {
+			var tr = $(this).parent();
+			tr.find('div[data-edit]').toggle();
+			tr.find('small').toggle();
+			return false;
+		}
 	}
 });
-
 
 $('table[id="importresults"] > tbody > tr > td a').click(function()
 {
@@ -202,8 +205,7 @@ $('table[id="importresults"] > tbody > tr > td a').click(function()
 	var title = tr.data('title');
 	var status = tr.data('status');
 	var episodes = tr.data('episodes');
-	var body = $('body');
-	body.data('info', { status: status, episodes: episodes });
+	$('body').data('info', { status: status, episodes: episodes });
 	$('#search-modal').show();
 	$.ajax({
 		type: "POST",
