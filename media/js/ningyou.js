@@ -9,7 +9,7 @@ function topalert(alerttxt)
 	top_alert.animate({height: top_alert.css('line-height') || '50px'}, 200).click(function ()
 	{
 		window.clearTimeout(alerttimer);
-		top_alert.animate({height: '0'}, 200);
+		top_alert.animate({height: '0'}, 1000);
 	});
 }
 
@@ -146,7 +146,8 @@ $('table > thead > tr > th > div > a:first-child').click(function()
 $('table > tbody > tr > td > div > select').change(function()
 {
 	$(this).closest('table').find('thead > tr > th > div > a:first-child').show();
-	var id = $(this).parents('tr').data('id');
+	var id = $(this).closest('tr').data('id');
+	var title = $(this).closest('tr').data('title');
 	var status = $(this).val();
 	$.ajax({
 		type: "POST",
@@ -157,6 +158,9 @@ $('table > tbody > tr > td > div > select').change(function()
 			"user" : logged,
 			"status" : status,
 		}
+	}).done(function()
+	{
+		topalert(title+': Status set to '+status);
 	});
 });
 
@@ -177,15 +181,20 @@ $('table > tbody > tr > td > div > a').click(function()
 	return false;
 });
 
-$('table > tbody > tr > td > a:first-child').click(function(e)
+$('table:not([id]) > tbody > tr > td').mouseover(function () {
+		$(this).css('cursor', 'pointer');
+});
+
+$('table:not([id]) > tbody > tr > td').click(function(e)
 {
-	if(e.shiftKey) {
+	if(e.toElement.tagName == "TD") {
 		var tr = $(this).parent();
 		tr.find('div[data-edit]').toggle();
 		tr.find('small').toggle();
 		return false;
 	}
 });
+
 
 $('table[id="importresults"] > tbody > tr > td a').click(function()
 {
