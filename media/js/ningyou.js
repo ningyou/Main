@@ -190,7 +190,7 @@ $('table:not([id]) > tbody > tr > td:first-child').mouseover(function () {
 $('table:not([id]) > tbody > tr > td:first-child').click(function(e)
 {
 	if($('body').data('user') == $('body').data('logged_user')) {
-		if(e.toElement.tagName == "TD") {
+		if(e.target.tagName == "TD") {
 			var tr = $(this).parent();
 			tr.find('div[data-edit]').toggle();
 			tr.find('small').toggle();
