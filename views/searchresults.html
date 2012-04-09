@@ -64,7 +64,6 @@
 		});
 		var tr = $(this).closest('tr')
 		var title = tr.data('title');
-		console.log(form.list_name);
 		if(form.list_name)
 		{
 			var ep = form.episodes| 0;
@@ -79,6 +78,7 @@
 			{
 				topalert(title+" added.");
 			});
+			$('#search-modal').modal('hide');
 			$(this).parents('tr').remove();
 		} else
 		{

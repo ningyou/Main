@@ -19,14 +19,14 @@ $('#login-modal').on('shown', function () {
 
 $('#search').submit(function(event) {
 	event.preventDefault()
-	var searchType = $("#searchtype").val()
+	var searchType = $('#searchtype').val()
 	$.ajax({
 		type: "POST",
 		url: "/search/"+searchType,
 		data: $("#search").serializeArray(),
 	}).done(function(data){
-		$("#searchbox").val('');
-		$("#result").empty().append(data);
+		$('#searchbox').val('');
+		$('#result').empty().append(data);
 	});
 })
 
@@ -71,7 +71,7 @@ $('table > tbody > tr > td:last-child > a:nth-child(2)').click(function()
 	return false;
 });
 
-$('table > tbody > tr > td:last-child > a:first-child').click(function()
+$('table:not([id]) > tbody > tr > td:last-child > a:first-child').click(function()
 {
 	var table = $(this).parent()
 	var ep = $(this).html().split('/')[0];
@@ -159,6 +159,7 @@ $('table > tbody > tr > td > div > select').change(function()
 		}
 	});
 });
+
 $('table > tbody > tr > td > div > a').click(function()
 {
 	var tr = $(this).closest('tr');
@@ -175,6 +176,7 @@ $('table > tbody > tr > td > div > a').click(function()
 	tr.remove();
 	return false;
 });
+
 $('table > tbody > tr > td > a:first-child').click(function(e)
 {
 	if(e.shiftKey) {
@@ -182,5 +184,38 @@ $('table > tbody > tr > td > a:first-child').click(function(e)
 		tr.find('div[data-edit]').toggle();
 		tr.find('small').toggle();
 		return false;
+	}
+});
+
+$('table[id="importresults"] > tbody > tr > td a').click(function()
+{
+	var title = $(this).closest('tr').data('title');
+	$('#search-modal').show();
+	$.ajax({
+		type: "POST",
+		url: "/search/anime",
+		data: {
+			"search" : title,
+		},
+	}).done(function(data){
+		$('#modalsearch').val(title);
+		$('#modalresults').empty().append(data);
+	});
+});
+
+$('#modalsearch').keyup(function(event)
+{
+	if(event.keyCode == 13) {
+		var title = $(this).val()
+		$.ajax({
+			type: "POST",
+			url: "/search/anime",
+			data: {
+				"search" : title,
+			},
+		}).done(function(data){
+			$('#modalsearch').val(title);
+			$('#modalresults').empty().append(data);
+		});
 	}
 });

@@ -173,6 +173,7 @@ return {
 				local cache = Redis.connect('127.0.0.1', 6379)
 				local animes = xpath.selectNodes(xml_tree, '/myanimelist/anime/')
 				local nomatch = {}
+				local added_count = 0
 				local not_in_cache = {}
 				table.insert(not_in_cache, "anidb")
 
@@ -193,20 +194,25 @@ return {
 						if not (cache:exists(key) and (cache:ttl(key) > 86400 or cache:ttl(key) == -1)) then
 							table.insert(not_in_cache, id)
 						end
-					add_to_list(_POST["list"], id, watched, status, rating)
+						local added = add_to_list(_POST["list"], id, watched, status, rating)
+						if added then
+							added_count = added_count+1
+						end
 					end
 				end
+
+				cache:quit()
 
 				if not_in_cache[2] then
 					local send = table.concat(not_in_cache, ",")
 					bunraku:Send(send)
 				end
 
-				for _,t in next, nomatch do
-					echo(t.title, "<br/>")
-				end
+				user_env["nomatch"] = nomatch
+				user_env["added_count"] = added_count
+				user_env["list"] = _POST["list"]
 
-				cache:quit()
+				template:RenderView('importresults', user_env)
 			end
 		elseif sessions.user_id then
 			local lists = _DB:find_one("ningyou.lists", { user = user_env["logged_user"] })
@@ -219,8 +225,8 @@ return {
 		end
 	end,
 
- 	search = function(_,searchtype)
- 		if _POST["search"] then
+	search = function(_,searchtype)
+		if _POST["search"] then
 			local results
 			local url
 			
