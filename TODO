@@ -1,12 +1,8 @@
 Ningyou rewrite:
 
-Dispatcher - Mostly done, gj haste!
-URL-Parser - It's handled by the dispatcher.
-Template - done! might want to extend it later on tho'.
-Sessions
-Cookies - 90% done, minor features left.
-SAPI
-Cache
+TVDB search
+MovieDB search
+Custom status
 
 Less important:
 RSS
@@ -14,14 +10,4 @@ requests
 recommendations
 friends
 dashboard
-
-Database stuff:
-MongoDB - learn it!
-
-Titles / External linking for info:
-
-Anime: AniDB? - animetitles file easily parsed and inserted/updated with mongo, has titles and id.
-Movies: themoviedb has a real nice api, done in commit ac5fdd7b117a285f43157425bd5313e310571ba9.
-TV Series (US): TVRage? haste has something here I think? TVDB? has a api, thats about all I know.
-Jdrama: ? We have d-addicts... but they have no api.
-Manga: Tried to find anything on this, animenfo has a server of some kind. http://www.animenfo.com/extension/index.php?p=7&action=Go might be able to use this.
+history
