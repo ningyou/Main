@@ -3,10 +3,12 @@
 <div>
 	{% if added_count > 1 then %}
 	<h2>Import Successful</h2>
-	<p>We've imported {{added_count}} to your "{{list}}" list. See below for titles that needs manual action.</p>
+	<p>We've imported {{added_count}} series to your "{{list}}" list.
+	<br/>See below for titles that needs manual action. Simply click on the title to search for it.</p>
 	{% else %}
 	<h2>Nothing Imported</h2>
-	<p>We couldn't import any of your titles. See below for titles that needs manual action.</p>
+	<p>We couldn't import any series to your list due to them already being added or the title was not found in the database. 
+	<br/>See below for titles that needs manual action. Simply click on the title to search for it.</p>
 	{% end %}
 
 	{% if #nomatch > 1 then %}
