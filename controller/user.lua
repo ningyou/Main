@@ -77,6 +77,12 @@ return {
 						info.total = cache:hget(key, "episodecount") or "N/A"
 						info.aired = cache:hget(key, "enddate") < today
 					end
+					if cache:hexists(key, "startdate") and cache:hget(key, "startdate"):match"%d+-%d+-%d+" then
+						info.notyet = cache:hget(key, "startdate") > today
+						info.startdate = cache:hget(key, "startdate")
+					else
+						info.notyet = true
+					end
 					info.id = id
 					table.insert(user_env.lists[info.status], info)
 				end

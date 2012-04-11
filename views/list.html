@@ -29,7 +29,11 @@
 							<tr data-id="{{info.id}}" data-title="{{info.title}}">
 								<td class="span12">
 									<a href="http://anidb.net/a{{info.id}}" target="_blank">{{info.title}}</a>
-									{% if not info.aired then %}
+									{% if info.notyet and info.startdate then %}
+									<small class="pull-right">Airdate: {{info.startdate}}</small>
+									{% elseif info.notyet then %}
+									<small class="pull-right">Airdate: TBA</small>
+									{% elseif not info.aired then %}
 									<small class="pull-right">Airing</small>
 									{% end %}
 									{% if user == logged_user then %}
