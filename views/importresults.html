@@ -11,7 +11,7 @@
 	<br/>See below for titles that needs manual action. Simply click on the title to search for it.</p>
 	{% end %}
 
-	{% if #nomatch > 1 then %}
+	{% if nomatch and #nomatch > 1 then %}
 	<table id="importresults" class="table table-striped table-bordered">
 		<thead>
 			<tr>

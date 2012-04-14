@@ -171,7 +171,51 @@ return {
 	end,
 
 	import = function()
-		if _POST["import_file"] and _POST["site"] == "mal" then
+		if _POST["import_file"] and _POST["site"] == "anidb" then
+			local xml = _POST["import_file"][2]
+			xml = xml:gsub("<export .* />", "")
+			local xml_tree = lom.parse(xml)
+
+			if xml_tree then
+				local cache = Redis.connect('127.0.0.1', 6379)
+				local animes = xpath.selectNodes(xml_tree, '/anime/entry/')
+				local added_count = 0
+				local not_in_cache = {}
+
+				for _,t in next, animes do
+					local episodes = t.attr.eps
+					local id = t.attr.id
+					local completed = tonumber(t.attr.is_watched)
+					local status
+
+					if completed == 1 then
+						status = "Completed"
+					else
+						status = "Watching"
+					end
+
+					local key = "anidb:"..id
+					if not (cache:exists(key) and (cache:ttl(key) > 86400 or cache:ttl(key) == -1)) then
+						table.insert(not_in_cache, id)
+					end
+					local added = add_to_list(_POST["list"], id, episodes, status)
+					if added then
+						added_count = added_count+1
+					end
+				end
+				cache:quit()
+
+				if not_in_cache[2] then
+					local send = table.concat(not_in_cache, ",")
+					bunraku:Send(send)
+				end
+
+				user_env["added_count"] = added_count
+				user_env["list"] = _POST["list"]
+
+				template:RenderView('importresults', user_env)
+			end
+		elseif _POST["import_file"] and _POST["site"] == "mal" then
 			local xml = zlib.inflate() (_POST["import_file"][2])
 			local xml_tree = lom.parse(xml)
 
