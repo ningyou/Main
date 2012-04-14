@@ -254,7 +254,9 @@ return {
 						table.insert(not_in_cache, results[i].id)
 					end
 					results[i].type = cache:hget(key, "type") or "N/A"
-					results[i].total = cache:hget(key, "episodecount") or "N/A"
+					if cache:hexists(key, "enddate") then
+						results[i].total = cache:hget(key, "episodecount") or "N/A"
+					end
 				end
 				cache:quit()
 
