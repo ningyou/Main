@@ -173,8 +173,8 @@ $('table > tbody > tr > td > div > a').click(function()
 		url: "/del/show",
 		data: {
 			"id" : id,
-			"list_name" : list_name,
-			"user" : logged,
+			"list_name" : $('body').data("list_name"),
+			"user" : $('body').data("logged_user"),
 		}
 	});
 	tr.remove();
