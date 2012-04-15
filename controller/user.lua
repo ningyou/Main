@@ -67,7 +67,7 @@ return {
 					if not (cache:exists(key) and (cache:ttl(key) > 86400 or cache:ttl(key) == -1)) then
 						table.insert(not_in_cache, id)
 					end
-	
+
 					local key = sites[list_info.type]..":"..id
 					local today = os.date('%Y-%m-%d')
 					if not user_env.lists[info.status] then user_env.lists[info.status] = {} end
@@ -99,7 +99,7 @@ return {
 				"On-Hold",
 				"Dropped",
 			}
-			
+
 			if not_in_cache[2] then
 				local send = table.concat(not_in_cache, ",")
 				bunraku:Send(send)
@@ -279,7 +279,7 @@ return {
 		if _POST["search"] then
 			local results
 			local url
-			
+
 			if searchtype == "anime" then
 				results = anidbsearch.lookup(_POST["search"])
 				url = "http://anidb.net/a"
@@ -287,7 +287,7 @@ return {
 				results = mangasearch.lookup(_POST["search"])
 				url = "http://www.animenewsnetwork.com/encyclopedia/anime.php?id="
 			end
-			
+
 			if results then
 				local not_in_cache = {}
 				table.insert(not_in_cache, sites[searchtype])
@@ -326,10 +326,10 @@ return {
 				"Dropped",
 			}
 
-				template:RenderView('searchresults', { 
-					results = results, 
-					url = url, 
-					lists = lists, 
+				template:RenderView('searchresults', {
+					results = results,
+					url = url,
+					lists = lists,
 					logged_user = user:Name(sessions.user_id),
 					status = status,
 					selected_status = _POST["status"],
@@ -368,7 +368,7 @@ return {
 				template:RenderView('addlist', user_env)
 			end
 		end
-		
+
 		if t == "episode" then
 			if user_env["logged_user"]:lower() == _POST["user"]:lower() then
 				if _POST["id"] and _POST["episodes"] then
@@ -384,7 +384,7 @@ return {
 		end
 		return nil, true
 	end,
-	
+
 	del = function(_,t,n)
 		if t == "show" then
 			if user_env["logged_user"]:lower() == _POST["user"]:lower() then
