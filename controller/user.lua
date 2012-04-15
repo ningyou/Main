@@ -131,14 +131,12 @@ return {
 	end,
 
 	logout = function()
-		if not sessions.session_id then
-			header("Location", "/")
-			setReturnCode(302)
-		else
+		if sessions.session_id then
 			sessions:Delete(sessions.session_id)
-			header("Location", "/")
-			setReturnCode(302)
 		end
+
+		header("Location", "/")
+		setReturnCode(302)
 	end,
 
 	google_oauth_callback = function()
