@@ -28,12 +28,12 @@ local doSearch = function(pattern)
 	for r in query:results() do
 		compare(matches, r.manga_id, search, r.title)
 	end
-	
+
 	local output = {}
 	for k,v in next, matches do
 		table.insert(output, {id = k, title = v[1]})
 	end
-	
+
 	return output
 end
 
