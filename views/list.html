@@ -49,7 +49,9 @@
 								</td>
 								<td class="center">{{info.type}}</td>
 								<td class="nowrap center">
-									{% if user == logged_user then %}
+									{% if status[i] == "Completed" then %}
+									{{info.total}}
+									{% elseif user == logged_user then %}
 									<a href="#">{{info.episodes}}/{{info.total or "?"}}</a>
 									<a href="#">+</a>
 									<input type="number" class="center span1 hide input-margins" />
