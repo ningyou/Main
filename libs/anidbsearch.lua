@@ -57,7 +57,7 @@ local doSearch = function(pattern)
 	end
 
 	table.sort(output, function(a,b) return a.weight > b.weight end)
-	
+
 	return output
 end
 
