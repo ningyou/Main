@@ -38,7 +38,7 @@ function _M:ValidateName(name)
 end
 
 function _M:Register(name, password, mail)
-	if self:ValidateMail(mail) and self:ValidateName(name) and password ~= nil then
+	if self:ValidateMail(mail) and self:ValidateName(name) and password then
 		if _DB:find_one("ningyou.users", { name_lower = name:lower() }) then return nil, "User Exists" end
 		if _DB:find_one("ningyou.users", { mail = mail:lower() }) then return nil, "Mail Exists" end
 
