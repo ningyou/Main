@@ -8,7 +8,7 @@ return {
 	{'^/google', 'user', 'google_oauth_callback'},
 	{'^/import', 'import', 'import'},
 	{'^/lists', 'user', 'lists'},
-	{'^/search', 'user', 'search'},
+	{'^/search', 'search', 'search'},
 	{'^/add', 'user', 'add'},
 	{'^/del', 'user', 'del'},
 
