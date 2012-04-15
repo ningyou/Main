@@ -62,8 +62,6 @@ function _M:Login(login, password)
 	if r then
 		if password == r.password then
 			return r.name
-		else
-			return
 		end
 	end
 end
