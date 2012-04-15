@@ -63,7 +63,7 @@ h1 a:hover span
 	z-index: 999;
 	width: 100%;
 	text-align: center;
-	position: absolute;
+	position: fixed;
 	top: 0;
 	left: 0;
 	background-color: #000;
