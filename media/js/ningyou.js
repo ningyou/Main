@@ -39,16 +39,28 @@ $('table > tbody > tr > td:last-child > a:nth-child(2)').click(function()
 	var ep = $(this).parent().find('a:first').html().split('/')[0] | 0;
 	var total = $(this).parent().find('a:first').html().split('/')[1] | 0;
 	var status = table.find('th').data('status');
+	var statuschange = false;
 	var refresh = table.find('thead > tr > th > div > a:first-child')
 	ep++;
+	
 	if(total) {
-		if(ep >= total) { ep = total; status = "Completed"; }
+		if(ep >= total) {
+			ep == total;
+			status = "Completed";
+			statuschange = true;
+		}
 	} else {
 		total = "?";
 	}
+	
+	if(!(status == "Watching" || status == "Completed")) {
+		status = "Watching";
+		statuschange = true;
+	}
+
 	$(this).parent().find('a:first').empty().append(ep+'/'+total);
 	if(this.request) { clearTimeout(this.request) }
-	this.request = setTimeout(function() { 
+	this.request = setTimeout(function() {
 	$.ajax({
 		type: "POST",
 		url: "/add/episode",
@@ -61,9 +73,9 @@ $('table > tbody > tr > td:last-child > a:nth-child(2)').click(function()
 			}
 		}).done(function()
 		{
-			if(status == "Completed")
+			if(statuschange)
 			{
-				topalert(title+': Status set to Completed.');
+				topalert(title+': Status set to '+status);
 				refresh.show()
 			}
 		});
@@ -87,17 +99,30 @@ $('table > tbody > tr > td:last-child > input').keyup(function(event)
 	var tr = $(this).closest('tr');
 	var id = tr.data('id');
 	var title = tr.data('title');
+	var statuschange = false;
 	if(event.keyCode == 13) {
 		var ep = $(this).val() | 0;
 		var total = $(this).parent().find('a:first').html().split('/')[1] | 0;
 		var status = table.find('th').data('status');
 		var refresh = table.find('thead > tr > th > div > a:first-child')
+
 		if(total) {
-			if(ep >= total) { ep = total; status = "Completed"; }
+			if(ep >= total) {
+				ep = total;
+				status = "Completed";
+				statuschange = true;
+			}
 		} else {
 			total = "?";
 		}
+
+		if(!(status == "Watching" || status == "Completed")) {
+			status = "Watching";
+			statuschange = true;
+		}
+
 		if(ep < 0) { ep = 0;}
+		
 		$(this).hide().focusout();
 		$(this).parent().find('a:first').empty().append(ep+'/'+total);
 		$.ajax({
@@ -111,10 +136,10 @@ $('table > tbody > tr > td:last-child > input').keyup(function(event)
 				"status" : status,
 			}
 		}).done(function()
-		{;
-			if(status == "Completed")
+		{
+			if(statuschange)
 			{
-				topalert(title+': Status set to Completed.');
+				topalert(title+': Status set to '+status);
 				refresh.show();
 			}
 		});
