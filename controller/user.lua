@@ -27,7 +27,7 @@ return {
 
 		if list then
 			list = list:lower()
-			local list_info = _DB:find_one("ningyou.lists", { user = name:lower() }, { ["lists."..list] = 1 })
+			local list_info = _DB:find_one("ningyou.lists", { user = username }, { ["lists."..list] = 1 })
 			if not list_info then return 404 end
 			list_info = list_info.lists[list]
 
@@ -83,7 +83,7 @@ return {
 			cache:quit()
 			template:RenderView('list', user_env)
 		else
-			local list_info = _DB:find_one("ningyou.lists", { user = name:lower() }, { ["lists"] = 1 })
+			local list_info = _DB:find_one("ningyou.lists", { user = username }, { ["lists"] = 1 })
 
 			if list_info then
 				user_env.lists = {}
@@ -185,7 +185,7 @@ return {
 
 	del = function(_,t,n)
 		if t == "show" then
-			if sessions.username:lower() == _POST["user"]:lower() then
+			if sessions.username == _POST["user"] then
 				if _POST["id"] then
 					local key = "lists.".. _POST["list_name"]:lower() .. ".ids." .. _POST["id"]
 					_DB:update("ningyou.lists", { user = _POST["user"] }, { ["$unset"] = { [key] = 1 }})
@@ -193,7 +193,7 @@ return {
 			end
 		elseif t == "list" then
 			if _POST["name"] then
-				if sessions.username:lower() == _POST["user"]:lower() then
+				if sessions.username == _POST["user"] then
 					local key = "lists." .. _POST["name"]:lower()
 					_DB:update("ningyou.lists", { user = _POST["user"] }, { ["$unset"] = { [key] = 1 }})
 				end
