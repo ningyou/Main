@@ -17,8 +17,6 @@ local sites = {
 	["manga"] = "manga",
 }
 
-user_env = nil
-
 local user_env = {
 	logged_user = user:Name(sessions.user_id),
 	logged_user_id = sessions.user_id,
