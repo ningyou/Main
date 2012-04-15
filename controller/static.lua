@@ -5,8 +5,8 @@ local user = require'user'
 
 return {
 	index = function()
-		if(sessions.user_id) then
-			controller:Call('user', nil, user:Name(sessions.user_id))
+		if(sessions.username) then
+			controller:Call('user', nil, sessions.username)
 		else
 			template:RenderView('default')
 		end

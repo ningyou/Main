@@ -10,8 +10,7 @@ local content = ob.Get'Content'
 local sites = dofile'config/sites.lua'
 
 local user_env = {
-	logged_user = user:Name(sessions.user_id),
-	logged_user_id = sessions.user_id,
+	logged_user = sessions.username,
 }
 
 local function find_title(id, site)
@@ -21,11 +20,10 @@ end
 
 return {
 	index = function(name, list)
-		local user_id = user:ID(name)
-		if not user_id then return 404 end
+		local username = user:Exists(name)
+		if(not username) then return 404 end
 
-		user_env["user"] = user:Name(user_id)
-		user_env["user_id"] = user_id
+		user_env["user"] = username
 
 		if list then
 			list = list:lower()
@@ -113,8 +111,8 @@ return {
 	end,
 
 	login = function()
-		if sessions.user_id then
-			content:write("Already logged in as " .. user:Name(sessions.user_id))
+		if sessions.username then
+			content:write("Already logged in as " .. sessions.username)
 		elseif _POST["submit"] then
 			local uri = getEnv()["Referer"]
 			local login = user:Login(_POST["name"], string.SHA256(_POST["password"]))
@@ -151,15 +149,15 @@ return {
 		if t == "list" then
 			if _POST["submit"] then
 				local key = "lists." .. _POST["name"]:lower()
-				if _DB:find_one("ningyou.lists", { user = user_env["logged_user"], [key] = { ["$exists"] = "true" }}) then
+				if _DB:find_one("ningyou.lists", { user = sessions.username, [key] = { ["$exists"] = "true" }}) then
 					header("Location", "/")
 					setReturnCode(302)
 				end
 
-				if not _DB:find_one("ningyou.lists", { user = user_env["logged_user"]}) then
-					_DB:insert("ningyou.lists", { user = user_env["logged_user"], lists = { [_POST["name"]:lower()] = { name = _POST["name"], type = _POST["type"] }}})
+				if not _DB:find_one("ningyou.lists", { user = sessions.username}) then
+					_DB:insert("ningyou.lists", { user = sessions.username, lists = { [_POST["name"]:lower()] = { name = _POST["name"], type = _POST["type"] }}})
 				else
-					_DB:update("ningyou.lists", { user = user_env["logged_user"] }, { ["$set"] = { [key] = { name = _POST["name"], type = _POST["type"] }}})
+					_DB:update("ningyou.lists", { user = sessions.username }, { ["$set"] = { [key] = { name = _POST["name"], type = _POST["type"] }}})
 				end
 				_DB:ensure_index("ningyou.lists", { user = 1 })
 				header("Location", "/")
@@ -170,7 +168,7 @@ return {
 		end
 
 		if t == "episode" then
-			if user_env["logged_user"]:lower() == _POST["user"]:lower() then
+			if sessions.username:lower() == _POST["user"]:lower() then
 				if _POST["id"] and _POST["episodes"] then
 					local key = "lists.".. _POST["list_name"]:lower() .. ".ids." .. _POST["id"] .. ".episodes"
 					_DB:update("ningyou.lists", { user = _POST["user"] }, { ["$set"] = { [key] = _POST["episodes"] }})
@@ -187,7 +185,7 @@ return {
 
 	del = function(_,t,n)
 		if t == "show" then
-			if user_env["logged_user"]:lower() == _POST["user"]:lower() then
+			if sessions.username:lower() == _POST["user"]:lower() then
 				if _POST["id"] then
 					local key = "lists.".. _POST["list_name"]:lower() .. ".ids." .. _POST["id"]
 					_DB:update("ningyou.lists", { user = _POST["user"] }, { ["$unset"] = { [key] = 1 }})
@@ -195,13 +193,13 @@ return {
 			end
 		elseif t == "list" then
 			if _POST["name"] then
-				if user_env["logged_user"]:lower() == _POST["user"]:lower() then
+				if sessions.username:lower() == _POST["user"]:lower() then
 					local key = "lists." .. _POST["name"]:lower()
 					_DB:update("ningyou.lists", { user = _POST["user"] }, { ["$unset"] = { [key] = 1 }})
 				end
 			elseif n then
 				local key = "lists." .. n:lower()
-				_DB:update("ningyou.lists", { user = user_env["logged_user"] }, { ["$unset"] = { [key] = 1 }})
+				_DB:update("ningyou.lists", { user = sessions.username }, { ["$unset"] = { [key] = 1 }})
 			end
 		end
 	end,

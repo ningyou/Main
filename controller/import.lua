@@ -8,8 +8,7 @@ local xpath = require'xpath'
 require'redis'
 
 local user_env = {
-	logged_user = user:Name(sessions.user_id),
-	logged_user_id = sessions.user_id,
+	logged_user = sessions.username,
 }
 
 local function find_id(title, site)
@@ -20,9 +19,9 @@ end
 local function add_to_list(list, id, episodes, status, rating)
 	local key = "lists.".. list:lower() .. ".ids."..id
 	if not list and not id and not episodes and not status then return end
-	if _DB:find_one("ningyou.lists", { user = user_env["logged_user"]:lower(), [key] = { ["$exists"] = "true" }}) then return end
+	if _DB:find_one("ningyou.lists", { user = sessions.username, [key] = { ["$exists"] = "true" }}) then return end
 
-	return _DB:update("ningyou.lists", { user = user_env["logged_user"]:lower() }, { ["$set"] = { [key] = { episodes = episodes, status = status, rating = rating }}})
+	return _DB:update("ningyou.lists", { user = sessions.username }, { ["$set"] = { [key] = { episodes = episodes, status = status, rating = rating }}})
 end
 
 local importers = {
@@ -131,8 +130,8 @@ return {
 
 		if(import_file and importers[site]) then
 			return importers[site]()
-		elseif sessions.user_id then
-			local lists = _DB:find_one("ningyou.lists", { user = user_env["logged_user"] })
+		elseif sessions.username then
+			local lists = _DB:find_one("ningyou.lists", { user = sessions.username })
 			if lists then
 				user_env.lists = lists.lists
 			end

@@ -8,11 +8,6 @@ require'redis'
 
 local sites = dofile'config/sites.lua'
 
-local user_env = {
-	logged_user = user:Name(sessions.user_id),
-	logged_user_id = sessions.user_id,
-}
-
 return {
 	search = function(_,searchtype)
 		if _POST["search"] then
@@ -47,7 +42,7 @@ return {
 					local send = table.concat(not_in_cache, ",")
 					bunraku:Send(send)
 				end
-				local list_info = _DB:find_one("ningyou.lists", { user = user_env["logged_user"]:lower() }, { ["lists"] = 1 })
+				local list_info = _DB:find_one("ningyou.lists", { user = sessions.username }, { ["lists"] = 1 })
 				local lists = {}
 
 				if list_info then
@@ -69,7 +64,7 @@ return {
 					results = results,
 					url = url,
 					lists = lists,
-					logged_user = user:Name(sessions.user_id),
+					logged_user = sessions.username,
 					status = status,
 					selected_status = _POST["status"],
 					episodes = _POST["episodes"],
@@ -79,8 +74,8 @@ return {
 			else
 				echo("Could not find: " .. _POST["search"])
 			end
-		elseif sessions.user_id then
-			template:RenderView('search', user_env)
+		elseif sessions.username then
+			template:RenderView('search', { logged_user = sessions.username })
 		else
 			return 404
 		end

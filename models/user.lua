@@ -61,23 +61,17 @@ function _M:Login(login, password)
 	local r = _DB:find_one("ningyou.users", { [field] = login:lower() })
 	if r then
 		if password == r.password then
-			return tostring(r._id)
+			return r.name
 		else
 			return
 		end
 	end
 end
 
-function _M:Name(user_id)
-	local r = _DB:find_one("ningyou.users", { _id = mongo.ObjectId(user_id) })
-
-	if r then return r.name end
-end
-
-function _M:ID(name)
+function _M:Exists(name)
 	local r = _DB:find_one("ningyou.users", { name_lower = name:lower() })
 
-	if r then return tostring(r._id) end
+	if r then return r.name end
 end
 
 return _M
