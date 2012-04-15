@@ -6,10 +6,7 @@ local anidbsearch = require'anidbsearch'
 local mangasearch = require'mangasearch'
 require'redis'
 
-local sites = {
-	["anime"] = "anidb",
-	["manga"] = "manga",
-}
+local sites = dofile'config/sites.lua'
 
 local user_env = {
 	logged_user = user:Name(sessions.user_id),

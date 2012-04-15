@@ -7,10 +7,7 @@ require'redis'
 
 local content = ob.Get'Content'
 
-local sites = {
-	["anime"] = "anidb",
-	["manga"] = "manga",
-}
+local sites = dofile'config/sites.lua'
 
 local user_env = {
 	logged_user = user:Name(sessions.user_id),
