@@ -17,25 +17,23 @@ function _M:Route(path)
 	local pathInfo, pathSplit = self:Path(path)
 	if(not pathInfo) then return end
 
-	local redirect, found
 	for i=1, #routes do
 		local ptrn, name, handler = unpack(routes[i])
 		if(pathInfo:match(ptrn)) then
 			if(not handler) then handler = 'index' end
 
 			-- pwetty!
-			redirect = controller:Call(name, handler, unpack(pathSplit))
-			found = true
-			break
+			local redirect, silent = controller:Call(name, handler, unpack(pathSplit))
+			if(redirect) then
+				return self:Route('/' .. redirect)
+			end
+
+			return nil, silent
 		end
 	end
 
-	if(redirect) then
-		return self:Route('/' .. redirect)
-	elseif(not found) then
-		-- Return error/404
-		return controller:Call(404, nil, unpack(pathSplit))
-	end
+	-- Return error/404
+	return controller:Call(404, nil, unpack(pathSplit))
 end
 
 function _M:Init(tbl)
