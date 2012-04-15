@@ -195,13 +195,13 @@ return {
 					table.sort(lists, function(a,b) return a.name:lower() < b.name:lower() end)
 				end
 
-			local status = {
-				"Watching",
-				"Completed",
-				"Plan to Watch",
-				"On-Hold",
-				"Dropped",
-			}
+				local status = {
+					"Watching",
+					"Completed",
+					"Plan to Watch",
+					"On-Hold",
+					"Dropped",
+				}
 
 				template:RenderView('searchresults', {
 					results = results,
