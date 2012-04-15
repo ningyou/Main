@@ -385,13 +385,23 @@ return {
 		return nil, true
 	end,
 	
-	del = function(_,t)
+	del = function(_,t,n)
 		if t == "show" then
 			if user_env["logged_user"]:lower() == _POST["user"]:lower() then
 				if _POST["id"] then
 					local key = "lists.".. _POST["list_name"]:lower() .. ".ids." .. _POST["id"]
 					_DB:update("ningyou.lists", { user = _POST["user"] }, { ["$unset"] = { [key] = 1 }})
 				end
+			end
+		elseif t == "list" then
+			if _POST["name"] then
+				if user_env["logged_user"]:lower() == _POST["user"]:lower() then
+					local key = "lists." .. _POST["name"]:lower()
+					_DB:update("ningyou.lists", { user = _POST["user"] }, { ["$unset"] = { [key] = 1 }})
+				end
+			elseif n then
+				local key = "lists." .. n:lower()
+				_DB:update("ningyou.lists", { user = user_env["logged_user"] }, { ["$unset"] = { [key] = 1 }})
 			end
 		end
 	end,
