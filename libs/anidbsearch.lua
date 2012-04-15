@@ -12,6 +12,7 @@ local function tokenize(text)
 	local unique = {}
 	for token in text:gmatch("[^%s]+") do
 		if #token and not unique[token] then
+			local keyword
 			if token:len() > 3 then
 				keyword = mongo.RegEx("^" .. token .. ".*", "")
 			else
