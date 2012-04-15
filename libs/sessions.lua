@@ -20,8 +20,6 @@ function _M:Get(session_id)
 			_DB:update("ningyou.sessions", { session_id = session_id }, { ["$set"] = { timeout = r.timeout } })
 		end
 		return r.name, r.timeout
-	else
-		return
 	end
 end
 
@@ -30,8 +28,6 @@ function _M:Delete(session_id)
 	if r and r.name then
 		_DB:remove("ningyou.sessions", { session_id = session_id })
 		cookie:Delete("session_id")
-	else
-		return
 	end
 end
 
