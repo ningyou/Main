@@ -6,7 +6,7 @@ return {
 	{'^/login', 'user', 'login'},
 	{'^/logout', 'user', 'logout'},
 	{'^/google', 'user', 'google_oauth_callback'},
-	{'^/import', 'user', 'import'},
+	{'^/import', 'import', 'import'},
 	{'^/lists', 'user', 'lists'},
 	{'^/search', 'user', 'search'},
 	{'^/add', 'user', 'add'},
