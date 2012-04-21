@@ -38,7 +38,7 @@ local function add_episode(user, list, id, info)
 	})
 end
 
-local function update_episode(user, list, id, field, value)
+local function update_episode(user, list, id, info)
 	local list = list:lower()
 
 	if not _DB:find_one("ningyou.lists", { user = user, name_lower = list, ["ids.id"] = id }) then return end
@@ -49,7 +49,9 @@ local function update_episode(user, list, id, field, value)
 		["ids.id"] = id,
 	}, {
 		["$set"] = {
-			["ids.$."..field] = value,
+			["ids.$.episodes"] = info.episodes,
+			["ids.$.status"] = info.status,
+			["ids.$.rating"] = info.rating,
 		}
 	})
 end
@@ -207,23 +209,11 @@ return {
 		if t == "episode" then
 			if not sessions.username then return end
 
-			if _POST.id and _POST.episodes then
-				content:write"episodes"
-				local success, err = update_episode(sessions.username, _POST.list_name, _POST.id, "episodes", _POST.episodes)
-				if success then
-					content:write"Success"
-				else
-					content:write(err)
-				end
-			end
-			if _POST.id and _POST.status then
-				content:write"status"
-				local success, err = update_episode(sessions.username, _POST.list_name, _POST.id, "status", _POST.status)
-				if success then
-					content:write"Success"
-				else
-					content:write(err)
-				end
+			if _POST.id then
+				local success, err = update_episode(sessions.username, _POST.list_name, _POST.id, {
+					episodes = _POST.episodes,
+					status = _POST.status,
+				})
 			end
 		end
 		return nil, true
