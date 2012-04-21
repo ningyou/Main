@@ -151,9 +151,14 @@ return {
 		if(import_file and importers[site]) then
 			return importers[site]()
 		elseif sessions.username then
-			local lists = _DB:find_one("ningyou.lists", { user = sessions.username })
-			if lists then
-				user_env.lists = lists.lists
+			local list_info = _DB:query("ningyou.lists", { user = sessions.username }, nil, nil, { name_lower = 1, name = 1, type = 1 })
+
+			if list_info then
+				user_env.lists = {}
+				for info in list_info:results() do
+					table.insert(user_env.lists, { name = info.name, type = info.type, name_lower = info.name_lower })
+				end
+				table.sort(user_env.lists, function(a,b) return a.name:lower() < b.name:lower() end)
 			end
 			template:RenderView('import', user_env)
 		else
