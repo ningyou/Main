@@ -16,12 +16,25 @@ local function find_id(title, site)
 	if r then return tonumber(r[site.."_id"]) end
 end
 
-local function add_to_list(list, id, episodes, status, rating)
-	local key = "lists.".. list:lower() .. ".ids."..id
-	if not list and not id and not episodes and not status then return end
-	if _DB:find_one("ningyou.lists", { user = sessions.username, [key] = { ["$exists"] = "true" }}) then return end
+local function add_to_list(user, list, id, info)
+	local user = user:lower()
+	local list = list:lower()
 
-	return _DB:update("ningyou.lists", { user = sessions.username }, { ["$set"] = { [key] = { episodes = episodes, status = status, rating = rating }}})
+	if _DB:find_one("ningyou.lists", { user = user, name_lower = list, ["ids.id"] = id }) then return end
+
+	return _DB:update("ningyou.lists", {
+		user = user,
+		name_lower = list,
+	}, {
+		["$push"] = {
+			ids = {
+				id = id,
+				status = info.status,
+				episodes, info.episodes,
+				rating, info.rating,
+			}
+		}
+	})
 end
 
 local importers = {
@@ -52,7 +65,10 @@ local importers = {
 				if not (cache:exists(key) and (cache:ttl(key) > 86400 or cache:ttl(key) == -1)) then
 					table.insert(not_in_cache, id)
 				end
-				local added = add_to_list(_POST["list"], id, episodes, status)
+				local added = add_to_list(sessions.username, _POST.list, id, {
+					episodes = episodes,
+					status = status
+				})
 				if added then
 					added_count = added_count+1
 				end
@@ -100,7 +116,11 @@ local importers = {
 					if not (cache:exists(key) and (cache:ttl(key) > 86400 or cache:ttl(key) == -1)) then
 						table.insert(not_in_cache, id)
 					end
-					local added = add_to_list(_POST["list"], id, watched, status, rating)
+					local added = add_to_list(sessions.username, _POST.list, id, {
+						episodes = episodes,
+						status = status,
+						rating = rating,
+					})
 					if added then
 						added_count = added_count+1
 					end

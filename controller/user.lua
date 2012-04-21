@@ -18,6 +18,42 @@ local function find_title(id, site)
 	if r then return r.title end
 end
 
+local function add_episode(user, list, id, info)
+	local list = list:lower()
+
+	if _DB:find_one("ningyou.lists", { user = user, name_lower = list, ["ids.id"] = id }) then return end
+
+	return _DB:update("ningyou.lists", {
+		user = user,
+		name_lower = list,
+	}, {
+		["$push"] = {
+			ids = {
+				id = id,
+				status = info.status,
+				episodes = info.episodes,
+				rating, info.rating,
+			}
+		}
+	})
+end
+
+local function update_episode(user, list, id, field, value)
+	local list = list:lower()
+
+	if not _DB:find_one("ningyou.lists", { user = user, name_lower = list, ["ids.id"] = id }) then return end
+
+	return _DB:update("ningyou.lists", {
+		user = user,
+		name_lower = list,
+		["ids.id"] = id,
+	}, {
+		["$set"] = {
+			["ids.$."..field] = value,
+		}
+	})
+end
+
 return {
 	index = function(name, list)
 		local username = user:Exists(name)
@@ -27,9 +63,8 @@ return {
 
 		if list then
 			list = list:lower()
-			local list_info = _DB:find_one("ningyou.lists", { user = username }, { ["lists."..list] = 1 })
+			local list_info = _DB:find_one("ningyou.lists", { user = username, name_lower = list })
 			if not list_info then return 404 end
-			list_info = list_info.lists[list]
 
 			local cache = Redis.connect('127.0.0.1', 6379)
 			user_env.lists = {}
@@ -37,16 +72,16 @@ return {
 			table.insert(not_in_cache, sites[list_info.type])
 
 			if list_info.ids then
-				for id, info in next, list_info.ids do
-					local key = sites[list_info.type]..":"..id
+				for _, info in next, list_info.ids do
+					local key = sites[list_info.type]..":"..info.id
 					if not (cache:exists(key) and (cache:ttl(key) > 86400 or cache:ttl(key) == -1)) then
-						table.insert(not_in_cache, id)
+						table.insert(not_in_cache, info.id)
 					end
 
-					local key = sites[list_info.type]..":"..id
+					local key = sites[list_info.type]..":"..info.id
 					local today = os.date('%Y-%m-%d')
 					if not user_env.lists[info.status] then user_env.lists[info.status] = {} end
-					info.title = find_title(tonumber(id), sites[list_info.type])
+					info.title = find_title(tonumber(info.id), sites[list_info.type])
 					info.type = cache:hget(key, "type") or "N/A"
 					if cache:hexists(key, "enddate") then
 						info.total = cache:hget(key, "episodecount") or "N/A"
@@ -58,7 +93,6 @@ return {
 					else
 						info.notyet = true
 					end
-					info.id = id
 					table.insert(user_env.lists[info.status], info)
 				end
 				for _, ids in next, user_env.lists do
@@ -83,12 +117,12 @@ return {
 			cache:quit()
 			template:RenderView('list', user_env)
 		else
-			local list_info = _DB:find_one("ningyou.lists", { user = username }, { ["lists"] = 1 })
+			local list_info = _DB:query("ningyou.lists", { user = username }, nil, nil, { name_lower = 1, name = 1, type = 1 })
 
 			if list_info then
 				user_env.lists = {}
-				for name, info in next, list_info.lists do
-					table.insert(user_env.lists, { name = info.name, type = info.type, name_lower = name })
+				for info in list_info:results() do
+					table.insert(user_env.lists, { name = info.name, type = info.type, name_lower = info.name_lower })
 				end
 				table.sort(user_env.lists, function(a,b) return a.name:lower() < b.name:lower() end)
 			end
@@ -146,35 +180,49 @@ return {
 	add = function(_,t)
 		if t == "list" then
 			if _POST["submit"] then
-				local key = "lists." .. _POST["name"]:lower()
-				if _DB:find_one("ningyou.lists", { user = sessions.username, [key] = { ["$exists"] = "true" }}) then
+				local list = _POST.name:lower()
+				if _DB:find_one("ningyou.lists", { user = sessions.username, name_lower = list }) then
 					header("Location", "/")
-					setReturnCode(302)
+					return setReturnCode(302)
 				end
 
-				if not _DB:find_one("ningyou.lists", { user = sessions.username}) then
-					_DB:insert("ningyou.lists", { user = sessions.username, lists = { [_POST["name"]:lower()] = { name = _POST["name"], type = _POST["type"] }}})
-				else
-					_DB:update("ningyou.lists", { user = sessions.username }, { ["$set"] = { [key] = { name = _POST["name"], type = _POST["type"] }}})
-				end
-				_DB:ensure_index("ningyou.lists", { user = 1 })
+				_DB:insert("ningyou.lists", { user = sessions.username, name = _POST.name, type = _POST.type, name_lower = list })
+
 				header("Location", "/")
-				setReturnCode(302)
+				return setReturnCode(302)
 			else
 				template:RenderView('addlist', user_env)
 			end
 		end
 
+		if t == "show" then
+			if not sessions.username then return end
+
+			add_episode(sessions.username, _POST.list_name, _POST.id, {
+				status = _POST.status,
+				episodes = _POST.episodes,
+				rating = _POST.rating,
+			})
+		end
 		if t == "episode" then
-			if sessions.username:lower() == _POST["user"]:lower() then
-				if _POST["id"] and _POST["episodes"] then
-					local key = "lists.".. _POST["list_name"]:lower() .. ".ids." .. _POST["id"] .. ".episodes"
-					_DB:update("ningyou.lists", { user = _POST["user"] }, { ["$set"] = { [key] = _POST["episodes"] }})
+			if not sessions.username then return end
+
+			if _POST.id and _POST.episodes then
+				content:write"episodes"
+				local success, err = update_episode(sessions.username, _POST.list_name, _POST.id, "episodes", _POST.episodes)
+				if success then
+					content:write"Success"
+				else
+					content:write(err)
 				end
-				if _POST["id"] and _POST["status"] then
-					local status = _POST["status"]
-					local key = "lists.".. _POST["list_name"]:lower() .. ".ids." .. _POST["id"] .. ".status"
-					_DB:update("ningyou.lists", { user = _POST["user"] }, { ["$set"] = { [key] = status }})
+			end
+			if _POST.id and _POST.status then
+				content:write"status"
+				local success, err = update_episode(sessions.username, _POST.list_name, _POST.id, "status", _POST.status)
+				if success then
+					content:write"Success"
+				else
+					content:write(err)
 				end
 			end
 		end
@@ -182,22 +230,44 @@ return {
 	end,
 
 	del = function(_,t,n)
+		if not sessions.username then return end
+
 		if t == "show" then
-			if sessions.username == _POST["user"] then
-				if _POST["id"] then
-					local key = "lists.".. _POST["list_name"]:lower() .. ".ids." .. _POST["id"]
-					_DB:update("ningyou.lists", { user = _POST["user"] }, { ["$unset"] = { [key] = 1 }})
-				end
+			if _POST.id then
+				_DB:update("ningyou.lists", {
+					user = sessions.username,
+					name_lower = _POST.list_name:lower(),
+					["ids.id"] = _POST.id
+				}, {
+					["$unset"] = {
+						["ids.$"] = 1,
+					}
+				})
+				-- Remove the null left by $unset.
+				_DB:update("ningyou.lists", {
+					user = sessions.username,
+					name_lower = _POST.list_name:lower(),
+				}, {
+					["$pull"] = {
+						ids = mongo.NULL(),
+					}
+				})
 			end
 		elseif t == "list" then
-			if _POST["name"] then
-				if sessions.username == _POST["user"] then
-					local key = "lists." .. _POST["name"]:lower()
-					_DB:update("ningyou.lists", { user = _POST["user"] }, { ["$unset"] = { [key] = 1 }})
-				end
+			if _POST.name then
+				if not _DB:find_one("ningyou.lists", { user = sessions.username, name_lower = _POST.name:lower() }) then return end
+
+				_DB:remove("ningyou.lists", {
+					user = sessions.username,
+					name_lower = _POST.name:lower(),
+				}, true)
 			elseif n then
-				local key = "lists." .. n:lower()
-				_DB:update("ningyou.lists", { user = sessions.username }, { ["$unset"] = { [key] = 1 }})
+				if not _DB:find_one("ningyou.lists", { user = sessions.username, name_lower = n:lower() }) then return end
+
+				_DB:remove("ningyou.lists", {
+					user = sessions.username,
+					name_lower = n:lower(),
+				}, true)
 			end
 		end
 	end,

@@ -42,12 +42,12 @@ return {
 					local send = table.concat(not_in_cache, ",")
 					bunraku:Send(send)
 				end
-				local list_info = _DB:find_one("ningyou.lists", { user = sessions.username }, { ["lists"] = 1 })
+				local list_info = _DB:query("ningyou.lists", { user = sessions.username }, nil, nil, { name_lower = 1, name = 1, type = 1 })
 				local lists = {}
 
 				if list_info then
-					for name, info in next, list_info.lists do
-						table.insert(lists, { name = info.name, type = info.type, name_lower = name })
+					for info in list_info:results() do
+						table.insert(lists, { name = info.name, type = info.type, name_lower = info.name_lower })
 					end
 					table.sort(lists, function(a,b) return a.name:lower() < b.name:lower() end)
 				end
