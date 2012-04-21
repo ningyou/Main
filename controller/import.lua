@@ -30,8 +30,8 @@ local function add_to_list(user, list, id, info)
 			ids = {
 				id = id,
 				status = info.status,
-				episodes, info.episodes,
-				rating, info.rating,
+				episodes = info.episodes,
+				rating = info.rating,
 			}
 		}
 	})
@@ -66,8 +66,8 @@ local importers = {
 					table.insert(not_in_cache, id)
 				end
 				local added = add_to_list(sessions.username, _POST.list, id, {
-					episodes = episodes,
-					status = status
+					episodes = episodes, 
+					status = status 
 				})
 				if added then
 					added_count = added_count+1
