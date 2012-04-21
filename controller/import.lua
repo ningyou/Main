@@ -17,7 +17,6 @@ local function find_id(title, site)
 end
 
 local function add_to_list(user, list, id, info)
-	local user = user:lower()
 	local list = list:lower()
 
 	if _DB:find_one("ningyou.lists", { user = user, name_lower = list, ["ids.id"] = id }) then return end
