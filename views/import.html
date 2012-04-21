@@ -6,8 +6,8 @@
 						<fieldset>
 							<select name="list" class="input-large">
 								<option>Select list</option>
-								{% if lists then for n,t in next, lists do if t.type == "anime" then %}
-									<option value="{{n}}">{{t.name}}</option>
+								{% if lists then for _,t in next, lists do if t.type == "anime" then %}
+									<option value="{{t.name_lower}}">{{t.name}}</option>
 								{% end end end %}
 							</select>
 							<select name="site" class="input-large">
