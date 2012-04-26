@@ -70,6 +70,7 @@ $('table > tbody > tr > td:last-child > a:nth-child(2)').click(function()
 				"list_name" : $('body').data('list_name'),
 				"user" : $('body').data('logged_user'),
 				"status" : status,
+				"statuschange" : statuschange,
 			}
 		}).done(function()
 		{
@@ -134,6 +135,7 @@ $('table > tbody > tr > td:last-child > input').keyup(function(event)
 				"list_name" : $('body').data('list_name'),
 				"user" : $('body').data('logged_user'),
 				"status" : status,
+				"statuschange" : statuschange,
 			}
 		}).done(function()
 		{
@@ -174,6 +176,7 @@ $('table > tbody > tr > td > div > select').change(function()
 	var id = $(this).closest('tr').data('id');
 	var title = $(this).closest('tr').data('title');
 	var status = $(this).val();
+	var statuschange = true;
 	$.ajax({
 		type: "POST",
 		url: "/add/episode",
@@ -182,6 +185,7 @@ $('table > tbody > tr > td > div > select').change(function()
 			"list_name" : $('body').data('list_name'),
 			"user" : $('body').data('logged_user'),
 			"status" : status,
+			"statuschange" : statuschange,
 		}
 	}).done(function()
 	{
