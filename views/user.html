@@ -4,8 +4,12 @@
 				<div class="span9">
 					<h2>{{user}}</h2>
 					<div class="well">
-						<p>Placeholder text.
-						</p>
+						<h4>History:</h4>
+						<ul class="unstyled">
+						{% if history then for i = 1, #history do %}
+						<li>{{history[i].string}}<div class="pull-right">{{history[i].time}}<div></li>
+						{% end end %}
+						</ul>
 					</div>
 				</div>
 				<div class="span3">

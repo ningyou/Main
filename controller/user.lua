@@ -3,6 +3,7 @@ local template = require'template'
 local ob = require'ob'
 local user = require'user'
 local sessions = require'sessions'
+local json = require'json'
 require'redis'
 
 local content = ob.Get'Content'
@@ -18,12 +19,21 @@ local function find_title(id, site)
 	if r then return r.title end
 end
 
+local function format_history(info)
+	local strings = dofile'config/history.lua'
+	local list_info = _DB:find_one("ningyou.lists", { user = info.user, name_lower = info.list }, { name = 1, type = 1, _id = 0 })
+
+	if (not list_info or not info) then return end
+
+	return strings[info.action][info.type]:format(list_info.name, find_title(tonumber(info.id), sites[list_info.type]), info.value)
+end
+
 local function add_episode(user, list, id, info)
 	local list = list:lower()
 
 	if _DB:find_one("ningyou.lists", { user = user, name_lower = list, ["ids.id"] = id }) then return end
 
-	return _DB:update("ningyou.lists", {
+	local success, err = _DB:update("ningyou.lists", {
 		user = user,
 		name_lower = list,
 	}, {
@@ -36,6 +46,21 @@ local function add_episode(user, list, id, info)
 			}
 		}
 	})
+
+	if success then
+		local client = Redis.connect('127.0.0.1', 6379)
+		client:rpush("history:"..sessions.username, json.encode({
+			time = os.time(),
+			action = "add",
+			type = "show",
+			list = list,
+			id = id,
+			value = info.status,
+		}))
+		client:quit()
+	end
+
+	return success, err
 end
 
 local function update_episode(user, list, id, info)
@@ -43,7 +68,7 @@ local function update_episode(user, list, id, info)
 
 	if not _DB:find_one("ningyou.lists", { user = user, name_lower = list, ["ids.id"] = id }) then return end
 
-	return _DB:update("ningyou.lists", {
+	local success, err = _DB:update("ningyou.lists", {
 		user = user,
 		name_lower = list,
 		["ids.id"] = id,
@@ -54,6 +79,32 @@ local function update_episode(user, list, id, info)
 			["ids.$.rating"] = info.rating,
 		}
 	})
+
+	local client = Redis.connect('127.0.0.1', 6379)
+	if success and info.episodes then
+		client:rpush("history:"..sessions.username, json.encode({
+			time = os.time(),
+			action = "update",
+			type = "episode",
+			list = list,
+			id = id,
+			value = info.episodes,
+		}))
+	end
+	if success and info.statuschange == "true" then
+		client:rpush("history:"..sessions.username, json.encode({
+			time = os.time(),
+			action = "update",
+			type = "status",
+			list = list,
+			id = id,
+			value = info.status,
+		}))
+
+	end
+	client:quit()
+
+	return success, err
 end
 
 return {
@@ -119,6 +170,17 @@ return {
 			cache:quit()
 			template:RenderView('list', user_env)
 		else
+			local client = Redis.connect('127.0.0.1', 6379)
+			local key = "history:"..username
+			local history = client:lrange(key, 0, -1)
+			user_env.history = {}
+			for i = #history, 1, -1 do
+				local info = json.decode(history[i])
+				info.user = username
+
+				table.insert(user_env.history, { string = format_history(info), time = os.date("%c", info.time) })
+			end
+
 			local list_info = _DB:query("ningyou.lists", { user = username }, nil, nil, { name_lower = 1, name = 1, type = 1 })
 
 			if list_info then
@@ -128,7 +190,7 @@ return {
 				end
 				table.sort(user_env.lists, function(a,b) return a.name:lower() < b.name:lower() end)
 			end
-
+			client:quit()
 			template:RenderView('user', user_env)
 		end
 	end,
@@ -213,6 +275,7 @@ return {
 				local success, err = update_episode(sessions.username, _POST.list_name, _POST.id, {
 					episodes = _POST.episodes,
 					status = _POST.status,
+					statuschange = _POST.statuschange,
 				})
 			end
 		end
