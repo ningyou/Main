@@ -5,7 +5,7 @@ local zlib = require'zlib'
 local sessions = require'sessions'
 local lom = require'lxp.lom'
 local xpath = require'xpath'
-require'redis'
+local redis = require'redis'
 
 local user_env = {
 	logged_user = sessions.username,
@@ -43,7 +43,7 @@ local importers = {
 		local xml_tree = lom.parse(xml)
 
 		if xml_tree then
-			local cache = Redis.connect('127.0.0.1', 6379)
+			local cache = redis.connect('127.0.0.1', 6379)
 			local animes = xpath.selectNodes(xml_tree, '/anime/entry/')
 			local added_count = 0
 			local not_in_cache = {}
@@ -91,7 +91,7 @@ local importers = {
 		local xml_tree = lom.parse(xml)
 
 		if xml_tree then
-			local cache = Redis.connect('127.0.0.1', 6379)
+			local cache = redis.connect('127.0.0.1', 6379)
 			local animes = xpath.selectNodes(xml_tree, '/myanimelist/anime/')
 			local nomatch = {}
 			local added_count = 0

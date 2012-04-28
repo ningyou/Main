@@ -4,7 +4,7 @@ local user = require'user'
 local sessions = require'sessions'
 local anidbsearch = require'anidbsearch'
 local mangasearch = require'mangasearch'
-require'redis'
+local redis = require'redis'
 
 local sites = dofile'config/sites.lua'
 
@@ -25,7 +25,7 @@ return {
 			if results then
 				local not_in_cache = {}
 				table.insert(not_in_cache, sites[searchtype])
-				local cache = Redis.connect('127.0.0.1', 6379)
+				local cache = redis.connect('127.0.0.1', 6379)
 				for i = 1, #results do
 					local key = sites[searchtype]..":"..results[i].id
 					if not (cache:exists(key) and (cache:ttl(key) > 86400 or cache:ttl(key) == -1)) then

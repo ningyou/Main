@@ -4,7 +4,7 @@ local ob = require'ob'
 local user = require'user'
 local sessions = require'sessions'
 local json = require'json'
-require'redis'
+local redis = require'redis'
 
 local content = ob.Get'Content'
 
@@ -48,7 +48,7 @@ local function add_episode(user, list, id, info)
 	})
 
 	if success then
-		local client = Redis.connect('127.0.0.1', 6379)
+		local client = redis.connect('127.0.0.1', 6379)
 		client:rpush("history:"..sessions.username, json.encode({
 			time = os.time(),
 			action = "add",
@@ -80,7 +80,7 @@ local function update_episode(user, list, id, info)
 		}
 	})
 
-	local client = Redis.connect('127.0.0.1', 6379)
+	local client = redis.connect('127.0.0.1', 6379)
 	if success and info.episodes then
 		client:rpush("history:"..sessions.username, json.encode({
 			time = os.time(),
@@ -119,7 +119,7 @@ return {
 			local list_info = _DB:find_one("ningyou.lists", { user = username, name_lower = list })
 			if not list_info then return 404 end
 
-			local cache = Redis.connect('127.0.0.1', 6379)
+			local cache = redis.connect('127.0.0.1', 6379)
 			user_env.lists = {}
 			local not_in_cache = {}
 			table.insert(not_in_cache, sites[list_info.type])
@@ -170,7 +170,7 @@ return {
 			cache:quit()
 			template:RenderView('list', user_env)
 		else
-			local client = Redis.connect('127.0.0.1', 6379)
+			local client = redis.connect('127.0.0.1', 6379)
 			local key = "history:"..username
 			local history = client:lrange(key, 0, -1)
 			user_env.history = {}
