@@ -32,7 +32,7 @@ local function format_history(info)
 
 	if (not list_info or not info) then return end
 
-	return strings[info.action][info.type]:format(list_info.name, find_title(tonumber(info.id), sites[list_info.type]), info.value)
+	return strings[info.action][info.type]:format(list_info.name, find_title(tonumber(info.id), sites[list_info.type]) or "", info.value)
 end
 
 local function add_episode(user, list, id, info)
