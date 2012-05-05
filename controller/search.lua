@@ -4,6 +4,7 @@ local user = require'user'
 local sessions = require'sessions'
 local anidbsearch = require'anidbsearch'
 local mangasearch = require'mangasearch'
+local tvsearch = require'tvsearch'
 local redis = require'redis'
 
 local sites = dofile'config/sites.lua'
@@ -20,6 +21,9 @@ return {
 			elseif searchtype == "manga" then
 				results = mangasearch.lookup(_POST["search"])
 				url = "http://www.animenewsnetwork.com/encyclopedia/anime.php?id="
+			elseif searchtype == "tv" then
+				results = tvsearch.lookup(_POST["search"])
+				url = "http://thetvdb.com/?tab=series&id="
 			end
 
 			if results then
@@ -31,8 +35,12 @@ return {
 					if not (cache:exists(key) and (cache:ttl(key) > 86400 or cache:ttl(key) == -1)) then
 						table.insert(not_in_cache, results[i].id)
 					end
-					results[i].type = cache:hget(key, "type") or "N/A"
-					if cache:hexists(key, "enddate") then
+					if searchtype == "tv" then
+						results[i].type = "TV Series"
+					else
+						results[i].type = cache:hget(key, "type") or "N/A"
+					end
+					if cache:hexists(key, "enddate") or searchtype == "tv" then
 						results[i].total = cache:hget(key, "episodecount") or "N/A"
 					end
 				end
@@ -42,7 +50,7 @@ return {
 					local send = table.concat(not_in_cache, ",")
 					bunraku:Send(send)
 				end
-				local list_info = _DB:query("ningyou.lists", { user = sessions.username }, nil, nil, { name_lower = 1, name = 1, type = 1 })
+				local list_info = _DB:query("ningyou.lists", { user = sessions.username, type = searchtype}, nil, nil, { name_lower = 1, name = 1, type = 1 })
 				local lists = {}
 
 				if list_info then

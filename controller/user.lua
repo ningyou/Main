@@ -15,8 +15,15 @@ local user_env = {
 }
 
 local function find_title(id, site)
-	local r = _DB:find_one("ningyou." .. site .. "titles", { [site.."_id"] = id, type = "official", lang = "en" }, { title = 1, _id = 0}) or _DB:find_one("ningyou." .. site .. "titles", { [site.."_id"] = id, type = "main" }, { title = 1, _id = 0})
-	if r then return r.title end
+	if site == "tvdb" then
+		local client = redis.connect()
+		local title = client:hget(site..":"..id, "title")
+		client:quit()
+		return title or "N/A"
+	else
+		local r = _DB:find_one("ningyou." .. site .. "titles", { [site.."_id"] = id, type = "official", lang = "en" }, { title = 1, _id = 0}) or _DB:find_one("ningyou." .. site .. "titles", { [site.."_id"] = id, type = "main" }, { title = 1, _id = 0})
+		if r then return r.title end
+	end
 end
 
 local function format_history(info)
@@ -124,6 +131,15 @@ return {
 			local not_in_cache = {}
 			table.insert(not_in_cache, sites[list_info.type])
 
+			-- Fix this.
+			if list_info.type == "anime" then
+				user_env.url = "http://anidb.net/a"
+			elseif list_info.type == "manga" then
+				user_env.url = "http://www.animenewsnetwork.com/encyclopedia/anime.php?id="
+			elseif list_info.type == "tv" then
+				user_env.url = "http://thetvdb.com/?tab=series&id="
+			end
+
 			if list_info.ids then
 				for _, info in next, list_info.ids do
 					local key = sites[list_info.type]..":"..info.id
@@ -135,14 +151,29 @@ return {
 					local today = os.date('%Y-%m-%d')
 					if not user_env.lists[info.status] then user_env.lists[info.status] = {} end
 					info.title = find_title(tonumber(info.id), sites[list_info.type])
-					info.type = cache:hget(key, "type") or "N/A"
+					if list_info.type == "tv" then
+						info.type = "TV Series"
+					else
+						info.type = cache:hget(key, "type") or "N/A"
+					end
 					if cache:hexists(key, "enddate") then
 						info.total = cache:hget(key, "episodecount") or "N/A"
 						info.aired = cache:hget(key, "enddate") < today
+					elseif cache:hexists(key, "status") then
+						local status = cache:hget(key, "status")
+						if status ~= "Continuing" then
+							info.total = cache:hget(key, "episodecount") or "N/A"
+							info.aired = true
+						end
 					end
 					if cache:hexists(key, "startdate") and cache:hget(key, "startdate"):match"%d+-%d+-%d+" then
 						info.notyet = cache:hget(key, "startdate") > today
 						info.startdate = cache:hget(key, "startdate")
+					elseif cache:hexists(key, "status") then
+						local status = cache:hget(key, "status")
+						if status == "Continuing" then
+							info.notyet = false
+						end
 					else
 						info.notyet = true
 					end

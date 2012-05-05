@@ -28,7 +28,7 @@
 							{% for _, info in next, lists[status[i]] do %}
 							<tr data-id="{{info.id}}" data-title="{{info.title}}">
 								<td class="span12">
-									<a href="http://anidb.net/a{{info.id}}" target="_blank">{{info.title}}</a>
+									<a href="{{url}}{{info.id}}" target="_blank">{{info.title}}</a>
 									{% if info.notyet and info.startdate then %}
 									<small class="pull-right">Airdate: {{info.startdate}}</small>
 									{% elseif info.notyet then %}
@@ -66,6 +66,7 @@
 					{% end end %}
 				</div>
 			</div>
+
 
 <%include login-modal.html %>
 
