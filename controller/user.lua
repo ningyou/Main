@@ -222,6 +222,7 @@ return {
 				table.sort(user_env.lists, function(a,b) return a.name:lower() < b.name:lower() end)
 			end
 			client:quit()
+			user_env["user_title"] = _DB:find_one("ningyou.users", { name = username }, { title = 1 }).title
 			template:RenderView('user', user_env)
 		end
 	end,

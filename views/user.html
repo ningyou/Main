@@ -2,7 +2,7 @@
 
 			<div class="row">
 				<div class="span9">
-					<h2>{{user}}</h2>
+					<h2>{{user}} <small>{% if user_title then %}{{user_title}}{% end %}</small></h2>
 					<ul class="nav nav-tabs" id="user-tab">
 						<li class="active">
 						<a href="#home" data-toggle="tab">Home</a>
