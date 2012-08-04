@@ -11,6 +11,7 @@ return {
 	{'^/search', 'search', 'search'},
 	{'^/add', 'user', 'add'},
 	{'^/del', 'user', 'del'},
+	{'^/api', 'api', },
 
 	{'^/[a-zA-Z0-9%-]+', 'user'}
 }
