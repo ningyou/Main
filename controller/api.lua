@@ -19,7 +19,6 @@ local function find_title(id, site)
 	end
 end
 
-
 local safeFormat = function(format, ...)
 	if select('#', ...) > 0 then
 		local success, message = pcall(string.format, format, ...)
@@ -243,16 +242,18 @@ local methods = {
 
 			content:write(json.encode(show_info))
 		end,
-		getlist = function(token, list, user)
+		getlist = function(token, list, username)
 			if not token then return err'No token defined', true end
 			if not list then return err'No list defined', true end
 
 			local token, fail = check_token(token)
 			if not token then return err(fail), true end
 
-			local username = user or token['user']
-			local list_lower = list:lower()
+			local check_user = username or token['user']
+			local username = user:Exists(check_user)
+			if not username then return err('Username %s not found.', check_user), true end
 
+			local list_lower = list:lower()
 			local list_info = _DB:find_one("ningyou.lists", { user = username, name_lower = list })
 			if not list_info then return err('Unable to find list %s under user %s', list, username), true end
 
