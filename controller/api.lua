@@ -88,7 +88,7 @@ local methods = {
 
 			content:write(json.encode(out))
 		end,
-		updateshow = function(token, list, id, episode)
+		updateshow = function(token, list, id, episode, status)
 			if not token then return err'No token defined', true end
 			if not list then return err'No list defined', true end
 			if not id then return err'No show id defined', true end
@@ -122,7 +122,8 @@ local methods = {
 				end
 			end
 
-			local status, statuschange
+			local status = status
+			local statuschange
 			if total and episode >= tonumber(total) then
 				episode = episodes
 				status = "Completed"
