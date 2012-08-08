@@ -146,7 +146,7 @@ local methods = {
 				time = os.time(),
 				action = "update",
 				type = "episode",
-				list = list,
+				list = list_lower,
 				id = id,
 				value = episode,
 			}))
