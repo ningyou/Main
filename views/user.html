@@ -16,8 +16,9 @@
 						<div class="tab-pane" id="history">
 							<ul class="unstyled span9">
 								{% if history then for i = 1, #history do %}
-								<li>{{history[i].string}}<div class="pull-right">{{history[i].time}}</div></li>
-								{% end end %}
+								{% if history[i].string then %}
+									<li>{{history[i].string}}<div class="pull-right">{{history[i].time}}</div></li>
+								{% end end end %}
 							</ul>
 						</div>
 					</div>
