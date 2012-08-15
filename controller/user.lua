@@ -27,12 +27,12 @@ local function find_title(id, site)
 end
 
 local function format_history(info)
-	local strings = dofile'config/history.lua'
+	local strings = dofile'config/history.lua'||
 	local list_info = _DB:find_one("ningyou.lists", { user = info.user, name_lower = info.list:lower() }, { name = 1, type = 1, _id = 0 })
 
 	if (not list_info or not info) then return end
 
-	return strings[info.action][info.type]:format(list_info.name, find_title(tonumber(info.id), sites[list_info.type]) or "", info.value)
+	return strings[info.action][info.type]:format(list_info.name, find_title(tonumber(info.id), sites[list_info.type]) or "", info.value or 0)
 end
 
 local function add_episode(user, list, id, info)
