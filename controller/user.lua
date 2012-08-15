@@ -27,7 +27,7 @@ local function find_title(id, site)
 end
 
 local function format_history(info)
-	local strings = dofile'config/history.lua'||
+	local strings = dofile'config/history.lua'
 	local list_info = _DB:find_one("ningyou.lists", { user = info.user, name_lower = info.list:lower() }, { name = 1, type = 1, _id = 0 })
 
 	if (not list_info or not info) then return end
