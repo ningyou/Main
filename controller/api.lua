@@ -4,14 +4,15 @@ local user = require'user'
 local redis = require'redis'
 local bunraku = require'bunraku'
 local listlib = require'list'
+local sessions = require'sessions'
 
 local content = ob.Get'Content'
 local sites = dofile'config/sites.lua'
 
 local safeFormat = function(format, ...)
-	if select('#', ...) > 0 then
+	if select('#', ...) > 0 then 
 		local success, message = pcall(string.format, format, ...)
-		if success then
+		if success then 
 			return message
 		end
 	else
@@ -27,6 +28,7 @@ end
 local function check_token(token)
 	local token_info = _DB:find_one('ningyou.api', { token = token })
 	if token_info then
+		sessions.username = token_info.user
 		return token_info
 	else
 		return nil, 'Wrong token.'
