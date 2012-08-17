@@ -83,7 +83,6 @@ function _M:updateshow(list, id, attr, value)
 	return true
 end
 
--- TODO: Add history.
 function _M:removeshow(list, id)
 	local list = list:lower()
 	local user = sessions.username
@@ -109,6 +108,8 @@ function _M:removeshow(list, id)
 		}
 	})
 	if not success then return nil, err end
+
+	history("remove", "show", list, id)
 
 	return true
 end

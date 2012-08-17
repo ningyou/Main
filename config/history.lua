@@ -10,4 +10,7 @@ return {
 	add = {
 		show = '[%s] Added %s to %s',
 	},
+	remove = {
+		show = '[%s] Removed %s',
+	},
 }
