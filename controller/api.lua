@@ -111,7 +111,7 @@ local methods = {
 			local status = status
 			local statuschange
 			if total and episode >= tonumber(total) then
-				episode = episodes
+				episode = total
 				status = "Completed"
 			end
 
