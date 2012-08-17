@@ -3,21 +3,10 @@ local json = require'json'
 local user = require'user'
 local redis = require'redis'
 local bunraku = require'bunraku'
+local listlib = require'list'
 
 local content = ob.Get'Content'
 local sites = dofile'config/sites.lua'
-
-local function find_title(id, site)
-	if site == "tvdb" then
-		local client = redis.connect()
-		local title = client:hget(site..":"..id, "title")
-		client:quit()
-		return title or "N/A"
-	else
-		local r = _DB:find_one("ningyou." .. site .. "titles", { [site.."_id"] = id, type = "official", lang = "en" }, { title = 1, _id = 0}) or _DB:find_one("ningyou." .. site .. "titles", { [site.."_id"] = id, type = "main" }, { title = 1, _id = 0})
-		if r then return r.title end
-	end
-end
 
 local safeFormat = function(format, ...)
 	if select('#', ...) > 0 then
@@ -105,11 +94,6 @@ local methods = {
 
 			local list_info = _DB:find_one("ningyou.lists", { user = username, name_lower = list_lower, ['ids.id'] = id })
 			if not list_info then return err('Unable to find id %d in list %s', id, list), true end
-			local show_info = find_show(list_info['ids'], id)
-			if show_info.status == "Completed" then return err('Show with id %d already set to Completed, ignoring', id), true end
-
-			local viewed = tonumber(show_info.episodes)
-			if viewed >= episode then return err'Trying to set a lower number then what is currently set, ignoring', true end
 
 			local key = sites[list_info.type]..":"..id
 			local total
@@ -127,42 +111,17 @@ local methods = {
 			if total and episode >= tonumber(total) then
 				episode = episodes
 				status = "Completed"
-				statuschange = true
 			end
 
-			local success, err = _DB:update("ningyou.lists", {
-				user = username,
-				name_lower = list_lower,
-				["ids.id"] = id,
-			}, {
-				["$set"] = {
-					["ids.$.episodes"] = episode,
-					["ids.$.status"] = status,
-				}
-			})
+			local success, err = listlib:updateshow(list, id, 'episodes', episode)
 			if not success then return err('Unable to add id %d to list %s, try again later', id, list), true end
 
-			client:rpush("history:"..username, json.encode({
-				time = os.time(),
-				action = "update",
-				type = "episode",
-				list = list_lower,
-				id = id,
-				value = episode,
-			}))
-
-			if statuschange == "true" then
-				client:rpush("history:"..username, json.encode({
-					time = os.time(),
-					action = "update",
-					type = "status",
-					list = list,
-					id = id,
-					value = status,
-				}))
+			if status then
+				success, err = listlib:updateshow(list, id, 'status', status)
 			end
-			client:quit()
+			if not success then return err('Unable to change status of id %d in list %s, try again later', id, list), true end
 
+			client:quit()
 			content:write(json.encode({ result = "success", id = id, episode = episode, status = status }))
 		end,
 		addshow = function(token, list, id, status, episode)
@@ -181,30 +140,8 @@ local methods = {
 			local list_info = _DB:find_one('ningyou.lists', { user = username, name_lower = list_lower, ['ids.id'] = id })
 			if list_info then return err('Show with id %d in list %s already exists, ignoring', id, list), true end
 
-			local success, err = _DB:update("ningyou.lists", {
-				user = user,
-				name_lower = list,
-			}, {
-				["$push"] = {
-					ids = {
-						id = id,
-						status = status,
-						episodes = episode,
-					}
-				}
-			})
+			local success, err = listlib:addshow(list, id, episode, status)
 			if not success then return err('Unable to add id %d to list %s, try again later', id, list), true end
-
-			local client = redis.connect('127.0.0.1', 6379)
-			client:rpush("history:"..username, json.encode({
-				time = os.time(),
-				action = "add",
-				type = "show",
-				list = list,
-				id = id,
-				value = status,
-			}))
-			client:quit()
 
 			content:write(json.encode({ result = 'success', id = id, episode = episode, status = status }))
 		end,
