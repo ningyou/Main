@@ -2,6 +2,7 @@ local bunraku = require'bunraku'
 local template = require'template'
 local ob = require'ob'
 local user = require'user'
+local listlib = require'list'
 local sessions = require'sessions'
 local json = require'json'
 local redis = require'redis'
@@ -14,104 +15,13 @@ local user_env = {
 	logged_user = sessions.username,
 }
 
-local function find_title(id, site)
-	if site == "tvdb" then
-		local client = redis.connect()
-		local title = client:hget(site..":"..id, "title")
-		client:quit()
-		return title or "N/A"
-	else
-		local r = _DB:find_one("ningyou." .. site .. "titles", { [site.."_id"] = id, type = "official", lang = "en" }, { title = 1, _id = 0}) or _DB:find_one("ningyou." .. site .. "titles", { [site.."_id"] = id, type = "main" }, { title = 1, _id = 0})
-		if r then return r.title end
-	end
-end
-
 local function format_history(info)
 	local strings = dofile'config/history.lua'
 	local list_info = _DB:find_one("ningyou.lists", { user = info.user, name_lower = info.list:lower() }, { name = 1, type = 1, _id = 0 })
 
 	if (not list_info or not info) then return end
 
-	return strings[info.action][info.type]:format(list_info.name, find_title(tonumber(info.id), sites[list_info.type]) or "", info.value or 0)
-end
-
-local function add_episode(user, list, id, info)
-	local list = list:lower()
-
-	if _DB:find_one("ningyou.lists", { user = user, name_lower = list, ["ids.id"] = id }) then return end
-
-	local success, err = _DB:update("ningyou.lists", {
-		user = user,
-		name_lower = list,
-	}, {
-		["$push"] = {
-			ids = {
-				id = id,
-				status = info.status,
-				episodes = info.episodes,
-				rating, info.rating,
-			}
-		}
-	})
-
-	if success then
-		local client = redis.connect('127.0.0.1', 6379)
-		client:rpush("history:"..sessions.username, json.encode({
-			time = os.time(),
-			action = "add",
-			type = "show",
-			list = list,
-			id = id,
-			value = info.status,
-		}))
-		client:quit()
-	end
-
-	return success, err
-end
-
-local function update_episode(user, list, id, info)
-	local list = list:lower()
-
-	if not _DB:find_one("ningyou.lists", { user = user, name_lower = list, ["ids.id"] = id }) then return end
-
-	local success, err = _DB:update("ningyou.lists", {
-		user = user,
-		name_lower = list,
-		["ids.id"] = id,
-	}, {
-		["$set"] = {
-			["ids.$.episodes"] = info.episodes,
-			["ids.$.status"] = info.status,
-			["ids.$.rating"] = info.rating,
-		}
-	})
-
-	local client = redis.connect('127.0.0.1', 6379)
-	if success and info.episodes then
-		client:rpush("history:"..sessions.username, json.encode({
-			time = os.time(),
-			action = "update",
-			type = "episode",
-			list = list,
-			id = id,
-			value = info.episodes,
-		}))
-	end
-	if success and info.statuschange == "true" then
-		client:rpush("history:"..sessions.username, json.encode({
-			time = os.time(),
-			action = "update",
-			type = "status",
-			list = list,
-			id = id,
-			value = info.status,
-		}))
-
-	end
-	client:quit()
-
-	return success, err
+	return strings[info.action][info.type]:format(list_info.name, listlib:show_title(tonumber(info.id), sites[list_info.type]) or "", info.value or 0)
 end
 
 return {
@@ -150,7 +60,7 @@ return {
 					local key = sites[list_info.type]..":"..info.id
 					local today = os.date('%Y-%m-%d')
 					if not user_env.lists[info.status] then user_env.lists[info.status] = {} end
-					info.title = find_title(tonumber(info.id), sites[list_info.type])
+					info.title = listlib:show_title(tonumber(info.id), sites[list_info.type])
 					if list_info.type == "tv" then
 						info.type = "TV Series"
 					else
@@ -274,86 +184,49 @@ return {
 	end,
 
 	add = function(_,t)
-		if t == "list" then
-			if _POST["submit"] then
-				local list = _POST.name:lower()
-				if _DB:find_one("ningyou.lists", { user = sessions.username, name_lower = list }) then
-					header("Location", "/")
-					return setReturnCode(302)
-				end
+		-- TODO: Change this to some access denied return code.
+		if not sessions.username then return 404 end
 
-				_DB:insert("ningyou.lists", { user = sessions.username, name = _POST.name, type = _POST.type, name_lower = list })
+		local func = {
+			list = function()
+				if not _POST["submit"] then return template:RenderView('addlist', user_env) end
+
+				local success, err = listlib:addlist(_POST.name, _POST.type)
+				if not success then return content:write(err) end
 
 				header("Location", "/")
 				return setReturnCode(302)
-			else
-				template:RenderView('addlist', user_env)
-			end
-		end
+			end,
+			show = function()
+				local success, err = listlib:addshow(_POST.list_name, _POST.id, _POST.episodes, _POST.status, _POST.rating)
+			end,
+			episode = function()
+				if not _POST.id then return end
 
-		if t == "show" then
-			if not sessions.username then return end
+				local success, err = listlib:updateshow(_POST.list_name, _POST.id, "episodes", _POST.episodes)
+				if _POST.statuschange == "true" then
+					listlib:updateshow(_POST.list_name, _POST.id, "status", _POST.status)
+				end
+			end,
+		}
 
-			add_episode(sessions.username, _POST.list_name, _POST.id, {
-				status = _POST.status,
-				episodes = _POST.episodes,
-				rating = _POST.rating,
-			})
-		end
-		if t == "episode" then
-			if not sessions.username then return end
+		if not func[t] then return 404 end
 
-			if _POST.id then
-				local success, err = update_episode(sessions.username, _POST.list_name, _POST.id, {
-					episodes = _POST.episodes,
-					status = _POST.status,
-					statuschange = _POST.statuschange,
-				})
-			end
-		end
-		return nil, true
+		return func[t](), true
 	end,
 
 	del = function(_,t,n)
-		if not sessions.username then return end
+		if not sessions.username then return 404 end
 
 		if t == "show" then
-			if _POST.id then
-				_DB:update("ningyou.lists", {
-					user = sessions.username,
-					name_lower = _POST.list_name:lower(),
-					["ids.id"] = _POST.id
-				}, {
-					["$unset"] = {
-						["ids.$"] = 1,
-					}
-				})
-				-- Remove the null left by $unset.
-				_DB:update("ningyou.lists", {
-					user = sessions.username,
-					name_lower = _POST.list_name:lower(),
-				}, {
-					["$pull"] = {
-						ids = mongo.NULL(),
-					}
-				})
-			end
+			if not _POST.id then return end
+
+			listlib:removeshow(_POST.list_name, _POST.id)
 		elseif t == "list" then
-			if _POST.name then
-				if not _DB:find_one("ningyou.lists", { user = sessions.username, name_lower = _POST.name:lower() }) then return end
+			local list = _POST.name or n
+			if not list then return end
 
-				_DB:remove("ningyou.lists", {
-					user = sessions.username,
-					name_lower = _POST.name:lower(),
-				}, true)
-			elseif n then
-				if not _DB:find_one("ningyou.lists", { user = sessions.username, name_lower = n:lower() }) then return end
-
-				_DB:remove("ningyou.lists", {
-					user = sessions.username,
-					name_lower = n:lower(),
-				}, true)
-			end
+			listlib:removelist(list)
 		end
 	end,
 }
