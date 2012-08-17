@@ -124,7 +124,7 @@ local methods = {
 			client:quit()
 			content:write(json.encode({ result = "success", id = id, episode = episode, status = status }))
 		end,
-		addshow = function(token, list, id, status, episode)
+		addshow = function(token, list, id, episode, status)
 			if not token then return err'No token defined', true end
 			if not list then return err'No list defined', true end
 			if not id then return err'No show id defined', true end
