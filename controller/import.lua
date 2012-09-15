@@ -6,6 +6,7 @@ local sessions = require'sessions'
 local lom = require'lxp.lom'
 local xpath = require'xpath'
 local redis = require'redis'
+local listlib = require'list'
 
 local user_env = {
 	logged_user = sessions.username,
@@ -14,26 +15,6 @@ local user_env = {
 local function find_id(title, site)
 	local r = _DB:find_one("ningyou." .. site .. "titles", { title_lower = title:lower() }, { [site.."_id"] = 1, _id = 0 })
 	if r then return tonumber(r[site.."_id"]) end
-end
-
-local function add_to_list(user, list, id, info)
-	local list = list:lower()
-
-	if _DB:find_one("ningyou.lists", { user = user, name_lower = list, ["ids.id"] = id }) then return end
-
-	return _DB:update("ningyou.lists", {
-		user = user,
-		name_lower = list,
-	}, {
-		["$push"] = {
-			ids = {
-				id = id,
-				status = info.status,
-				episodes = info.episodes,
-				rating = info.rating,
-			}
-		}
-	})
 end
 
 local importers = {
@@ -64,10 +45,7 @@ local importers = {
 				if not (cache:exists(key) and (cache:ttl(key) > 86400 or cache:ttl(key) == -1)) then
 					table.insert(not_in_cache, id)
 				end
-				local added = add_to_list(sessions.username, _POST.list, id, {
-					episodes = episodes, 
-					status = status 
-				})
+				local added = listlib:addshow(_POST.list, id, episodes, status)
 				if added then
 					added_count = added_count+1
 				end
@@ -115,11 +93,9 @@ local importers = {
 					if not (cache:exists(key) and (cache:ttl(key) > 86400 or cache:ttl(key) == -1)) then
 						table.insert(not_in_cache, id)
 					end
-					local added = add_to_list(sessions.username, _POST.list, id, {
-						episodes = episodes,
-						status = status,
-						rating = rating,
-					})
+
+					local added = listlib:addshow(_POST.list, id, watched, status, rating)
+
 					if added then
 						added_count = added_count+1
 					end
