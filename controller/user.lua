@@ -202,8 +202,9 @@ return {
 			end,
 			episode = function()
 				if not _POST.id then return end
-
-				local success, err = listlib:updateshow(_POST.list_name, _POST.id, "episodes", _POST.episodes)
+				if _POST.episodes then
+					local success, err = listlib:updateshow(_POST.list_name, _POST.id, "episodes", _POST.episodes)
+				end
 				if _POST.statuschange == "true" then
 					listlib:updateshow(_POST.list_name, _POST.id, "status", _POST.status)
 				end
