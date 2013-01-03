@@ -20,16 +20,19 @@ end
 -- TODO: Add language support.
 function _M:show_title(id, site, lang)
 	if site == "tvdb" then
+		local key = ("%s:%d"):format(site, id)
 		local client = redis.connect()
-		local title = client:hget(site..":"..id, "title")
+		local title = client:hget(key, "title")
 		client:quit()
 
 		return title or "N/A"
 	else
+		local db_name = ("ningyou.%stitles"):format(site)
+		local site_id = ("%s_id"):format(site)
 		local r =
-		_DB:find_one("ningyou." .. site .. "titles", { [site.."_id"] = id, type = "official", lang = "en" }, { title = 1, _id = 0})
+		_DB:find_one(db_name, { [site_id] = id, type = "official", lang = "en" }, { title = 1, _id = 0})
 		or
-		_DB:find_one("ningyou." .. site .. "titles", { [site.."_id"] = id, type = "main" }, { title = 1, _id = 0})
+		_DB:find_one(db_name, { [site_id] = id, type = "main" }, { title = 1, _id = 0})
 
 		if r then return r.title end
 	end
