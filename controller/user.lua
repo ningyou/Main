@@ -60,7 +60,7 @@ return {
 					local key = sites[list_info.type]..":"..info.id
 					local today = os.date('%Y-%m-%d')
 					if not user_env.lists[info.status] then user_env.lists[info.status] = {} end
-					info.title = listlib:show_title(tonumber(info.id), sites[list_info.type])
+					info.title = listlib:show_title(tonumber(info.id), sites[list_info.type]) or "N/A"
 					if list_info.type == "tv" then
 						info.type = "TV Series"
 					else
