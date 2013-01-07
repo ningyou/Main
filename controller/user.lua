@@ -5,11 +5,10 @@ local user = require'user'
 local listlib = require'list'
 local sessions = require'sessions'
 local json = require'json'
-local redis = require'redis'
-
 local content = ob.Get'Content'
 
 local sites = dofile'config/sites.lua'
+local client = _CLIENT
 
 local user_env = {
 	logged_user = sessions.username,
@@ -36,7 +35,6 @@ return {
 			local list_info = _DB:find_one("ningyou.lists", { user = username, name_lower = list })
 			if not list_info then return 404 end
 
-			local cache = redis.connect('127.0.0.1', 6379)
 			user_env.lists = {}
 			local not_in_cache = {}
 			table.insert(not_in_cache, sites[list_info.type])
@@ -52,38 +50,39 @@ return {
 
 			if list_info.ids then
 				for _, info in next, list_info.ids do
-					local key = sites[list_info.type]..":"..info.id
-					if not (cache:exists(key) and (cache:ttl(key) > 86400 or cache:ttl(key) == -1)) then
+					local key = ("%s:%d"):format(sites[list_info.type], info.id)
+					if not (client:command('exists', key) == 1 and (client:command('ttl', key) > 86400 or client:command('ttl', key) == -1)) then
 						table.insert(not_in_cache, info.id)
 					end
 
-					local key = sites[list_info.type]..":"..info.id
+					local show_info = client:command("hgetall", key)
+					-- Arrange the return as key = value
+					for i = 1, #show_info, 2 do
+						show_info[show_info[i]] = show_info[i+1]
+						show_info[i] = nil
+						show_info[i+1] = nil
+					end
+
 					local today = os.date('%Y-%m-%d')
 					if not user_env.lists[info.status] then user_env.lists[info.status] = {} end
 					info.title = listlib:show_title(tonumber(info.id), sites[list_info.type]) or "N/A"
 					if list_info.type == "tv" then
 						info.type = "TV Series"
 					else
-						info.type = cache:hget(key, "type") or "N/A"
+						info.type = show_info.type or "N/A"
 					end
-					if cache:hexists(key, "enddate") then
-						info.total = cache:hget(key, "episodecount") or "N/A"
-						info.aired = cache:hget(key, "enddate") < today
-					elseif cache:hexists(key, "status") then
-						local status = cache:hget(key, "status")
-						if status ~= "Continuing" then
-							info.total = cache:hget(key, "episodecount") or "N/A"
-							info.aired = true
-						end
+					if show_info.enddate then
+						info.total = show_info.episodecount or "N/A"
+						info.aired = show_info.enddate < today
+					elseif show_info.status and show_info.status ~= "Continuing" then
+						info.total = client:command('hget', key, "episodecount") or "N/A"
+						info.aired = true
 					end
-					if cache:hexists(key, "startdate") and cache:hget(key, "startdate"):match"%d+-%d+-%d+" then
-						info.notyet = cache:hget(key, "startdate") > today
-						info.startdate = cache:hget(key, "startdate")
-					elseif cache:hexists(key, "status") then
-						local status = cache:hget(key, "status")
-						if status == "Continuing" then
-							info.notyet = false
-						end
+					if show_info.startdate and show_info.startdate:match"%d+-%d+-%d+" then
+						info.notyet = show_info.startdate > today
+						info.startdate = show_info.startdate
+					elseif show_info.status and status == "Continuing" then
+						info.notyet = false
 					else
 						info.notyet = true
 					end
@@ -108,12 +107,10 @@ return {
 				bunraku:Send(send)
 			end
 
-			cache:quit()
 			template:RenderView('list', user_env)
 		else
-			local client = redis.connect('127.0.0.1', 6379)
 			local key = "history:"..username
-			local history = client:lrange(key, 0, -1)
+			local history = client:command('lrange', key, 0, -1)
 			user_env.history = {}
 			for i = #history, 1, -1 do
 				local info = json.decode(history[i])
@@ -131,7 +128,6 @@ return {
 				end
 				table.sort(user_env.lists, function(a,b) return a.name:lower() < b.name:lower() end)
 			end
-			client:quit()
 			user_env["user_title"] = _DB:find_one("ningyou.users", { name = username }, { title = 1 }).title
 			template:RenderView('user', user_env)
 		end
@@ -158,7 +154,7 @@ return {
 			local login = user:Login(_POST["name"], string.SHA256(_POST["password"]))
 			if login then
 				local timeout
-				if not _POST["remember"] then timeout = (os.time() + 7200) end
+				if not _POST["remember"] then timeout = os.time()+7200 end
 				sessions:Save(login, timeout)
 				header("Location", uri)
 				setReturnCode(302)

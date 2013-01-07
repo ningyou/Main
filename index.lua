@@ -14,6 +14,7 @@ local before = clock()
 local routing = require'routing'
 local ob = require'ob'
 local sessions = require'sessions'
+local redis = require'hiredis'
 local mongo = require"mongo"
 
 -- We probably want to wrap these in some metatable magic to prevent them
@@ -21,8 +22,8 @@ local mongo = require"mongo"
 _GET = parseGet()
 _POST = parsePost()
 _DB = mongo.Connection.New()
+_CLIENT = assert(redis.connect'/var/run/redis/redis.sock')
 assert(_DB:connect'127.0.0.1')
-
 
 xpcall(
 	function()
