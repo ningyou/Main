@@ -102,11 +102,10 @@ return {
 						table.sort(ids, function(a,b) return a.title:lower() < b.title:lower() end)
 					end
 
-					client:command('setex', cache_key, 7200, mp.pack(user_env.lists))
-
 					if not_in_cache[2] then
-						local send = table.concat(not_in_cache, ',')
-						bunraku:Send(send)
+						bunraku:Send(table.concat(not_in_cache, ','))
+					else
+						client:command('setex', cache_key, 7200, mp.pack(user_env.lists))
 					end
 				end
 			end
