@@ -102,7 +102,7 @@ return {
 						table.sort(ids, function(a,b) return a.title:lower() < b.title:lower() end)
 					end
 
-					client:command('set', cache_key, mp.pack(user_env.lists))
+					client:command('setex', cache_key, 7200, mp.pack(user_env.lists))
 
 					if not_in_cache[2] then
 						local send = table.concat(not_in_cache, ',')
@@ -120,7 +120,6 @@ return {
 				'Dropped',
 			}
 
-			--table.foreach(user_env.lists["Watching(11)"][1], print)
 			template:RenderView('list', user_env)
 		else
 			local key = 'history:'..username
