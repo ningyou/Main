@@ -51,7 +51,8 @@ return {
 			if list_info.ids then
 				for _, info in next, list_info.ids do
 					local key = ("%s:%d"):format(sites[list_info.type], info.id)
-					if not (client:command('exists', key) == 1 and (client:command('ttl', key) > 86400 or client:command('ttl', key) == -1)) then
+					local ttl = client:command('ttl', key)
+					if not (client:command('exists', key) == 1 and (ttl > 86400 or ttl == -1)) then
 						table.insert(not_in_cache, info.id)
 					end
 
