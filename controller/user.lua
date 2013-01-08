@@ -6,6 +6,7 @@ local listlib = require'list'
 local sessions = require'sessions'
 local json = require'json'
 local content = ob.Get'Content'
+local date = os.date
 
 local sites = dofile'config/sites.lua'
 local client = _CLIENT
@@ -37,7 +38,7 @@ return {
 
 			user_env.lists = {}
 			local not_in_cache = {}
-			table.insert(not_in_cache, sites[list_info.type])
+			not_in_cache[1] = sites[list_info.type]
 
 			-- Fix this.
 			if list_info.type == 'anime' then
@@ -49,11 +50,12 @@ return {
 			end
 
 			if list_info.ids then
-				for _, info in next, list_info.ids do
+				for i = 1, #list_info.ids do
+					local info = list_info.ids[i]
 					local key = ('%s:%d'):format(sites[list_info.type], info.id)
 					local ttl = client:command('ttl', key)
 					if not (client:command('exists', key) == 1 and (ttl > 86400 or ttl == -1)) then
-						table.insert(not_in_cache, info.id)
+						not_in_cache[#not_in_cache+1] = info.id
 					end
 
 					local show_info = client:command('hgetall', key)
@@ -64,7 +66,7 @@ return {
 						show_info[i+1] = nil
 					end
 
-					local today = os.date('%Y-%m-%d')
+					local today = date('%Y-%m-%d')
 					if not user_env.lists[info.status] then user_env.lists[info.status] = {} end
 					info.title = listlib:show_title(tonumber(info.id), sites[list_info.type]) or 'N/A'
 					if list_info.type == 'tv' then
@@ -76,7 +78,7 @@ return {
 						info.total = show_info.episodecount or 'N/A'
 						info.aired = show_info.enddate < today
 					elseif show_info.status and show_info.status ~= 'Continuing' then
-						info.total = client:command('hget', key, 'episodecount') or 'N/A'
+						info.total = show_info.episodecount or 'N/A'
 						info.aired = true
 					end
 					if show_info.startdate and show_info.startdate:match'%d+-%d+-%d+' then
@@ -87,7 +89,8 @@ return {
 					else
 						info.notyet = true
 					end
-					table.insert(user_env.lists[info.status], info)
+					local index = #user_env.lists[info.status]
+					user_env.lists[info.status][index+1] = info
 				end
 				for _, ids in next, user_env.lists do
 					table.sort(ids, function(a,b) return a.title:lower() < b.title:lower() end)
@@ -117,7 +120,7 @@ return {
 				local info = json.decode(history[i])
 				info.user = username
 
-				table.insert(user_env.history, { string = format_history(info), time = os.date('%c', info.time) })
+				table.insert(user_env.history, { string = format_history(info), time = date('%c', info.time) })
 			end
 
 			local list_info = _DB:query('ningyou.lists', { user = username }, nil, nil, { name_lower = 1, name = 1, type = 1 })
