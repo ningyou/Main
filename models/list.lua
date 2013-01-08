@@ -119,7 +119,7 @@ end
 
 function _M:addlist(list, list_type)
 	local user = sessions.username
-	if _DB:find_one('ningyou.lists', { user = user, name_lower = list:lower() }) then return nil, ('List '%s' already exists.'):format(list) end
+	if _DB:find_one('ningyou.lists', { user = user, name_lower = list:lower() }) then return nil, ('List "%s" already exists.'):format(list) end
 
 	local success, err = _DB:insert('ningyou.lists', { user = user, name = list, type = list_type, name_lower = list:lower() })
 	if not success then return nil, err end
