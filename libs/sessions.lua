@@ -19,6 +19,8 @@ end
 function _M:Get(session_id)
 	local key = key:format(session_id)
 	local username = _CLIENT:command("get", key)
+	if type(username) == "table" then return end
+
 	local ttl = _CLIENT:command("ttl", key)
 	if ttl > 7200 then
 		_CLIENT:command("expire", key, 604800)
