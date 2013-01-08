@@ -46,7 +46,7 @@ function _M:Init()
 			_M.session_id = session_id
 			_M.username = username
 		else
-			_M.Delete(session_id)
+			_M:Delete(session_id)
 		end
 	end
 end
