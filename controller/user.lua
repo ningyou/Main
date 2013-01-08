@@ -153,9 +153,7 @@ return {
 			local uri = getEnv()["Referer"]
 			local login = user:Login(_POST["name"], string.SHA256(_POST["password"]))
 			if login then
-				local timeout
-				if not _POST["remember"] then timeout = os.time()+7200 end
-				sessions:Save(login, timeout)
+				sessions:Save(login, _POST.remember)
 				header("Location", uri)
 				setReturnCode(302)
 			else

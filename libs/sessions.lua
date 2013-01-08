@@ -1,45 +1,37 @@
 local cookie = require"cookies"
-
+local key = "session:%s"
 local _M = {}
 
-function _M:Save(username, timeout)
+function _M:Save(username, remember)
 	local session_id = string.SHA256(math.random(1305534,30598239) .. os.time())
 
-	_DB:insert("ningyou.sessions", { session_id = session_id, name = username, timeout = timeout})
-	_DB:ensure_index("ningyou.sessions", { session_id = 1 })
+	if not remember then
+		_CLIENT:command("setex", key:format(session_id), 7200, username) -- 2 hours
+	else
+		_CLIENT:command("setex", key:format(session_id), 604800, username) -- 1 week
+	end
+
 	cookie:Set("session_id", session_id)
 
 	return session_id
 end
 
 function _M:Get(session_id)
-	local r = _DB:find_one("ningyou.sessions", { session_id = session_id })
-	if r and r.name then
-		if r.timeout and r.timeout > os.time() then
-			r.timeout = os.time()+7200
-			_DB:update("ningyou.sessions", { session_id = session_id }, { ["$set"] = { timeout = r.timeout } })
-		end
-		return r.name, r.timeout
+	local key = key:format(session_id)
+	local username = _CLIENT:command("get", key)
+	local ttl = _CLIENT:command("ttl", key)
+	if ttl > 7200 then
+		_CLIENT:command("expire", key, 604800)
+	else
+		_CLIENT:command("expire", key, 7200)
 	end
+	return username
 end
 
 function _M:Delete(session_id)
-	local r = _DB:find_one("ningyou.sessions", { session_id = session_id })
-	if r and r.name then
-		_DB:remove("ningyou.sessions", { session_id = session_id })
-		cookie:Delete("session_id")
-	end
-end
-
-function _M:Timeout(session_id, timeout)
-	local r = _DB:find_one("ningyou.sessions", { session_id = session_id })
-	if r and r.name then
-		if timeout then
-			_DB:update("ningyou.sessions", { session_id = session_id }, { ["$set"] = { timeout = timeout } })
-		else
-			_DB:update("ningyou.sessions", { session_id = session_id }, { ["$unset"] = { timeout = 1 } })
-		end
-	end
+	_CLIENT:command("del", key:format(session_id))
+	cookie:Delete("session_id")
+	return true
 end
 
 function _M:Init()
@@ -49,12 +41,12 @@ function _M:Init()
 	_M.session_id = nil
 
 	if session_id then
-		local username, timeout = _M:Get(session_id)
-		if not timeout or (timeout and timeout > os.time()) then
+		local username = _M:Get(session_id)
+		if username then
 			_M.session_id = session_id
 			_M.username = username
 		else
-			_M:Delete(session_id)
+			_M.Delete(session_id)
 		end
 	end
 end
