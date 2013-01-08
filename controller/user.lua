@@ -16,11 +16,11 @@ local user_env = {
 
 local function format_history(info)
 	local strings = dofile'config/history.lua'
-	local list_info = _DB:find_one("ningyou.lists", { user = info.user, name_lower = info.list:lower() }, { name = 1, type = 1, _id = 0 })
+	local list_info = _DB:find_one('ningyou.lists', { user = info.user, name_lower = info.list:lower() }, { name = 1, type = 1, _id = 0 })
 
 	if (not list_info or not info) then return end
 
-	return strings[info.action][info.type]:format(list_info.name, listlib:show_title(tonumber(info.id), sites[list_info.type]) or "", info.value or 0)
+	return strings[info.action][info.type]:format(list_info.name, listlib:show_title(tonumber(info.id), sites[list_info.type]) or '', info.value or 0)
 end
 
 return {
@@ -28,11 +28,11 @@ return {
 		local username = user:Exists(name)
 		if(not username) then return 404 end
 
-		user_env["user"] = username
+		user_env['user'] = username
 
 		if list then
 			list = list:lower()
-			local list_info = _DB:find_one("ningyou.lists", { user = username, name_lower = list })
+			local list_info = _DB:find_one('ningyou.lists', { user = username, name_lower = list })
 			if not list_info then return 404 end
 
 			user_env.lists = {}
@@ -40,23 +40,23 @@ return {
 			table.insert(not_in_cache, sites[list_info.type])
 
 			-- Fix this.
-			if list_info.type == "anime" then
-				user_env.url = "http://anidb.net/a"
-			elseif list_info.type == "manga" then
-				user_env.url = "http://www.animenewsnetwork.com/encyclopedia/anime.php?id="
-			elseif list_info.type == "tv" then
-				user_env.url = "http://thetvdb.com/?tab=series&id="
+			if list_info.type == 'anime' then
+				user_env.url = 'http://anidb.net/a'
+			elseif list_info.type == 'manga' then
+				user_env.url = 'http://www.animenewsnetwork.com/encyclopedia/anime.php?id='
+			elseif list_info.type == 'tv' then
+				user_env.url = 'http://thetvdb.com/?tab=series&id='
 			end
 
 			if list_info.ids then
 				for _, info in next, list_info.ids do
-					local key = ("%s:%d"):format(sites[list_info.type], info.id)
+					local key = ('%s:%d'):format(sites[list_info.type], info.id)
 					local ttl = client:command('ttl', key)
 					if not (client:command('exists', key) == 1 and (ttl > 86400 or ttl == -1)) then
 						table.insert(not_in_cache, info.id)
 					end
 
-					local show_info = client:command("hgetall", key)
+					local show_info = client:command('hgetall', key)
 					-- Arrange the return as key = value
 					for i = 1, #show_info, 2 do
 						show_info[show_info[i]] = show_info[i+1]
@@ -66,23 +66,23 @@ return {
 
 					local today = os.date('%Y-%m-%d')
 					if not user_env.lists[info.status] then user_env.lists[info.status] = {} end
-					info.title = listlib:show_title(tonumber(info.id), sites[list_info.type]) or "N/A"
-					if list_info.type == "tv" then
-						info.type = "TV Series"
+					info.title = listlib:show_title(tonumber(info.id), sites[list_info.type]) or 'N/A'
+					if list_info.type == 'tv' then
+						info.type = 'TV Series'
 					else
-						info.type = show_info.type or "N/A"
+						info.type = show_info.type or 'N/A'
 					end
 					if show_info.enddate then
-						info.total = show_info.episodecount or "N/A"
+						info.total = show_info.episodecount or 'N/A'
 						info.aired = show_info.enddate < today
-					elseif show_info.status and show_info.status ~= "Continuing" then
-						info.total = client:command('hget', key, "episodecount") or "N/A"
+					elseif show_info.status and show_info.status ~= 'Continuing' then
+						info.total = client:command('hget', key, 'episodecount') or 'N/A'
 						info.aired = true
 					end
-					if show_info.startdate and show_info.startdate:match"%d+-%d+-%d+" then
+					if show_info.startdate and show_info.startdate:match'%d+-%d+-%d+' then
 						info.notyet = show_info.startdate > today
 						info.startdate = show_info.startdate
-					elseif show_info.status and status == "Continuing" then
+					elseif show_info.status and status == 'Continuing' then
 						info.notyet = false
 					else
 						info.notyet = true
@@ -96,31 +96,31 @@ return {
 
 			user_env.list_name = list_info.name
 			user_env.status = {
-				"Watching",
-				"Completed",
-				"Plan to Watch",
-				"On-Hold",
-				"Dropped",
+				'Watching',
+				'Completed',
+				'Plan to Watch',
+				'On-Hold',
+				'Dropped',
 			}
 
 			if not_in_cache[2] then
-				local send = table.concat(not_in_cache, ",")
+				local send = table.concat(not_in_cache, ',')
 				bunraku:Send(send)
 			end
 
 			template:RenderView('list', user_env)
 		else
-			local key = "history:"..username
+			local key = 'history:'..username
 			local history = client:command('lrange', key, 0, -1)
 			user_env.history = {}
 			for i = #history, 1, -1 do
 				local info = json.decode(history[i])
 				info.user = username
 
-				table.insert(user_env.history, { string = format_history(info), time = os.date("%c", info.time) })
+				table.insert(user_env.history, { string = format_history(info), time = os.date('%c', info.time) })
 			end
 
-			local list_info = _DB:query("ningyou.lists", { user = username }, nil, nil, { name_lower = 1, name = 1, type = 1 })
+			local list_info = _DB:query('ningyou.lists', { user = username }, nil, nil, { name_lower = 1, name = 1, type = 1 })
 
 			if list_info then
 				user_env.lists = {}
@@ -129,16 +129,16 @@ return {
 				end
 				table.sort(user_env.lists, function(a,b) return a.name:lower() < b.name:lower() end)
 			end
-			user_env["user_title"] = _DB:find_one("ningyou.users", { name = username }, { title = 1 }).title
+			user_env['user_title'] = _DB:find_one('ningyou.users', { name = username }, { title = 1 }).title
 			template:RenderView('user', user_env)
 		end
 	end,
 
 	signup = function()
-		if _POST["submit"] then
-			local register, err = user:Register(_POST["name"], _POST["password"], _POST["mail"])
+		if _POST['submit'] then
+			local register, err = user:Register(_POST['name'], _POST['password'], _POST['mail'])
 			if register then
-				content:write("Success!")
+				content:write('Success!')
 			else
 				content:write(err)
 			end
@@ -149,16 +149,16 @@ return {
 
 	login = function()
 		if sessions.username then
-			content:write("Already logged in as " .. sessions.username)
-		elseif _POST["submit"] then
-			local uri = getEnv()["Referer"]
-			local login = user:Login(_POST["name"], string.SHA256(_POST["password"]))
+			content:write('Already logged in as ' .. sessions.username)
+		elseif _POST['submit'] then
+			local uri = getEnv()['Referer']
+			local login = user:Login(_POST['name'], string.SHA256(_POST['password']))
 			if login then
 				sessions:Save(login, _POST.remember)
-				header("Location", uri)
+				header('Location', uri)
 				setReturnCode(302)
 			else
-				content:write("Wrong Username or Password")
+				content:write('Wrong Username or Password')
 			end
 		else
 			template:RenderView('login')
@@ -170,12 +170,12 @@ return {
 			sessions:Delete(sessions.session_id)
 		end
 
-		header("Location", "/")
+		header('Location', '/')
 		setReturnCode(302)
 	end,
 
 	google_oauth_callback = function()
-		content:write("More to come..")
+		content:write('More to come..')
 	end,
 
 	add = function(_,t)
@@ -184,12 +184,12 @@ return {
 
 		local func = {
 			list = function()
-				if not _POST["submit"] then return template:RenderView('addlist', user_env) end
+				if not _POST['submit'] then return template:RenderView('addlist', user_env) end
 
 				local success, err = listlib:addlist(_POST.name, _POST.type)
 				if not success then return content:write(err) end
 
-				header("Location", "/")
+				header('Location', '/')
 				return setReturnCode(302)
 			end,
 			show = function()
@@ -198,10 +198,10 @@ return {
 			episode = function()
 				if not _POST.id then return end
 				if _POST.episodes then
-					local success, err = listlib:updateshow(_POST.list_name, _POST.id, "episodes", _POST.episodes)
+					local success, err = listlib:updateshow(_POST.list_name, _POST.id, 'episodes', _POST.episodes)
 				end
-				if _POST.statuschange == "true" then
-					listlib:updateshow(_POST.list_name, _POST.id, "status", _POST.status)
+				if _POST.statuschange == 'true' then
+					listlib:updateshow(_POST.list_name, _POST.id, 'status', _POST.status)
 				end
 			end,
 		}
@@ -214,11 +214,11 @@ return {
 	del = function(_,t,n)
 		if not sessions.username then return 404 end
 
-		if t == "show" then
+		if t == 'show' then
 			if not _POST.id then return end
 
 			listlib:removeshow(_POST.list_name, _POST.id)
-		elseif t == "list" then
+		elseif t == 'list' then
 			local list = _POST.name or n
 			if not list then return end
 

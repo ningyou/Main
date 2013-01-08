@@ -2,12 +2,12 @@ local _M = {}
 
 local urlEncode
 do
-	local fmt = function (c) return ("%%%02X"):format(string.byte(c)) end
+	local fmt = function (c) return ('%%%02X'):format(string.byte(c)) end
 	function urlEncode(str)
 		if (str) then
-			str = str:gsub("\n", "\r\n")
-			str = str:gsub("([^%w ])", fmt)
-			str = str:gsub(" ", "+")
+			str = str:gsub('\n', '\r\n')
+			str = str:gsub('([^%w ])', fmt)
+			str = str:gsub(' ', '+')
 		end
 
 		return str
@@ -19,9 +19,9 @@ do
 	local fmt = function(h) return string.char(tonumber(h,16)) end
 	function urlDecode(str)
 		if(str) then
-			str = str:gsub("+", " ")
-			str = str:gsub("%%(%x%x)", fmt)
-			str = str:gsub("\r\n", "\n")
+			str = str:gsub('+', ' ')
+			str = str:gsub('%%(%x%x)', fmt)
+			str = str:gsub('\r\n', '\n')
 		end
 
 		return str
@@ -40,7 +40,7 @@ end
 
 local handlers = {
 	expires = function(time)
-		return os.date("!Expires=%a, %d-%b-%Y %H:%M:%S GMT", time)
+		return os.date('!Expires=%a, %d-%b-%Y %H:%M:%S GMT', time)
 	end,
 }
 

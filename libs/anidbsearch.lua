@@ -8,17 +8,17 @@ local scores = {
 local THRESHOLD = 100
 
 local function tokenize(text)
-	local tokens = { ["$and"] = {}}
+	local tokens = { ['$and'] = {}}
 	local unique = {}
-	for token in text:gmatch("[^%s]+") do
+	for token in text:gmatch('[^%s]+') do
 		if #token and not unique[token] then
 			local keyword
 			if token:len() > 3 then
-				keyword = mongo.RegEx("^" .. token .. ".*", "")
+				keyword = mongo.RegEx('^' .. token .. '.*', '')
 			else
 				keyword = token
 			end
-			table.insert(tokens["$and"], { _keywords = keyword })
+			table.insert(tokens['$and'], { _keywords = keyword })
 			unique[token] = true
 		end
 	end
@@ -29,7 +29,7 @@ local insert = function(tbl, aid, weight)
 	weight = math.floor(weight)
 	if(weight < THRESHOLD) then return end
 
-	local title = _DB:find_one("ningyou.anidbtitles", { anidb_id = aid, type = "official", lang = "en" }, { title = 1 }) or _DB:find_one("ningyou.anidbtitles", { anidb_id = aid, type = "main" }, { title = 1 })
+	local title = _DB:find_one('ningyou.anidbtitles', { anidb_id = aid, type = 'official', lang = 'en' }, { title = 1 }) or _DB:find_one('ningyou.anidbtitles', { anidb_id = aid, type = 'main' }, { title = 1 })
 	title = title.title
 
 	local data = tbl[aid]
@@ -41,12 +41,12 @@ local insert = function(tbl, aid, weight)
 end
 
 local doSearch = function(pattern)
-	local pattern = pattern:gsub("[^%w_0-9]+", " ")
+	local pattern = pattern:gsub('[^%w_0-9]+', ' ')
 	local matches = {}
-	local search = pattern:lower():gsub('([-?]+)', '%%%1'):gsub("'", '`')
+	local search = pattern:lower():gsub('([-?]+)', '%%%1'):gsub('\'', '`')
 	local tokens = tokenize(search)
 
-	local result = _DB:query("ningyou.anidbtitles", tokens)
+	local result = _DB:query('ningyou.anidbtitles', tokens)
 	for r in result:results() do
 		insert(matches, r.anidb_id, 1e3 * scores[r.type])
 	end
@@ -64,4 +64,3 @@ end
 return {
 	lookup = doSearch,
 }
-

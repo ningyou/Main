@@ -8,7 +8,7 @@ local url = require'socket.url'
 
 local function add_cache(pattern, info)
 	local client = redis.connect()
-	local key = "tvsearch:"..pattern:lower()
+	local key = 'tvsearch:'..pattern:lower()
 
 	client:set(key, json.encode(info))
 	client:quit()
@@ -16,7 +16,7 @@ end
 
 local function check_cache(pattern)
 	local client = redis.connect()
-	local key = "tvsearch:"..pattern:lower()
+	local key = 'tvsearch:'..pattern:lower()
 
 	if client:exists(key) then
 		local data = client:get(key)
@@ -31,17 +31,17 @@ function http.get(u)
 		url = u,
 		sink = ltn12.sink.table(t),
 		headers = {
-			["Accept-Encoding"] = "deflate",
+			['Accept-Encoding'] = 'deflate',
 		},
 	}
 	return table.concat(t), r, c, h
 end
 
 local doSearch = function(pattern)
-	local in_cache = check_cache(pattern:gsub("%s", "_"):lower())
+	local in_cache = check_cache(pattern:gsub('%s', '_'):lower())
 	if in_cache then return in_cache end
 
-	local xml = http.get(("http://www.thetvdb.com/api/GetSeries.php?seriesname=%s"):format(url.escape(pattern)))
+	local xml = http.get(('http://www.thetvdb.com/api/GetSeries.php?seriesname=%s'):format(url.escape(pattern)))
 	local xml_tree = lom.parse(xml)
 	local id = xpath.selectNodes(xml_tree, '/Data/Series/seriesid/text()')
 	local title = xpath.selectNodes(xml_tree, '/Data/Series/SeriesName/text()')
@@ -50,7 +50,7 @@ local doSearch = function(pattern)
 		table.insert(output, { id = id[i], title = title[i] })
 	end
 
-	add_cache(pattern:gsub("%s", "_"):lower(), output)
+	add_cache(pattern:gsub('%s', '_'):lower(), output)
 
 	return output
 end
