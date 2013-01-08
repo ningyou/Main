@@ -6,8 +6,8 @@ local listlib = require'list'
 local sessions = require'sessions'
 local json = require'json'
 local content = ob.Get'Content'
+local mp = require'cmsgpack'
 local date = os.date
-
 local sites = dofile'config/sites.lua'
 local client = _CLIENT
 
@@ -32,72 +32,86 @@ return {
 		user_env['user'] = username
 
 		if list then
-			list = list:lower()
-			local list_info = _DB:find_one('ningyou.lists', { user = username, name_lower = list })
-			if not list_info then return 404 end
+			local list = list:lower()
+			local cache_key = ('cache:%s:%s'):format(username, list)
+			local cache = client:command('get', cache_key)
+			if type(cache) ~= 'table' then
+				user_env.lists = mp.unpack(cache)
+			else
+				local list_info = _DB:find_one('ningyou.lists', { user = username, name_lower = list })
+				if not list_info then return 404 end
 
-			user_env.lists = {}
-			local not_in_cache = {}
-			not_in_cache[1] = sites[list_info.type]
+				user_env.lists = {}
+				local not_in_cache = {}
+				not_in_cache[1] = sites[list_info.type]
 
-			-- Fix this.
-			if list_info.type == 'anime' then
-				user_env.url = 'http://anidb.net/a'
-			elseif list_info.type == 'manga' then
-				user_env.url = 'http://www.animenewsnetwork.com/encyclopedia/anime.php?id='
-			elseif list_info.type == 'tv' then
-				user_env.url = 'http://thetvdb.com/?tab=series&id='
+				-- Fix this.
+				if list_info.type == 'anime' then
+					user_env.url = 'http://anidb.net/a'
+				elseif list_info.type == 'manga' then
+					user_env.url = 'http://www.animenewsnetwork.com/encyclopedia/anime.php?id='
+				elseif list_info.type == 'tv' then
+					user_env.url = 'http://thetvdb.com/?tab=series&id='
+				end
+
+				if list_info.ids then
+					for i = 1, #list_info.ids do
+						local info = list_info.ids[i]
+						local key = ('%s:%d'):format(sites[list_info.type], info.id)
+						local ttl = client:command('ttl', key)
+						if not (client:command('exists', key) == 1 and (ttl > 86400 or ttl == -1)) then
+							not_in_cache[#not_in_cache+1] = info.id
+						end
+
+						local show_info = client:command('hgetall', key)
+						-- Arrange the return as key = value
+						for i = 1, #show_info, 2 do
+							show_info[show_info[i]] = show_info[i+1]
+							show_info[i] = nil
+							show_info[i+1] = nil
+						end
+
+						local today = date('%Y-%m-%d')
+						if not user_env.lists[info.status] then user_env.lists[info.status] = {} end
+						info.title = listlib:show_title(tonumber(info.id), sites[list_info.type]) or 'N/A'
+						if list_info.type == 'tv' then
+							info.type = 'TV Series'
+						else
+							info.type = show_info.type or 'N/A'
+						end
+						if show_info.enddate then
+							info.total = show_info.episodecount or 'N/A'
+							info.aired = show_info.enddate < today
+						elseif show_info.status and show_info.status ~= 'Continuing' then
+							info.total = show_info.episodecount or 'N/A'
+							info.aired = true
+						end
+						if show_info.startdate and show_info.startdate:match'%d+-%d+-%d+' then
+							info.notyet = show_info.startdate > today
+							info.startdate = show_info.startdate
+						elseif show_info.status and status == 'Continuing' then
+							info.notyet = false
+						else
+							info.notyet = true
+						end
+						local index = #user_env.lists[info.status]
+						user_env.lists[info.status][index+1] = info
+					end
+
+					for _, ids in next, user_env.lists do
+						table.sort(ids, function(a,b) return a.title:lower() < b.title:lower() end)
+					end
+
+					client:command('set', cache_key, mp.pack(user_env.lists))
+
+					if not_in_cache[2] then
+						local send = table.concat(not_in_cache, ',')
+						bunraku:Send(send)
+					end
+				end
 			end
 
-			if list_info.ids then
-				for i = 1, #list_info.ids do
-					local info = list_info.ids[i]
-					local key = ('%s:%d'):format(sites[list_info.type], info.id)
-					local ttl = client:command('ttl', key)
-					if not (client:command('exists', key) == 1 and (ttl > 86400 or ttl == -1)) then
-						not_in_cache[#not_in_cache+1] = info.id
-					end
-
-					local show_info = client:command('hgetall', key)
-					-- Arrange the return as key = value
-					for i = 1, #show_info, 2 do
-						show_info[show_info[i]] = show_info[i+1]
-						show_info[i] = nil
-						show_info[i+1] = nil
-					end
-
-					local today = date('%Y-%m-%d')
-					if not user_env.lists[info.status] then user_env.lists[info.status] = {} end
-					info.title = listlib:show_title(tonumber(info.id), sites[list_info.type]) or 'N/A'
-					if list_info.type == 'tv' then
-						info.type = 'TV Series'
-					else
-						info.type = show_info.type or 'N/A'
-					end
-					if show_info.enddate then
-						info.total = show_info.episodecount or 'N/A'
-						info.aired = show_info.enddate < today
-					elseif show_info.status and show_info.status ~= 'Continuing' then
-						info.total = show_info.episodecount or 'N/A'
-						info.aired = true
-					end
-					if show_info.startdate and show_info.startdate:match'%d+-%d+-%d+' then
-						info.notyet = show_info.startdate > today
-						info.startdate = show_info.startdate
-					elseif show_info.status and status == 'Continuing' then
-						info.notyet = false
-					else
-						info.notyet = true
-					end
-					local index = #user_env.lists[info.status]
-					user_env.lists[info.status][index+1] = info
-				end
-				for _, ids in next, user_env.lists do
-					table.sort(ids, function(a,b) return a.title:lower() < b.title:lower() end)
-				end
-			end
-
-			user_env.list_name = list_info.name
+			user_env.list_name = _DB:find_one('ningyou.lists', { user = username, name_lower = list }, { name = 1, _id = 0 }).name
 			user_env.status = {
 				'Watching',
 				'Completed',
@@ -106,11 +120,7 @@ return {
 				'Dropped',
 			}
 
-			if not_in_cache[2] then
-				local send = table.concat(not_in_cache, ',')
-				bunraku:Send(send)
-			end
-
+			--table.foreach(user_env.lists["Watching(11)"][1], print)
 			template:RenderView('list', user_env)
 		else
 			local key = 'history:'..username

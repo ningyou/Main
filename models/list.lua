@@ -2,6 +2,7 @@ local _M = {}
 local redis = require'redis'
 local json = require'json'
 local sessions = require'sessions'
+local key = 'cache:%s:%s'
 
 --TODO: Change to msgpack.
 local history = function(action, htype, list, id, value)
@@ -43,6 +44,7 @@ function _M:addshow(list, id, episode, status, rating)
 	local user = sessions.username
 	if _DB:find_one('ningyou.lists', { user = user, name_lower = list, ['ids.id'] = id }) then return end
 
+	_CLIENT:command('del', key:format(user, list))
 	local success, err = _DB:update('ningyou.lists', {
 		user = user,
 		name_lower = list,
@@ -69,6 +71,7 @@ function _M:updateshow(list, id, attr, value)
 	local user = sessions.username
 	if not _DB:find_one('ningyou.lists', { user = user, name_lower = list, ['ids.id'] = id }) then return end
 
+	_CLIENT:command('del', key:format(user, list))
 	local success, err = _DB:update('ningyou.lists', {
 		user = user,
 		name_lower = list,
@@ -90,6 +93,7 @@ function _M:removeshow(list, id)
 	local list = list:lower()
 	local user = sessions.username
 
+	_CLIENT:command('del', key:format(user, list))
 	local success, err = _DB:update('ningyou.lists', {
 		user = user,
 		name_lower = list,
