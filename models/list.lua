@@ -156,7 +156,7 @@ function _M:getlist(username, list)
 
 	local lists = {}
 	local not_in_cache = {}
-	not_in_cache[1] = sites[list_info.type]
+	not_in_cache[1] = sites[list_info.type].name
 
 	for i = 1, #list_info.ids do
 		local info = list_info.ids[i]
