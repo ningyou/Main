@@ -2,6 +2,7 @@ local _M = {}
 local json = require'json'
 local sessions = require'sessions'
 local mp = require'cmsgpack'
+local bunraku = require'bunraku'
 local key = 'cache:%s:%s'
 local sites = dofile'config/sites.lua'
 local date = os.date
@@ -144,7 +145,7 @@ function _M:getlist(username, list)
 	local cache_key = ('cache:%s:%s'):format(username, list)
 	local cache = _CLIENT:command('get', cache_key)
 	local list_type = _DB:find_one('ningyou.lists', { user = username, name_lower = list }, { type = 1, _id = 0 }).type
-	
+
 	-- If cache exists, return it.
 	if type(cache) ~= 'table' then
 		return mp.unpack(cache), list_type
@@ -210,7 +211,7 @@ function _M:getlist(username, list)
 	else
 		_CLIENT:command('setex', cache_key, 7200, mp.pack(lists))
 	end
-	
+
 	return lists, list_info.type
 end
 
