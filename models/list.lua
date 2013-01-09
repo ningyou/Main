@@ -1,13 +1,14 @@
 local _M = {}
-local redis = require'redis'
 local json = require'json'
 local sessions = require'sessions'
+local mp = require'cmsgpack'
 local key = 'cache:%s:%s'
+local sites = dofile'config/sites.lua'
+local date = os.date
 
 --TODO: Change to msgpack.
 local history = function(action, htype, list, id, value)
-	local client = redis.connect()
-	client:rpush('history:'..sessions.username, json.encode({
+	_CLIENT:command('rpush', 'history:'..sessions.username, json.encode({
 		time = os.time(),
 		action = action,
 		type = htype,
@@ -15,16 +16,13 @@ local history = function(action, htype, list, id, value)
 		id = id,
 		value = value,
 	}))
-	client:quit()
 end
 
 -- TODO: Add language support.
 function _M:show_title(id, site, lang)
 	if site == 'tvdb' then
 		local key = ('%s:%d'):format(site, id)
-		local client = redis.connect()
-		local title = client:hget(key, 'title')
-		client:quit()
+		local title = _CLIENT:command('hget', key, 'title')
 
 		return title or 'N/A'
 	else
@@ -139,6 +137,81 @@ function _M:removelist(list)
 	if not success then return nil, err end
 
 	return true
+end
+
+function _M:getlist(username, list)
+	local list = list:lower()
+	local cache_key = ('cache:%s:%s'):format(username, list)
+	local cache = _CLIENT:command('get', cache_key)
+	local list_type = _DB:find_one('ningyou.lists', { user = username, name_lower = list }, { type = 1, _id = 0 }).type
+	
+	-- If cache exists, return it.
+	if type(cache) ~= 'table' then
+		return mp.unpack(cache), list_type
+	end
+
+	local list_info = _DB:find_one('ningyou.lists', { user = username, name_lower = list })
+	if not list_info or not list_info.ids then return end
+
+	local lists = {}
+	local not_in_cache = {}
+	not_in_cache[1] = sites[list_info.type]
+
+	for i = 1, #list_info.ids do
+		local info = list_info.ids[i]
+		local key = ('%s:%d'):format(sites[list_info.type].name, info.id)
+		local ttl = _CLIENT:command('ttl', key)
+
+		if not (_CLIENT:command('exists', key) == 1 and (ttl > 86400 or ttl == -1)) then
+			not_in_cache[#not_in_cache+1] = info.id
+		end
+
+		local show_info = _CLIENT:command('hgetall', key)
+		-- Arrange the return as key = value
+		for i = 1, #show_info, 2 do
+			show_info[show_info[i]] = show_info[i+1]
+			show_info[i] = nil
+			show_info[i+1] = nil
+		end
+
+		local today = date('%Y-%m-%d')
+		if not lists[info.status] then lists[info.status] = {} end
+		info.title = self:show_title(tonumber(info.id), sites[list_info.type].name) or 'N/A'
+		if list_info.type == 'tv' then
+			info.type = 'TV Series'
+		else
+			info.type = show_info.type or 'N/A'
+		end
+		if show_info.enddate then
+			info.total = show_info.episodecount or 'N/A'
+			info.aired = show_info.enddate < today
+		elseif show_info.status and show_info.status ~= 'Continuing' then
+			info.total = show_info.episodecount or 'N/A'
+			info.aired = true
+		end
+		if show_info.startdate and show_info.startdate:match'%d+-%d+-%d+' then
+			info.notyet = show_info.startdate > today
+			info.startdate = show_info.startdate
+		elseif show_info.status and status == 'Continuing' then
+			info.notyet = false
+		else
+			info.notyet = true
+		end
+		local index = #lists[info.status]
+		lists[info.status][index+1] = info
+	end
+
+	for _, ids in next, lists do
+		table.sort(ids, function(a,b) return a.title:lower() < b.title:lower() end)
+	end
+
+	if not_in_cache[2] then
+		bunraku:Send(table.concat(not_in_cache, ','))
+	else
+		_CLIENT:command('setex', cache_key, 7200, mp.pack(lists))
+	end
+	
+	return lists, list_info.type
 end
 
 return _M
