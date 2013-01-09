@@ -5,7 +5,7 @@ local sessions = require'sessions'
 local anidbsearch = require'anidbsearch'
 local mangasearch = require'mangasearch'
 local tvsearch = require'tvsearch'
-local redis = require'redis'
+local client = _CLIENT
 
 local sites = dofile'config/sites.lua'
 
@@ -28,27 +28,33 @@ return {
 
 			if results then
 				local not_in_cache = {}
-				table.insert(not_in_cache, sites[searchtype])
-				local cache = redis.connect('127.0.0.1', 6379)
+				not_in_cache[1] = sites[searchtype].name
 				for i = 1, #results do
-					local key = sites[searchtype]..":"..results[i].id
-					if not (cache:exists(key) and (cache:ttl(key) > 86400 or cache:ttl(key) == -1)) then
-						table.insert(not_in_cache, results[i].id)
+					local key = ("%s:%d"):format(sites[searchtype].name, results[i].id)
+					local show_info = _CLIENT:command('hgetall', key)
+
+					for i = 1, #show_info, 2 do
+						show_info[show_info[i]] = show_info[i+1]
+						show_info[i] = nil
+						show_info[i+1] = nil
+					end
+
+					local ttl = client:command('ttl', key)
+					if #show_info == 0 and (ttl > 86400 or ttl == -1) then
+						not_in_cache[#not_in_cache+1] = results[i].id
 					end
 					if searchtype == "tv" then
 						results[i].type = "TV Series"
 					else
-						results[i].type = cache:hget(key, "type") or "N/A"
+						results[i].type = show_info.type or "N/A"
 					end
-					if cache:hexists(key, "enddate") or searchtype == "tv" then
-						results[i].total = cache:hget(key, "episodecount") or "N/A"
+					if show_info.enddate or searchtype == "tv" then
+						results[i].total = show_info.episodecount or "N/A"
 					end
 				end
-				cache:quit()
 
 				if not_in_cache[2] then
-					local send = table.concat(not_in_cache, ",")
-					bunraku:Send(send)
+					bunraku:Send(table.concat(not_in_cache, ","))
 				end
 				local list_info = _DB:query("ningyou.lists", { user = sessions.username, type = searchtype}, nil, nil, { name_lower = 1, name = 1, type = 1 })
 				local lists = {}
