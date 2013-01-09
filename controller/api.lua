@@ -5,7 +5,7 @@ local redis = require'redis'
 local bunraku = require'bunraku'
 local listlib = require'list'
 local sessions = require'sessions'
-
+local client = _CLIENT
 local content = ob.Get'Content'
 local sites = dofile'config/sites.lua'
 
@@ -89,26 +89,29 @@ local methods = {
 			if not token then return err(fail), true end
 
 			local username = token['user']
-			local client = redis.connect()
 			local list_lower = list:lower()
 			local episode = tonumber(episode)
-			local today = os.date('%Y-%m-%d')
 
 			local list_info = _DB:find_one("ningyou.lists", { user = username, name_lower = list_lower, ['ids.id'] = id })
 			if not list_info then return err('Unable to find id %d in list %s', id, list), true end
 
-			local key = sites[list_info.type]..":"..id
-			local total
-			if client:hexists(key, "enddate") then
-				total = client:hget(key, "episodecount") or "N/A"
-			elseif client:hexists(key, "status") then
-				local status = client:hget(key, "status")
-				if status ~= "Continuing" then
-					total = client:hget(key, "episodecount") or "N/A"
-				end
+			local key = ("%s:%d"):format(sites[list_info.type].name, id)
+			local show_info = client:command('get', key)
+
+			for i = 1, #show_info, 2 do
+				show_info[show_info[i]] = show_info[i+1]
+				show_info[i] = nil
+				show_info[i+1] = nil
 			end
 
-			local status = status
+			local total
+			if show_info.enddate then
+				total = show_info.episodecount or "N/A"
+			elseif show_info.status and show_info.status ~= "Continuing" then
+				total = client:hget(key, "episodecount") or "N/A"
+			end
+
+			local status = show_info.status
 			local statuschange
 			if total and episode >= tonumber(total) then
 				episode = total
@@ -123,7 +126,6 @@ local methods = {
 			end
 			if not success then return err('Unable to change status of id %d in list %s, try again later', id, list), true end
 
-			client:quit()
 			content:write(json.encode({ result = "success", id = id, episode = episode, status = status }))
 		end,
 		addshow = function(token, list, id, episode, status)
@@ -161,26 +163,26 @@ local methods = {
 			local list_info = _DB:find_one('ningyou.lists', { user = username, name_lower = list_lower, ['ids.id'] = id })
 			if not list_info then return err('Unable to find id %d in list %s', id, list), true end
 
-			local show_info = find_show(list_info['ids'], id)
+			local show = find_show(list_info['ids'], id)
+			local key = ("%s:%d"):format(sites[list_info.type].name, id)
+			local show_info = client:command('get', key)
 
-			local client = redis.connect()
-			local today = os.date('%Y-%m-%d')
-
-			local key = sites[list_info.type]..":"..id
-			local total
-			if client:hexists(key, "enddate") then
-				total = client:hget(key, "episodecount") or "N/A"
-			elseif client:hexists(key, "status") then
-				local status = client:hget(key, "status")
-				if status ~= "Continuing" then
-					total = client:hget(key, "episodecount") or "N/A"
-				end
+			for i = 1, #show_info, 2 do
+				show_info[show_info[i]] = show_info[i+1]
+				show_info[i] = nil
+				show_info[i+1] = nil
 			end
-			client:quit()
 
-			show_info.total = total
+			local total
+			if show_info.enddate then
+				total = show_info.episodecount or "N/A"
+			elseif show_info.status and show_info.status ~= "Continuing" then
+				total = client:hget(key, "episodecount") or "N/A"
+			end
 
-			content:write(json.encode(show_info))
+			show.total = total
+
+			content:write(json.encode(show))
 		end,
 		getlist = function(token, list, username)
 			if not token then return err'No token defined', true end
@@ -193,61 +195,9 @@ local methods = {
 			local username = user:Exists(check_user)
 			if not username then return err('Username %s not found.', check_user), true end
 
-			local list_lower = list:lower()
-			local list_info = _DB:find_one("ningyou.lists", { user = username, name_lower = list })
-			if not list_info then return err('Unable to find list %s under user %s', list, username), true end
+			local lists = listlib:getlist(username, list)
+			if not lists then return err('Unable to find list: %s', list) end
 
-			local not_in_cache = {}
-			local lists = {}
-			table.insert(not_in_cache, sites[list_info.type])
-
-			local cache = redis.connect('127.0.0.1', 6379)
-			if not list_info.ids then return nil, true end
-
-			for _, info in next, list_info.ids do
-				local key = sites[list_info.type]..":"..info.id
-				if not (cache:exists(key) and (cache:ttl(key) > 86400 or cache:ttl(key) == -1)) then
-						table.insert(not_in_cache, info.id)
-				end
-				local today = os.date('%Y-%m-%d')
-				if not lists[info.status] then lists[info.status] = {} end
-				info.title = find_title(tonumber(info.id), sites[list_info.type])
-				if list_info.type == "tv" then
-				info.type = "TV Series"
-				else
-					info.type = cache:hget(key, "type") or "N/A"
-				end
-				if cache:hexists(key, "enddate") then
-					info.total = cache:hget(key, "episodecount") or "N/A"
-					info.aired = cache:hget(key, "enddate") < today
-				elseif cache:hexists(key, "status") then
-					local status = cache:hget(key, "status")
-					if status ~= "Continuing" then
-						info.total = cache:hget(key, "episodecount") or "N/A"
-						info.aired = true
-					end
-				end
-				if cache:hexists(key, "startdate") and cache:hget(key, "startdate"):match"%d+-%d+-%d+" then
-					info.notyet = cache:hget(key, "startdate") > today
-					info.startdate = cache:hget(key, "startdate")
-				elseif cache:hexists(key, "status") then
-					local status = cache:hget(key, "status")
-					if status == "Continuing" then
-						info.notyet = false
-					end
-				else
-					info.notyet = true
-				end
-				table.insert(lists[info.status], info)
-			end
-			cache:quit()
-			for _, ids in next, lists do
-				table.sort(ids, function(a,b) return a.title:lower() < b.title:lower() end)
-			end
-			if not_in_cache[2] then
-				local send = table.concat(not_in_cache, ",")
-				bunraku:Send(send)
-			end
 			content:write(json.encode(lists))
 		end,
 	}
