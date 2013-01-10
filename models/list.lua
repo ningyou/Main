@@ -33,8 +33,9 @@ function _M:show_title(id, site, lang)
 		_DB:find_one(db_name, { [site_id] = id, type = 'official', lang = 'en' }, { title = 1, _id = 0})
 		or
 		_DB:find_one(db_name, { [site_id] = id, type = 'main' }, { title = 1, _id = 0})
+		if not r then return nil, ("Unable to find title of %s id: %d"):format(site, id) end
 
-		if r then return r.title end
+		return r.title
 	end
 end
 
