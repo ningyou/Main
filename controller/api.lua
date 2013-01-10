@@ -37,9 +37,9 @@ end
 
 local function find_show(ids, id)
 	local id = tonumber(id)
-	for i,v in next, ids do
+	for i, v in next, ids do
 		if tonumber(v.id) == id then
-			return v
+			return i
 		end
 	end
 end
@@ -163,9 +163,10 @@ local methods = {
 			local list_info = _DB:find_one('ningyou.lists', { user = username, name_lower = list_lower, ['ids.id'] = id })
 			if not list_info then return err('Unable to find id %d in list %s', id, list), true end
 
-			local show = find_show(list_info['ids'], id)
+			local idx = find_show(list_info['ids'], id)
+			local show = list_info.ids[idx]
 			local key = ("%s:%d"):format(sites[list_info.type].name, id)
-			local show_info = client:command('get', key)
+			local show_info = client:command('hgetall', key)
 
 			for i = 1, #show_info, 2 do
 				show_info[show_info[i]] = show_info[i+1]
@@ -173,14 +174,13 @@ local methods = {
 				show_info[i+1] = nil
 			end
 
-			local total
 			if show_info.enddate then
-				total = show_info.episodecount or "N/A"
+				show.total = show_info.episodecount or "N/A"
 			elseif show_info.status and show_info.status ~= "Continuing" then
-				total = client:hget(key, "episodecount") or "N/A"
+				show.total = show_info.episodecount or "N/A"
 			end
 
-			show.total = total
+			show.title = listlib:show_title(tonumber(id), sites[list_info.type].name)
 
 			content:write(json.encode(show))
 		end,
