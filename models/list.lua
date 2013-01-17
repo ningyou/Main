@@ -24,8 +24,9 @@ function _M:show_title(id, site, lang)
 	if site == 'tvdb' then
 		local key = ('%s:%d'):format(site, id)
 		local title = _CLIENT:command('hget', key, 'title')
+		if title == 'table' then return end
 
-		return title or 'N/A'
+		return title
 	else
 		local db_name = ('ningyou.%stitles'):format(site)
 		local site_id = ('%s_id'):format(site)
@@ -35,6 +36,7 @@ function _M:show_title(id, site, lang)
 		_DB:find_one(db_name, { [site_id] = id, type = 'main' }, { title = 1, _id = 0})
 		if not r then return nil, ("Unable to find title of %s id: %d"):format(site, id) end
 
+		if type(r.title) ~= "string" then return end
 		return r.title
 	end
 end

@@ -21,7 +21,7 @@ local function format_history(info)
 
 	if (not list_info or not info) then return end
 
-	return strings[info.action][info.type]:format(list_info.name, listlib:show_title(tonumber(info.id), sites[list_info.type].name) or '', info.value or 0)
+	return strings[info.action][info.type]:format(list_info.name, listlib:show_title(tonumber(info.id), sites[list_info.type].name) or 'N/A', info.value or 0)
 end
 
 return {
