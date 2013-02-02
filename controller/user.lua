@@ -18,10 +18,12 @@ local user_env = {
 local function format_history(info)
 	local strings = dofile'config/history.lua'
 	local list_info = _DB:find_one('ningyou.lists', { user = info.user, name_lower = info.list:lower() }, { name = 1, type = 1, _id = 0 })
-
 	if (not list_info or not info) then return end
+	
+	local show_title = listlib:show_title(tonumber(info.id), sites[list_info.type].name) or 'N/A'
+	if type(show_title) ~= "string" then return end
 
-	return strings[info.action][info.type]:format(list_info.name, listlib:show_title(tonumber(info.id), sites[list_info.type].name) or 'N/A', info.value or 0)
+	return strings[info.action][info.type]:format(list_info.name, show_title, info.value or 0)
 end
 
 return {
