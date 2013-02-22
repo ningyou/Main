@@ -196,10 +196,9 @@ function _M:getlist(username, list)
 		if show_info.startdate and show_info.startdate:match'%d+-%d+-%d+' then
 			info.notyet = show_info.startdate > today
 			info.startdate = show_info.startdate
-		elseif show_info.status and status == 'Continuing' then
-			info.notyet = false
-		else
+		elseif show_info.startdate then
 			info.notyet = true
+			info.startdate = show_info.startdate
 		end
 		local index = #lists[info.status]
 		lists[info.status][index+1] = info
