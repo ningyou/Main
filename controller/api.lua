@@ -68,7 +68,7 @@ local methods = {
 			if not token then return err(fail), true end
 
 			local username = user or token['user']
-			local list_info = _DB:query('ningyou.lists', { user = username }, nil, nil, { name = 1, type = 1, _id = 0 })
+			local list_info = _DB:query('ningyou.lists', { user = username }, { name = 1, type = 1, _id = 0 })
 			if not list_info then return err'No lists found', true end
 
 			local out = {}

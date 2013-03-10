@@ -30,14 +30,14 @@ function _M:show_title(id, site, lang)
 	else
 		local db_name = ('ningyou.%stitles'):format(site)
 		local site_id = ('%s_id'):format(site)
-		local r =
-		_DB:find_one(db_name, { [site_id] = id, type = 'official', lang = 'en' }, { title = 1, _id = 0})
+		local title =
+		_DB:find_one(db_name, { [site_id] = id, type = 'official', lang = 'en' }, "title")
 		or
-		_DB:find_one(db_name, { [site_id] = id, type = 'main' }, { title = 1, _id = 0})
-		if not r then return nil, ("Unable to find title of %s id: %d"):format(site, id) end
+		_DB:find_one(db_name, { [site_id] = id, type = 'main' }, "title")
+		if not title then return nil, ("Unable to find title of %s id: %d"):format(site, id) end
 
-		if type(r.title) ~= "string" then return end
-		return r.title
+		if type(title) ~= "string" then return end
+		return title
 	end
 end
 
@@ -113,7 +113,7 @@ function _M:removeshow(list, id)
 		name_lower = list,
 	}, {
 		['$pull'] = {
-			ids = mongo.NULL(),
+			ids = mongoc.null(),
 		}
 	})
 	if not success then return nil, err end
@@ -147,7 +147,7 @@ function _M:getlist(username, list)
 	local list = list:lower()
 	local cache_key = ('cache:%s:%s'):format(username, list)
 	local cache = _CLIENT:command('get', cache_key)
-	local list_type = _DB:find_one('ningyou.lists', { user = username, name_lower = list }, { type = 1, _id = 0 }).type
+	local list_type = _DB:find_one('ningyou.lists', { user = username, name_lower = list }, "type")
 
 	-- If cache exists, return it.
 	if type(cache) ~= 'table' then

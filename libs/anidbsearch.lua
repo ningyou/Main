@@ -14,7 +14,7 @@ local function tokenize(text)
 		if #token and not unique[token] then
 			local keyword
 			if token:len() > 3 then
-				keyword = mongo.RegEx('^' .. token .. '.*', '')
+				keyword = mongoc.regex('^' .. token .. '.*', '')
 			else
 				keyword = token
 			end
@@ -29,8 +29,7 @@ local insert = function(tbl, aid, weight)
 	weight = math.floor(weight)
 	if(weight < THRESHOLD) then return end
 
-	local title = _DB:find_one('ningyou.anidbtitles', { anidb_id = aid, type = 'official', lang = 'en' }, { title = 1 }) or _DB:find_one('ningyou.anidbtitles', { anidb_id = aid, type = 'main' }, { title = 1 })
-	title = title.title
+	local title = _DB:find_one('ningyou.anidbtitles', { anidb_id = aid, type = 'official', lang = 'en' }, "title") or _DB:find_one('ningyou.anidbtitles', { anidb_id = aid, type = 'main' }, "title")
 
 	local data = tbl[aid]
 	if(data and data[2] < weight) then
