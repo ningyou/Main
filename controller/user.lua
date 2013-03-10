@@ -40,7 +40,7 @@ return {
 
 			user_env.lists = lists
 			user_env.url = sites[list_type].url
-			user_env.list_name = _DB:find_one('ningyou.lists', { user = username, name_lower = list }, { name = 1, _id = 0 }).name
+			user_env.list_name = _DB:find_one('ningyou.lists', { user = username, name_lower = list }, "name")
 
 			-- Fix sorting.
 			user_env.status = {
@@ -63,7 +63,7 @@ return {
 				table.insert(user_env.history, { string = format_history(info), time = date('%c', info.time) })
 			end
 
-			local list_info = _DB:query('ningyou.lists', { user = username }, nil, nil, { name_lower = 1, name = 1, type = 1 })
+			local list_info = _DB:query('ningyou.lists', { user = username }, { name_lower = 1, name = 1, type = 1 })
 
 			if list_info then
 				user_env.lists = {}
@@ -72,7 +72,7 @@ return {
 				end
 				table.sort(user_env.lists, function(a,b) return a.name:lower() < b.name:lower() end)
 			end
-			user_env['user_title'] = _DB:find_one('ningyou.users', { name = username }, { title = 1 }).title
+			user_env['user_title'] = _DB:find_one('ningyou.users', { name = username }, "title")
 			template:RenderView('user', user_env)
 		end
 	end,

@@ -56,7 +56,7 @@ return {
 				if not_in_cache[2] then
 					bunraku:Send(table.concat(not_in_cache, ","))
 				end
-				local list_info = _DB:query("ningyou.lists", { user = sessions.username, type = searchtype}, nil, nil, { name_lower = 1, name = 1, type = 1 })
+				local list_info = _DB:query("ningyou.lists", { user = sessions.username, type = searchtype}, { name_lower = 1, name = 1, type = 1 })
 				local lists = {}
 
 				if list_info then

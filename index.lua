@@ -15,15 +15,14 @@ local routing = require'routing'
 local ob = require'ob'
 local sessions = require'sessions'
 local redis = require'hiredis'
-local mongo = require"mongo"
+local mongo = require"mongoc"
 
 -- We probably want to wrap these in some metatable magic to prevent them
 -- from being called unnecessary.
 _GET = parseGet()
 _POST = parsePost()
-_DB = mongo.Connection.New()
+_DB = assert(mongo.connect("127.0.0.1", 27017))
 _CLIENT = assert(redis.connect'/var/run/redis/redis.sock')
-assert(_DB:connect'127.0.0.1')
 
 xpcall(
 	function()
