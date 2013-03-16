@@ -179,6 +179,8 @@ function _M:getlist(username, list)
 		end
 
 		local today = date('%Y-%m-%d')
+
+		if not info.status then break end
 		if not lists[info.status] then lists[info.status] = {} end
 		info.title = self:show_title(tonumber(info.id), sites[list_info.type].name) or 'N/A'
 		if list_info.type == 'tv' then
