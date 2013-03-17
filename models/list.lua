@@ -183,6 +183,8 @@ function _M:getlist(username, list)
 		if not info.status then break end
 		if not lists[info.status] then lists[info.status] = {} end
 		info.title = self:show_title(tonumber(info.id), sites[list_info.type].name) or 'N/A'
+		if type(info.title) == "table" then info.title = 'N/A' end
+
 		if list_info.type == 'tv' then
 			info.type = 'TV Series'
 		else
