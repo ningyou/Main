@@ -28,7 +28,7 @@ function _M:Get(session_id)
 		_CLIENT:command('expire', key, 7200)
 	end 
 
-	cookie:Set('session_id', session_id, "expires", os.time()+6.311e+7), "path", "/"
+	cookie:Set('session_id', session_id, "expires", os.time()+6.311e+7, "path", "/")
 
 	return username
 end
