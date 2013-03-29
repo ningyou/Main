@@ -11,7 +11,7 @@ function _M:Save(username, remember)
 		_CLIENT:command('setex', key:format(session_id), 604800, username) -- 1 week
 	end
 
-	cookie:Set('session_id', session_id)
+	cookie:Set('session_id', session_id, "expires", os.time()+6.311e+7, "path", "/")
 
 	return session_id
 end
@@ -26,7 +26,10 @@ function _M:Get(session_id)
 		_CLIENT:command('expire', key, 604800)
 	else
 		_CLIENT:command('expire', key, 7200)
-	end
+	end 
+
+	cookie:Set('session_id', session_id, "expires", os.time()+6.311e+7, "path", "/")
+
 	return username
 end
 

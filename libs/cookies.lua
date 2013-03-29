@@ -42,6 +42,9 @@ local handlers = {
 	expires = function(time)
 		return os.date('!Expires=%a, %d-%b-%Y %H:%M:%S GMT', time)
 	end,
+	path = function(path)
+		return string.format("path=%s", path)
+	end,
 }
 
 function _M:Set(name, value, ...)
