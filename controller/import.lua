@@ -126,7 +126,7 @@ return {
 		if(import_file and importers[site]) then
 			return importers[site]()
 		elseif sessions.username then
-			local list_info = _DB:query("ningyou.lists", { user = sessions.username }, nil, nil, { name_lower = 1, name = 1, type = 1 })
+			local list_info = _DB:query("ningyou.lists", { user = sessions.username }, { name_lower = 1, name = 1, type = 1 })
 
 			if list_info then
 				user_env.lists = {}
