@@ -16,12 +16,13 @@ local ob = require'ob'
 local sessions = require'sessions'
 local redis = require'hiredis'
 local mongo = require"mongoc"
+local psql = require'luasql.postgres'.postgres()
 
 -- We probably want to wrap these in some metatable magic to prevent them
 -- from being called unnecessary.
 _GET = parseGet()
 _POST = parsePost()
-_DB = assert(mongo.connect("127.0.0.1", 27017))
+_DB = assert(psql:connect'user=ningyou dbname=ningyoudb port=5433')
 _CLIENT = assert(redis.connect'/var/run/redis/redis.sock')
 
 xpcall(

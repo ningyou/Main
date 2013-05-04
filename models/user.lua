@@ -39,11 +39,12 @@ end
 
 function _M:Register(name, password, mail)
 	if self:ValidateMail(mail) and self:ValidateName(name) and password then
-		if _DB:find_one('ningyou.users', { name_lower = name:lower() }) then return nil, 'User Exists' end
-		if _DB:find_one('ningyou.users', { mail = mail:lower() }) then return nil, 'Mail Exists' end
+		local query = "select 1 from ningyou_users where lower(name) = lower('%s') or lower(mail) = lower('%s') limit 1"
+		local res = _DB:execute(query:format(name, mail))
+		if res:numrows() > 0 then return nil, 'User Exists' end
 
-		_DB:insert('ningyou.users', { name = name, name_lower = name:lower(), mail = mail:lower(), password = string.SHA256(password) })
-		_DB:ensure_index('ningyou.users', { name_lower = 1, mail = 1 }, 1)
+		local query = "insert into ningyou_users (name, mail, password) values ('%s', '%s', '%s')"
+		_DB:execute(query:format(name, mail:lower(), string.SHA256(password)))
 		return name
 	end
 end
@@ -55,21 +56,24 @@ function _M:Login(login, password)
 	if(self:ValidateMail(login)) then
 		field = 'mail'
 	else
-		field = 'name_lower'
+		field = 'name'
 	end
 
-	local r = _DB:find_one('ningyou.users', { [field] = login:lower() })
-	if r then
-		if password == r.password then
-			return r.name
-		end
-	end
+	local query = "select id, name, password from ningyou_users where LOWER(%s) = LOWER('%s') limit 1"
+	local res = _DB:execute(query:format(field, login))
+	if not (res:numrows() > 0) then return end
+
+	local user_id, name, res_password = res:fetch()
+	if password ~= res_password then return end
+
+	return name, user_id
 end
 
 function _M:Exists(name)
-	local r = _DB:find_one('ningyou.users', { name_lower = name:lower() })
+	local query = "select name, id from ningyou_users where lower(name) = lower('%s') limit 1"
+	local res = _DB:execute(query:format(name))
 
-	if r then return r.name end
+	if res:numrows() > 0  then return res:fetch() end
 end
 
 return _M

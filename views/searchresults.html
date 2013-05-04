@@ -21,9 +21,9 @@
 			<div id="add-form" class="hide">
 				<br/>
 				<form>
-					<select name="list_name" class="input-medium">
+					<select name="list_id" class="input-medium">
 						{% if lists then for i = 1, #lists do %}
-						<option>{{lists[i].name}}</option>
+						<option value="{{lists[i].id}}">{{lists[i].name}}</option>
 						{% end end %}
 					</select>
 					<select name="status" class="input-medium">
@@ -64,7 +64,7 @@
 		});
 		var tr = $(this).closest('tr')
 		var title = tr.data('title');
-		if(form.list_name)
+		if(form.list_id)
 		{
 			var ep = form.episodes| 0;
 			var total = tr.find($('td:last-child')).html() | 0;

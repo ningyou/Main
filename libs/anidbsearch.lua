@@ -1,3 +1,5 @@
+local db = require'db'
+
 local scores = {
 	main = 1,
 	syn = .8,
@@ -8,17 +10,11 @@ local scores = {
 local THRESHOLD = 100
 
 local function tokenize(text)
-	local tokens = { ['$and'] = {}}
+	local tokens = {}
 	local unique = {}
 	for token in text:gmatch('[^%s]+') do
 		if #token and not unique[token] then
-			local keyword
-			if token:len() > 3 then
-				keyword = mongoc.regex('^' .. token .. '.*', '')
-			else
-				keyword = token
-			end
-			table.insert(tokens['$and'], { _keywords = keyword })
+			tokens[#tokens+1] = token
 			unique[token] = true
 		end
 	end
@@ -29,25 +25,27 @@ local insert = function(tbl, aid, weight)
 	weight = math.floor(weight)
 	if(weight < THRESHOLD) then return end
 
-	local title = _DB:find_one('ningyou.anidbtitles', { anidb_id = aid, type = 'official', lang = 'en' }, "title") or _DB:find_one('ningyou.anidbtitles', { anidb_id = aid, type = 'main' }, "title")
+	local query = "select show_title(%d, 'en', 'anidb')"
+	local title = _DB:execute(query:format(aid)):fetch()
 
 	local data = tbl[aid]
 	if(data and data[2] < weight) then
 		data[2] = weight
 	elseif(not data) then
 		tbl[aid] = {title, weight}
-	end
+	end 
 end
 
 local doSearch = function(pattern)
-	local pattern = pattern:gsub('[^%w_0-9]+', ' ')
 	local matches = {}
 	local search = pattern:lower():gsub('([-?]+)', '%%%1'):gsub('\'', '`')
 	local tokens = tokenize(search)
 
-	local result = _DB:query('ningyou.anidbtitles', tokens)
-	for r in result:results() do
-		insert(matches, r.anidb_id, 1e3 * scores[r.type])
+	local query = "select show_id, type from ningyou_titles where keywords @@ to_tsquery('%s')"
+	local res, err = _DB:execute(query:format(table.concat(tokens, ":* & ") .. ":*"))
+	if err then return print(err) end
+	for show_id, show_type in db:results(res) do
+		insert(matches, show_id, 1e3 * scores[show_type])
 	end
 
 	local output = {}

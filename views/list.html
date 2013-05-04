@@ -3,13 +3,13 @@
 			<div class="row">
 				<div class="span12">
 					<h2>{{list_name}}</h2>
-					{% for i = 1, #status do if lists[status[i]] then %}
+					{% for i = 1, #lists do if #lists[order[i]] > 0 then %}
 					<table class="table table-bordered table-striped table-condensed">
 						<thead>
 							<tr>
-								<th data-status="{{status[i]}}" class="span12">
-									{{status[i]}} ({{#lists[status[i]]}})
-									{% if user == logged_user then %}
+								<th data-status="{{order[i]}}" class="span12">
+									{{status[order[i]]}} ({{#lists[order[i]]}})
+									{% if user_id == logged_user_id then %}
 									<div class="pull-right">
 										<a href="#" class="hide"><i class="icon-refresh"></i></a>
 										<a href="#"><i class="icon-edit"></i></a>
@@ -25,7 +25,7 @@
 							</tr>
 						</thead>
 						<tbody>
-							{% for _, info in next, lists[status[i]] do %}
+							{% for _, info in next, lists[order[i]] do %}
 							<tr data-id="{{info.id}}" data-title="{{info.title}}">
 								<td class="span12">
 									<a href="{{url}}{{info.id}}" target="_blank">{{info.title}}</a>
@@ -36,22 +36,20 @@
 									{% elseif not info.aired then %}
 									<small class="pull-right">Airing</small>
 									{% end %}
-									{% if user == logged_user then %}
+									{% if user_id == logged_user_id then %}
 									<div data-edit="true" class="hide pull-right">
 										<select class="input-medium select-margins">
 											{% for s = 1, #status do %}
-											<option{% if status[s] == status[i] then %} selected="yes"{% end %}>{{status[s]}}</option>
+											<option value="{{order[s]}}"{% if status[s] == status[order[i]] then %} selected="yes"{% end %}>{{status[s]}}</option>
 											{% end %}
 										</select>
 										<a href="#" class="select-margins"><i class="icon-remove"></i></a>
 									</div>
 									{% end %}
 								</td>
-								<td class="center">{{info.type}}</td>
+								<td class="center">{{info.type or 'N/A'}}</td>
 								<td class="nowrap center">
-									{% if status[i] == "Completed" then %}
-									{{info.total}}
-									{% elseif user == logged_user then %}
+									{% if user_id == logged_user_id then %}
 									<a href="#">{{info.episodes}}/{{info.total or "?"}}</a>
 									<a href="#">+</a>
 									<input type="number" class="center span1 hide input-margins" />

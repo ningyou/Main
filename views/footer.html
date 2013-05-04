@@ -11,14 +11,17 @@
 		<script src="/media/js/bootstrap-tab.js"></script>
 		<script src="/media/js/ningyou.js"></script>
 		<script>
-			{% if logged_user then %}
-			$('body').data('logged_user', '{{logged_user}}')
+			{% if logged_user_id then %}
+			$('body').data('logged_user_id', '{{logged_user_id}}')
 			{% end %}
-			{% if list_name then %}
-			$('body').data('list_name', '{{list_name}}')
+			{% if list_id then %}
+			$('body').data('list_id', '{{list_id}}')
+			{% end %}
+			{% if status then %}
+			$('body').data('status', '{{json.encode(status)}}')
 			{% end %}
 			{% if user then %}
-			$('body').data('user', '{{user}}')
+			$('body').data('user_id', '{{user_id}}')
 			{% end %}
 		</script>
 	</body>

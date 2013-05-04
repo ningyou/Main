@@ -5,6 +5,7 @@ local sessions = require'sessions'
 local anidbsearch = require'anidbsearch'
 local mangasearch = require'mangasearch'
 local tvsearch = require'tvsearch'
+local db = require'db'
 local client = _CLIENT
 
 local sites = dofile'config/sites.lua'
@@ -56,14 +57,14 @@ return {
 				if not_in_cache[2] then
 					bunraku:Send(table.concat(not_in_cache, ","))
 				end
-				local list_info = _DB:query("ningyou.lists", { user = sessions.username, type = searchtype}, { name_lower = 1, name = 1, type = 1 })
-				local lists = {}
 
-				if list_info then
-					for info in list_info:results() do
-						table.insert(lists, { name = info.name, type = info.type, name_lower = info.name_lower })
-					end
-					table.sort(lists, function(a,b) return a.name:lower() < b.name:lower() end)
+				local query = "select list.id, list.name, type.name from ningyou_lists as list, ningyou_list_types as type where type.id = list.type_id and list.user_id = %d and LOWER(type.name) = '%s' order by list.name"
+				local res, err = _DB:execute(query:format(sessions.user_id, searchtype))
+				if err then return print(err) end
+
+				local lists = {}
+				for list_id, list_name, list_type in db:results(res) do
+					lists[#lists+1] = { id = list_id, name = list_name, type = list_type, status = db:unnest('status', list_id) }
 				end
 
 				local status = {
@@ -79,6 +80,7 @@ return {
 					url = url,
 					lists = lists,
 					logged_user = sessions.username,
+					logged_user_id = sessions.user_id,
 					status = status,
 					selected_status = _POST["status"],
 					episodes = _POST["episodes"],

@@ -10,8 +10,10 @@ local mp = require'cmsgpack'
 local date = os.date
 local sites = dofile'config/sites.lua'
 local client = _CLIENT
+local db = require'db'
 
-local user_env = {
+local env = {
+	logged_user_id = sessions.user_id,
 	logged_user = sessions.username,
 }
 
@@ -28,52 +30,52 @@ end
 
 return {
 	index = function(name, list)
-		local username = user:Exists(name)
+		local username, user_id, user_title = user:Exists(name)
 		if(not username) then return 404 end
 
-		user_env['user'] = username
+		env['user'] = username
+		env['user_id'] = user_id
 
 		if list then
-			local list = list:lower()
-			local lists, list_type = listlib:getlist(username, list)
+			local lists, list_name, list_type, list_id, list_url = listlib:getlist(user_id, list)
 			if not lists then return 404 end
 
-			user_env.lists = lists
-			user_env.url = sites[list_type].url
-			user_env.list_name = _DB:find_one('ningyou.lists', { user = username, name_lower = list }, "name")
+			env.lists = lists
+			env.url = list_url
+			env.list_name = list_name
+			env.list_id = list_id
 
-			-- Fix sorting.
-			user_env.status = {
-				'Watching',
-				'Completed',
-				'Plan to Watch',
-				'On-Hold',
-				'Dropped',
-			}
+			env.status = db:unnest('status', list_id)
+			env.order = db:unnest('order', list_id)
 
-			template:RenderView('list', user_env)
+			env.json = json
+
+			template:RenderView('list', env)
 		else
+
+			--[[
 			local key = 'history:'..username
 			local history = client:command('lrange', key, 0, -1)
-			user_env.history = {}
+			env.history = {}
 			for i = #history, 1, -1 do
 				local info = json.decode(history[i])
 				info.user = username
 
-				table.insert(user_env.history, { string = format_history(info), time = date('%c', info.time) })
+				table.insert(env.history, { string = format_history(info), time = date('%c', info.time) })
 			end
+			]]
 
-			local list_info = _DB:query('ningyou.lists', { user = username }, { name_lower = 1, name = 1, type = 1 })
-
-			if list_info then
-				user_env.lists = {}
-				for info in list_info:results() do
-					table.insert(user_env.lists, { name = info.name, type = info.type, name_lower = info.name_lower })
+			local query = "select list.name, type.name from ningyou_lists as list, ningyou_list_types as type where type.id = list.type_id and list.user_id = %d"
+			local res = _DB:execute(query:format(user_id))
+			if res then
+				env.lists = {}
+				for list_name, list_type in db:results(res) do
+					env.lists[#env.lists+1] = { name = list_name, type = list_type }
 				end
-				table.sort(user_env.lists, function(a,b) return a.name:lower() < b.name:lower() end)
+				table.sort(env.lists, function(a,b) return a.name:lower() < b.name:lower() end)
 			end
-			user_env['user_title'] = _DB:find_one('ningyou.users', { name = username }, "title")
-			template:RenderView('user', user_env)
+			env['user_title'] = user_title
+			template:RenderView('user', env)
 		end
 	end,
 
@@ -95,9 +97,9 @@ return {
 			content:write('Already logged in as ' .. sessions.username)
 		elseif _POST['submit'] then
 			local uri = getEnv()['Referer']
-			local login = user:Login(_POST['name'], string.SHA256(_POST['password']))
+			local login, user_id = user:Login(_POST['name'], string.SHA256(_POST['password']))
 			if login then
-				sessions:Save(login, _POST.remember)
+				sessions:Save(login, user_id, _POST.remember)
 				header('Location', uri)
 				setReturnCode(302)
 			else
@@ -127,7 +129,7 @@ return {
 
 		local func = {
 			list = function()
-				if not _POST['submit'] then return template:RenderView('addlist', user_env) end
+				if not _POST['submit'] then return template:RenderView('addlist', env) end
 
 				local success, err = listlib:addlist(_POST.name, _POST.type)
 				if not success then return content:write(err) end
@@ -136,16 +138,12 @@ return {
 				return setReturnCode(302)
 			end,
 			show = function()
-				local success, err = listlib:addshow(_POST.list_name, _POST.id, _POST.episodes, _POST.status, _POST.rating)
+				if not _POST.show_id then return end
+				local success, err = listlib:addshow(sessions.user_id, _POST.list_id, _POST.show_id, _POST.episodes, _POST.status_id, _POST.rating)
 			end,
 			episode = function()
-				if not _POST.id then return end
-				if _POST.episodes then
-					local success, err = listlib:updateshow(_POST.list_name, _POST.id, 'episodes', _POST.episodes)
-				end
-				if _POST.statuschange == 'true' then
-					listlib:updateshow(_POST.list_name, _POST.id, 'status', _POST.status)
-				end
+				if not _POST.show_id then return end
+				local success, err = listlib:updateshow(sessions.user_id, _POST.list_id, _POST.show_id, _POST.episodes, _POST.status_id)
 			end,
 		}
 
@@ -158,9 +156,9 @@ return {
 		if not sessions.username then return 404 end
 
 		if t == 'show' then
-			if not _POST.id then return end
+			if not _POST.show_id then return end
 
-			listlib:removeshow(_POST.list_name, _POST.id)
+			listlib:removeshow(sessions.user_id, _POST.list_id, _POST.show_id)
 		elseif t == 'list' then
 			local list = _POST.name or n
 			if not list then return end

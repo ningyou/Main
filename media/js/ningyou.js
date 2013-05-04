@@ -30,6 +30,7 @@ $('#search').submit(function(event) {
 	});
 })
 
+// Progress click.
 $('table > tbody > tr > td:last-child > a:nth-child(2)').click(function()
 {
 	var table = $(this).closest('table');
@@ -38,7 +39,8 @@ $('table > tbody > tr > td:last-child > a:nth-child(2)').click(function()
 	var title = tr.data('title');
 	var ep = $(this).parent().find('a:first').html().split('/')[0] | 0;
 	var total = $(this).parent().find('a:first').html().split('/')[1] | 0;
-	var status = table.find('th').data('status');
+	var status = table.find('th').data('status') | 0;
+	var status_arr = JSON.parse($('body').data('status'));
 	var statuschange = false;
 	var refresh = table.find('thead > tr > th > div > a:first-child')
 	ep++;
@@ -46,15 +48,15 @@ $('table > tbody > tr > td:last-child > a:nth-child(2)').click(function()
 	if(total) {
 		if(ep >= total) {
 			ep == total;
-			status = "Completed";
+			status = 2;
 			statuschange = true;
 		}
 	} else {
 		total = "?";
 	}
 	
-	if(!(status == "Watching" || status == "Completed")) {
-		status = "Watching";
+	if(!(status == 1 || status == 2)) {
+		status = 1;
 		statuschange = true;
 	}
 
@@ -65,18 +67,18 @@ $('table > tbody > tr > td:last-child > a:nth-child(2)').click(function()
 		type: "POST",
 		url: "/add/episode",
 			data: {
-				"id" : id,
+				"show_id" : id,
 				"episodes" : ep,
-				"list_name" : $('body').data('list_name'),
-				"user" : $('body').data('logged_user'),
-				"status" : status,
+				"list_id" : $('body').data('list_id'),
+				"user_id" : $('body').data('logged_user_id'),
+				"status_id" : status,
 				"statuschange" : statuschange,
 			}
 		}).done(function()
 		{
 			if(statuschange)
 			{
-				topalert(title+': Status set to '+status);
+				topalert(title+': Status set to '+status_arr[status-1]);
 				refresh.show()
 			}
 		});
@@ -104,21 +106,22 @@ $('table > tbody > tr > td:last-child > input').keyup(function(event)
 	if(event.keyCode == 13) {
 		var ep = $(this).val() | 0;
 		var total = $(this).parent().find('a:first').html().split('/')[1] | 0;
-		var status = table.find('th').data('status');
+		var status = table.find('th').data('status') | 0;
+		var status_arr = JSON.parse($('body').data('status'));
 		var refresh = table.find('thead > tr > th > div > a:first-child')
 
 		if(total) {
 			if(ep >= total) {
 				ep = total;
-				status = "Completed";
+				status = 2;
 				statuschange = true;
 			}
 		} else {
 			total = "?";
 		}
 
-		if(!(status == "Watching" || status == "Completed")) {
-			status = "Watching";
+		if(!(status == 1 || status == 2)) {
+			status = 1;
 			statuschange = true;
 		}
 
@@ -130,18 +133,18 @@ $('table > tbody > tr > td:last-child > input').keyup(function(event)
 			type: "POST",
 			url: "/add/episode",
 			data: {
-				"id" : id,
+				"show_id" : id,
 				"episodes" : ep,
-				"list_name" : $('body').data('list_name'),
-				"user" : $('body').data('logged_user'),
-				"status" : status,
+				"list_id" : $('body').data('list_id'),
+				"user_id" : $('body').data('logged_user_id'),
+				"status_id" : status,
 				"statuschange" : statuschange,
 			}
 		}).done(function()
 		{
 			if(statuschange)
 			{
-				topalert(title+': Status set to '+status);
+				topalert(title+': Status set to '+status_arr[status-1]);
 				refresh.show();
 			}
 		});
@@ -174,22 +177,25 @@ $('table > tbody > tr > td > div > select').change(function()
 {
 	$(this).closest('table').find('thead > tr > th > div > a:first-child').show();
 	var id = $(this).closest('tr').data('id');
+	var ep = $(this).closest('tr').find('td:last-child').find('a:first').html().split('/')[0] | 0;
 	var title = $(this).closest('tr').data('title');
 	var status = $(this).val();
+	var status_arr = JSON.parse($('body').data('status'));
 	var statuschange = true;
 	$.ajax({
 		type: "POST",
 		url: "/add/episode",
 		data: {
-			"id" : id,
-			"list_name" : $('body').data('list_name'),
-			"user" : $('body').data('logged_user'),
-			"status" : status,
+			"show_id" : id,
+			"episodes" : ep,
+			"list_id" : $('body').data('list_id'),
+			"user_id" : $('body').data('logged_user_id'),
+			"status_id" : status,
 			"statuschange" : statuschange,
 		}
 	}).done(function()
 	{
-		topalert(title+': Status set to '+status);
+		topalert(title+': Status set to '+status_arr[status-1]);
 	});
 });
 
@@ -202,8 +208,8 @@ $('table > tbody > tr > td > div > a').click(function()
 		url: "/del/show",
 		data: {
 			"id" : id,
-			"list_name" : $('body').data("list_name"),
-			"user" : $('body').data("logged_user"),
+			"list_id" : $('body').data("list_id"),
+			"user_id" : $('body').data("logged_user_id"),
 		}
 	});
 	tr.remove();
@@ -218,7 +224,7 @@ $('table:not([id]) > tbody > tr > td:first-child').mouseover(function () {
 
 $('table:not([id]) > tbody > tr > td:first-child').click(function(e)
 {
-	if($('body').data('user') == $('body').data('logged_user')) {
+	if($('body').data('user_id') == $('body').data('logged_user_id')) {
 		if(e.target.tagName == "TD") {
 			var tr = $(this).parent();
 			tr.find('div[data-edit]').toggle();
