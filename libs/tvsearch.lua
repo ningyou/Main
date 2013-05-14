@@ -2,27 +2,22 @@ local http = require'socket.http'
 local ltn12 = require'ltn12'
 local lom = require'lxp.lom'
 local xpath = require'xpath'
-local redis = require'redis'
 local json = require'json'
 local url = require'socket.url'
+local client = _CLIENT
 
 local function add_cache(pattern, info)
-	local client = redis.connect()
 	local key = 'tvsearch:'..pattern:lower()
 
-	client:set(key, json.encode(info))
-	client:quit()
+	client:command('setex', key, 86400, json.encode(info))
 end
 
 local function check_cache(pattern)
-	local client = redis.connect()
 	local key = 'tvsearch:'..pattern:lower()
+	if client:command('exists', key) == 0 then return end
 
-	if client:exists(key) then
-		local data = client:get(key)
-		client:quit()
-		return json.decode(data)
-	end
+	local data = client:command('get', key)
+	return json.decode(data)
 end
 
 function http.get(u)
@@ -40,14 +35,12 @@ end
 local doSearch = function(pattern)
 	local in_cache = check_cache(pattern:gsub('%s', '_'):lower())
 	if in_cache then return in_cache end
-
-	local xml = http.get(('http://www.thetvdb.com/api/GetSeries.php?seriesname=%s'):format(url.escape(pattern)))
-	local xml_tree = lom.parse(xml)
+	local xml_tree = lom.parse(http.get(('http://www.thetvdb.com/api/GetSeries.php?seriesname=%s'):format(url.escape(pattern))))
 	local id = xpath.selectNodes(xml_tree, '/Data/Series/seriesid/text()')
 	local title = xpath.selectNodes(xml_tree, '/Data/Series/SeriesName/text()')
 	local output = {}
 	for i = 1, #id do
-		table.insert(output, { id = id[i], title = title[i] })
+		output[#output+1] = { id = id[i], title = title[i] }
 	end
 
 	add_cache(pattern:gsub('%s', '_'):lower(), output)
