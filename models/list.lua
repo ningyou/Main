@@ -41,11 +41,11 @@ else
 end
 end
 
-function _M:addshow(user_id, list_id, show_id, episode, status, rating)
+function _M:addshow(user_id, list_id, show_id, episodes, status_id, rating)
 	local check = "select 1 from ningyou_list_data where list_id = %d and show_id = %d limit 1"
 	if _DB:execute(check:format(list_id, show_id)):numrows() == 1 then return end
 
-	local query = "insert into ningyou_list_data (list_id, status_id, show_id, episodes) values (%d, %d, %d, %d) where list_id = %d"
+	local query = "insert into ningyou_list_data (list_id, status_id, show_id, episodes) values (%d, %d, %d, %d)"
 	local success, err = _DB:execute(query:format(list_id, status_id, show_id, episodes))
 	if not success then return nil, err end
 

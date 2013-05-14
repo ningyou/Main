@@ -26,13 +26,13 @@
 						<option value="{{lists[i].id}}">{{lists[i].name}}</option>
 						{% end end %}
 					</select>
-					<select name="status" class="input-medium">
+					<select name="status_id" class="input-medium">
 						{% for i = 1, #status do %}
-						<option{% if selected_status == status[i] then %} selected="yes"{% end %}>{{status[i]}}</option>
+						<option value='{{i}}'{% if selected_status == status[i] then %} selected="yes"{% end %}>{{status[i]}}</option>
 						{% end %}
 					</select>
 					<input name="episodes" class="center input-mini" type="number" value="{{episodes or "0"}}" />
-					<input name="id" type="hidden" value="{{h.id}}" />
+					<input name="show_id" type="hidden" value="{{h.id}}" />
 					<input name="user" type="hidden" value="{{logged_user}}" />
 					<input type="submit" class="btn" value="Add" />
 				</form>
