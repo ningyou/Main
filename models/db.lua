@@ -6,11 +6,7 @@ function _M:unnest(array, list_id)
 	local res = _DB:execute(query:format(array, list_id))
 	local coltype = res:getcoltypes()[1]
 	for i = 1, res:numrows() do
-		if coltype == "int4" then
-			out[i] = tonumber(res:fetch())
-		else
-			out[i] = res:fetch()
-		end
+		out[i] = tonumber(res:fetch()) or res:fetch()
 	end
 
 	return out
