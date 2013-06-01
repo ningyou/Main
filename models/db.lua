@@ -4,9 +4,9 @@ function _M:unnest(array, list_id)
 	local out = {}
 	local query = 'select unnest(ningyou_lists.%s) from ningyou_lists where id = %d'
 	local res = _DB:execute(query:format(array, list_id))
-	local coltype = res:getcoltypes()[1]
 	for i = 1, res:numrows() do
-		out[i] = tonumber(res:fetch()) or res:fetch()
+		local fetch = res:fetch()
+		out[i] = tonumber(fetch) or fetch
 	end
 
 	return out
