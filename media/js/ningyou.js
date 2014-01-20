@@ -13,11 +13,11 @@ function topalert(alerttxt)
 	});
 }
 
-$('#login-modal').on('shown', function () {
+$('#login-modal').on('shown.bs.modal', function () {
 	$("#login :input:first").focus();
 })
 
-$('#search').submit(function(event) {
+$('button').on("click", function(event) {
 	event.preventDefault()
 	var searchType = $('#searchtype').val()
 	$.ajax({

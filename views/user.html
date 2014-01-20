@@ -1,41 +1,21 @@
 <%include header.html %>
 
 			<div class="row">
-				<div class="span9">
+				<div class="col-md-7 col-md-offset-1">
 					<h2>{{user}} <small>{% if user_title then %}{{user_title}}{% end %}</small></h2>
-					<ul class="nav nav-tabs" id="user-tab">
-						<li class="active">
-						<a href="#home" data-toggle="tab">Home</a>
-						</li>
-						<li>
-							<a href="#history" data-toggle="tab">History</a>
-						</li>
-					</ul>
-					<div class="tab-content">
-						<div class="tab-pane active" id="home">Text.</div>
-						<div class="tab-pane" id="history">
-							<ul class="unstyled span9">
-								{% if history then for i = 1, #history do %}
-								{% if history[i].string then %}
-									<li>{{history[i].string}}<div class="pull-right">{{history[i].time}}</div></li>
-								{% end end end %}
-							</ul>
-						</div>
-					</div>
 				</div>
-				<div class="span3">
-					<h3>Lists:</h3>
-					<ul class="unstyled">
+				<div class="col-md-3">
+					<h4>Lists:</h4>
+					<div class="list-group">
 						{% if lists then for i = 1, #lists do %}
-						<li><a href="/{{user}}/{{lists[i].name:lower()}}">{{lists[i].name}}</a><small class="pull-right">{{lists[i].type}}</small></li>
+						<a class="list-group-item" href="/{{user}}/{{lists[i].name:lower()}}">{{lists[i].name}}<small class="pull-right">{{lists[i].type}}</small></a>
 						{% end end %}
-					</ul>
-					<hr />
+					</div>
 					{% if user_id == logged_user_id then %}
-					<h3>Tasks:</h3>
-					<ul class="unstyled">
-						<li><a href="/add/list">Add list</a></li>
-					</ul>
+					<h4>Tasks:</h4>
+					<div class="list-group">
+						<a class="list-group-item"href="/add/list">Add list</a>
+					</div>
 					{% end %}
 				</div>
 			</div>

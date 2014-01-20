@@ -1,23 +1,20 @@
 <%include header.html %>
 
 			<div class="row">
-				<div class="span7 offset3">
-					<form id="search">
-						<div class="input-prepend">
-							<span class="add-on">
-								<i class="icon-search"></i>
-							</span>
-							<input id="searchbox" type="text" name="search" placeholder="Search..." class="input-xlarge"/>
-							<select id="searchtype" class="input-small">
-								<option value="anime">Anime</option>
-								<option value="manga">Manga</option>
-								<option value="tv">TV series</option>
-							</select>
-							<input type="submit" class="btn" name="search" value="Search" />
-						</div>
-					</form>
+				<div class="col-md-7 col-md-offset-4">
+					<div class="input-group col-xs-8">
+						<input id="searchbox" type="text" name="search" placeholder="Search..." class="form-control" />
+						<span class="input-group-btn">
+							<button class="btn btn-default" type="button">Search</button>
+						</span>
+					</div>
+					<select id="searchtype" class="input-small">
+						<option value="anime">Anime</option>
+						<option value="manga">Manga</option>
+						<option value="tv">TV series</option>
+					</select>
 				</div>
-				<div id="result" class="span12"></div>
+				<div id="result" class="col-md-12"></div>
 			</div>
 
 <%include footer.html %>

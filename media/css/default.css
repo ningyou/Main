@@ -2,6 +2,8 @@
 #title
 {
 	background: transparent url("/media/img/logo-ridge.png") repeat-x scroll left bottom;
+	padding-right: 0px;
+	padding-left: 0px;
 	padding-bottom: 5px;
 	margin-bottom: 8px;
 }
@@ -34,6 +36,10 @@ h1 a:hover span
 	color: #1fc2ff;
 }
 
+body {
+	overflow-y: scroll;
+}
+
 .nav.pull-right .dropdown-menu {
 	left: auto;
 	right: -1px;
@@ -46,9 +52,36 @@ h1 a:hover span
 	margin-bottom: 11px;
 }
 
-#login-modal
+#login-modal .btn
 {
-	margin: -250px 0 0 -165px;
+	padding: 1px 6px;
+}
+
+#login-modal label
+{
+	font-weight: normal;
+	font-size: 13px;
+}
+
+#login-modal .modal-header
+{
+	height: 46px;
+}
+
+#login-modal .modal-footer
+{
+	height: 58px;
+	margin-top: 1px;
+}
+
+#login-modal .modal-body
+{
+	height: 170px;
+	padding: 15px;
+}
+
+#login-modal .modal-dialog
+{
 	width: 330px;
 }
 

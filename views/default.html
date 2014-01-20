@@ -1,7 +1,7 @@
 <%include header.html %>
 
 			<div class="row">
-				<div class="span9">
+				<div class="col-md-7 col-md-offset-1">
 					<h2>Welcome to the Ningyou-Project!</h2>
 					<div class="well">
 						<p>
@@ -11,15 +11,23 @@
 						</p>
 					</div>
 				</div>
-				<div class="span3">
+				<div class="col-md-3">
 					<h2>Become awesome</h2>
-					<form action="/signup" method="POST">
-						<fieldset>
-							<input name="name" class="input-large" type="text" value="" placeholder="Username" />
-							<input name="password" class="input-large" type="password" value="" placeholder="Password" />
-							<input name="mail" class="input-large" type="text" value="" placeholder="E-mail" />
-							<input name="submit" type="submit" class="btn btn-primary pull-right" value="Enlightenment" />
-						</fieldset>
+					<form role="form" action="/signup" method="POST">
+						<div class="form-group">
+							<fieldset>
+								<div class="form-group">
+									<input name="name" class="form-control input-sm" type="text" value="" placeholder="Username" />
+								</div>
+								<div class="form-group">
+									<input name="password" class="form-control input-sm" type="password" value="" placeholder="Password" />
+								</div>
+								<div class="form-group">
+									<input name="mail" class="form-control input-sm" type="text" value="" placeholder="E-mail" />
+								</div>
+								<input name="submit" type="submit" class="btn btn-primary pull-right" value="Enlightenment" />
+							</fieldset>
+						</div>
 					</form>
 				</div>
 			</div>

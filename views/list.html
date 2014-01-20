@@ -1,13 +1,13 @@
 <%include header.html %>
 
 			<div class="row">
-				<div class="span12">
+				<div class="col-md-10 col-md-offset-1">
 					<h2>{{list_name}}</h2>
 					{% for i = 1, #lists do if #lists[order[i]] > 0 then %}
-					<table class="table table-bordered table-striped table-condensed">
+					<table class="table table-condensed table-bordered">
 						<thead>
 							<tr>
-								<th data-status="{{order[i]}}" class="span12">
+								<th data-status="{{order[i]}}" class="col-md-10 col-md-offset-1">
 									{{status[order[i]]}} ({{#lists[order[i]]}})
 									{% if user_id == logged_user_id then %}
 									<div class="pull-right">
@@ -27,7 +27,7 @@
 						<tbody>
 							{% for _, info in next, lists[order[i]] do %}
 							<tr data-id="{{info.id}}" data-title="{{info.title}}">
-								<td class="span12">
+								<td class="col-md-10 col-md-offset-1">
 									<a href="{{url}}{{info.id}}" target="_blank">{{info.title}}</a>
 									{% if info.notyet and info.startdate then %}
 									<small class="pull-right">Airdate: {{info.startdate}}</small>

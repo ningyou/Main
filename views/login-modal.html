@@ -1,26 +1,27 @@
-			<div id="login-modal" class="modal hide">
-				<div class="modal-header">
-					<a class="close" data-dismiss="modal">×</a>
-					<h3>Login</h3>
-				</div>
-				<form id="login" action="/login" method="POST">
-					<div class="modal-body">
-						<label>Username/E-mail</label>
-						<input tabindex="1" class="span4" type="text" value="" name="name" />
-						<label>Password</label>
-						<input tabindex="2" class="span4" type="password" value="" name="password" />
-						<div class="row">
-							<div class="span4">
-								<label class="checkbox">
-									<input tabindex="3" type="checkbox" name="remember" /> Remember me
-									<a class="pull-right" href="/login/lost-password">Lost password?</a>
-								</label>
-							</div>
+			<div id="login-modal" class="modal fade">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<a class="close" data-dismiss="modal">×</a>
+							<p><strong>Login</strong></p>
 						</div>
-
+						<form role="form" id="login" action="/login" method="POST">
+							<div class="modal-body">
+								<label for="name">Username/E-mail</label>
+								<input id="name" tabindex="1" class="form-control input-sm" type="text" value="" name="name" />
+								<label for="password">Password</label>
+								<input id="password" tabindex="2" class="form-control input-sm" type="password" value="" name="password" />
+								<div class="checkbox">
+									<label>
+										<input tabindex="3" type="checkbox" name="remember" /> Remember me
+										<a class="pull-right" href="/login/lost-password">Lost password?</a>
+									</label>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<input tabindex="4" type="submit" class="btn btn-primary" value="Login" name="submit" />
+							</div>
+						</form>
 					</div>
-					<div class="modal-footer">
-						<input tabindex="4" type="submit" class="btn btn-primary" value="Login" name="submit" />
-					</div>
-				</form>
+				</div>
 			</div>

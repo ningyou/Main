@@ -9,14 +9,14 @@
 		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
 		<![endif]-->
 
-		<link href="/media/css/bootstrap.css" rel="stylesheet" />
+		<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
 		<link href="/media/css/default.css" rel="stylesheet" />
 	</head>
 	<body>
 		<div id="top-alert"></div>
 		<div class="container">
 			<div class="row">
-				<div id="title" class="span12">
+				<div id="title" class="col-md-10 col-md-offset-1">
 					<h1 class="pull-left"><a href="/"><span>人形</span>Ningyou.</a></h1>
 
 					<ul class="nav nav-pills pull-right">
@@ -32,7 +32,7 @@
 							</ul>
 						</li>
 						{% else %}
-						<li><a data-toggle="modal" data-target="#login-modal" href="/login">Login</a></li>
+						<li><a data-toggle="modal" data-target="#login-modal">Login</a></li>
 						{% end %}
 					</ul>
 				</div>
